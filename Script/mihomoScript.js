@@ -1,5 +1,5 @@
 /**
- * mihomo配置覆写脚本（全量版）
+ * mihomo配置覆写脚本（全量版 · 100+地区自动识别 + 安全基线合并）
  * 作者：AIsouler
  * 源仓库：https://github.com/AIsouler/MyClash
  * 脚本链接：https://raw.githubusercontent.com/AIsouler/MyClash/main/Script/mihomoScript.js
@@ -139,37 +139,112 @@ const directProxies = [
 
 // 定义地区策略组
 const regionDefinitions = [
-  {
-    name: '香港',
-    flag: '🇭🇰',
-    regex: /🇭🇰|香港|(?<![A-Za-z])HKG?(?![A-Za-z])|hong\s*kong/i,
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/HongKong.svg',
-  },
-  {
-    name: '日本',
-    flag: '🇯🇵',
-    regex: /🇯🇵|日本|东京|大阪|京都|(?<![A-Za-z])JPN?(?![A-Za-z])|japan/i,
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Japan.svg',
-  },
-  {
-    name: '美国',
-    flag: '🇺🇸',
-    regex:
-      /🇺🇸|美国|纽约|洛杉矶|旧金山|芝加哥|休斯顿|迈阿密|西雅图|波士顿|华盛顿|拉斯维加斯|圣何塞|圣地亚哥|(?<![A-Za-z])USA?(?![A-Za-z])|america|united\s*states/i,
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/America.svg',
-  },
-  {
-    name: '新加坡',
-    flag: '🇸🇬',
-    regex: /🇸🇬|新加坡|狮城|(?<![A-Za-z])SGP?(?![A-Za-z])|singapore/i,
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Singapore.svg',
-  },
-  {
-    name: '台湾省',
-    flag: '🇹🇼',
-    regex: /🇹🇼|台湾|台北|高雄|(?<![A-Za-z])TWN?(?![A-Za-z])|taiwan/i,
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Taiwan.svg',
-  },
+  { name: "🇭🇰 香港节点", flag: "🇭🇰", regex: new RegExp("🇭🇰|香港|\\\\bHKG?\\\\b|hong[\\\\s_-]*kong", "i"), icon: "" },
+  { name: "🇹🇼 台湾节点", flag: "🇹🇼", regex: new RegExp("🇹🇼|台湾|\\\\bTWN?\\\\b|taiwan", "i"), icon: "" },
+  { name: "🇯🇵 日本节点", flag: "🇯🇵", regex: new RegExp("🇯🇵|日本|\\\\bJPN?\\\\b|japan|tokyo|osaka|东京|大阪", "i"), icon: "" },
+  { name: "🇰🇷 韩国节点", flag: "🇰🇷", regex: new RegExp("🇰🇷|韩国|\\\\bKR\\\\b|korea|seoul|首尔", "i"), icon: "" },
+  { name: "🇸🇬 新加坡节点", flag: "🇸🇬", regex: new RegExp("🇸🇬|新加坡|狮城|\\\\bSGP?\\\\b|singapore", "i"), icon: "" },
+  { name: "🇺🇸 美国节点", flag: "🇺🇸", regex: new RegExp("🇺🇸|美国|\\\\bUSA?\\\\b|america|united[\\\\s_-]*states|los[\\\\s_-]*angeles|洛杉矶|san[\\\\s_-]*jose|圣何塞", "i"), icon: "" },
+  { name: "🇬🇧 英国节点", flag: "🇬🇧", regex: new RegExp("🇬🇧|英国|\\\\bGB\\\\b|united[\\\\s_-]*kingdom|london|伦敦", "i"), icon: "" },
+  { name: "🇩🇪 德国节点", flag: "🇩🇪", regex: new RegExp("🇩🇪|德国|\\\\bDE\\\\b|germany|frankfurt|法兰克福", "i"), icon: "" },
+  { name: "🇳🇱 荷兰节点", flag: "🇳🇱", regex: new RegExp("🇳🇱|荷兰|\\\\bNL\\\\b|nether?lands|amsterdam|阿姆斯特丹", "i"), icon: "" },
+  { name: "🇲🇾 马来西亚节点", flag: "🇲🇾", regex: new RegExp("🇲🇾|马来西亚|\\\\bMY\\\\b|malaysia|kuala[\\\\s_-]*lumpur|吉隆坡", "i"), icon: "" },
+  { name: "🇹🇭 泰国节点", flag: "🇹🇭", regex: new RegExp("🇹🇭|泰国|\\\\bTH\\\\b|thailand|bangkok|曼谷", "i"), icon: "" },
+  { name: "🇻🇳 越南节点", flag: "🇻🇳", regex: new RegExp("🇻🇳|越南|\\\\bVN\\\\b|vietnam|hanoi|河内|ho[\\\\s_-]*chi[\\\\s_-]*minh|胡志明", "i"), icon: "" },
+  { name: "🇵🇭 菲律宾节点", flag: "🇵🇭", regex: new RegExp("🇵🇭|菲律宾|\\\\bPH\\\\b|philippines|manila|马尼拉", "i"), icon: "" },
+  { name: "🇮🇩 印尼节点", flag: "🇮🇩", regex: new RegExp("🇮🇩|印尼|印度尼西亚|\\\\bID\\\\b|indonesia|jakarta|雅加达", "i"), icon: "" },
+  { name: "🇮🇳 印度节点", flag: "🇮🇳", regex: new RegExp("🇮🇳|印度|\\\\bIN\\\\b|india|mumbai|孟买|delhi|德里", "i"), icon: "" },
+  { name: "🇦🇺 澳大利亚节点", flag: "🇦🇺", regex: new RegExp("🇦🇺|澳大利亚|澳洲|\\\\bAU\\\\b|australia|sydney|悉尼|melbourne|墨尔本", "i"), icon: "" },
+  { name: "🇫🇷 法国节点", flag: "🇫🇷", regex: new RegExp("🇫🇷|法国|\\\\bFR\\\\b|france|paris|巴黎", "i"), icon: "" },
+  { name: "🇷🇺 俄罗斯节点", flag: "🇷🇺", regex: new RegExp("🇷🇺|俄罗斯|\\\\bRU\\\\b|russia|moscow|莫斯科", "i"), icon: "" },
+  { name: "🇮🇹 意大利节点", flag: "🇮🇹", regex: new RegExp("🇮🇹|意大利|\\\\bIT\\\\b|\\\\bitaly\\\\b|rome|罗马", "i"), icon: "" },
+  { name: "🇨🇦 加拿大节点", flag: "🇨🇦", regex: new RegExp("🇨🇦|加拿大|\\\\bCA\\\\b|canada|toronto|多伦多", "i"), icon: "" },
+  { name: "🇦🇷 阿根廷节点", flag: "🇦🇷", regex: new RegExp("🇦🇷|阿根廷|\\\\bAR\\\\b|argentina|buenos[\\\\s_-]*aires|布宜诺斯艾利斯", "i"), icon: "" },
+  { name: "🇧🇷 巴西节点", flag: "🇧🇷", regex: new RegExp("🇧🇷|巴西|\\\\bBR\\\\b|brazil|sao[\\\\s_-]*paulo|圣保罗", "i"), icon: "" },
+  { name: "🇲🇽 墨西哥节点", flag: "🇲🇽", regex: new RegExp("🇲🇽|墨西哥|\\\\bMX\\\\b|mexico", "i"), icon: "" },
+  { name: "🇸🇦 沙特阿拉伯节点", flag: "🇸🇦", regex: new RegExp("🇸🇦|沙特阿拉伯|沙特|\\\\bSA\\\\b|saudi[\\\\s_-]*arabia", "i"), icon: "" },
+  { name: "🇿🇦 南非节点", flag: "🇿🇦", regex: new RegExp("🇿🇦|南非|\\\\bZA\\\\b|south[\\\\s_-]*africa|johannesburg|约翰内斯堡", "i"), icon: "" },
+  { name: "🇹🇷 土耳其节点", flag: "🇹🇷", regex: new RegExp("🇹🇷|土耳其|\\\\bTR\\\\b|turkey|istanbul|伊斯坦布尔", "i"), icon: "" },
+  { name: "🇧🇳 文莱节点", flag: "🇧🇳", regex: new RegExp("🇧🇳|文莱|\\\\bBN\\\\b|brunei", "i"), icon: "" },
+  { name: "🇰🇭 柬埔寨节点", flag: "🇰🇭", regex: new RegExp("🇰🇭|柬埔寨|\\\\bKH\\\\b|cambodia|phnom[\\\\s_-]*penh|金边", "i"), icon: "" },
+  { name: "🇱🇦 老挝节点", flag: "🇱🇦", regex: new RegExp("🇱🇦|老挝|\\\\bLA\\\\b|\\\\blaos\\\\b|vientiane|万象", "i"), icon: "" },
+  { name: "🇲🇲 缅甸节点", flag: "🇲🇲", regex: new RegExp("🇲🇲|缅甸|\\\\bMM\\\\b|myanmar|yangon|仰光", "i"), icon: "" },
+  { name: "🇦🇹 奥地利节点", flag: "🇦🇹", regex: new RegExp("🇦🇹|奥地利|\\\\bAT\\\\b|austria|vienna|维也纳", "i"), icon: "" },
+  { name: "🇧🇪 比利时节点", flag: "🇧🇪", regex: new RegExp("🇧🇪|比利时|\\\\bBE\\\\b|belgium|brussels|布鲁塞尔", "i"), icon: "" },
+  { name: "🇧🇬 保加利亚节点", flag: "🇧🇬", regex: new RegExp("🇧🇬|保加利亚|\\\\bBG\\\\b|bulgaria|sofia|索非亚", "i"), icon: "" },
+  { name: "🇭🇷 克罗地亚节点", flag: "🇭🇷", regex: new RegExp("🇭🇷|克罗地亚|\\\\bHR\\\\b|croatia", "i"), icon: "" },
+  { name: "🇨🇾 塞浦路斯节点", flag: "🇨🇾", regex: new RegExp("🇨🇾|塞浦路斯|\\\\bCY\\\\b|cyprus", "i"), icon: "" },
+  { name: "🇨🇿 捷克节点", flag: "🇨🇿", regex: new RegExp("🇨🇿|捷克|捷克共和国|\\\\bCZ\\\\b|czech|prague|布拉格", "i"), icon: "" },
+  { name: "🇩🇰 丹麦节点", flag: "🇩🇰", regex: new RegExp("🇩🇰|丹麦|\\\\bDK\\\\b|denmark|copenhagen|哥本哈根", "i"), icon: "" },
+  { name: "🇪🇪 爱沙尼亚节点", flag: "🇪🇪", regex: new RegExp("🇪🇪|爱沙尼亚|\\\\bEE\\\\b|estonia", "i"), icon: "" },
+  { name: "🇫🇮 芬兰节点", flag: "🇫🇮", regex: new RegExp("🇫🇮|芬兰|\\\\bFI\\\\b|finland|helsinki|赫尔辛基", "i"), icon: "" },
+  { name: "🇬🇷 希腊节点", flag: "🇬🇷", regex: new RegExp("🇬🇷|希腊|\\\\bGR\\\\b|greece|athens|雅典", "i"), icon: "" },
+  { name: "🇭🇺 匈牙利节点", flag: "🇭🇺", regex: new RegExp("🇭🇺|匈牙利|\\\\bHU\\\\b|hungary|budapest|布达佩斯", "i"), icon: "" },
+  { name: "🇮🇪 爱尔兰节点", flag: "🇮🇪", regex: new RegExp("🇮🇪|爱尔兰|\\\\bIE\\\\b|ireland|dublin|都柏林", "i"), icon: "" },
+  { name: "🇱🇻 拉脱维亚节点", flag: "🇱🇻", regex: new RegExp("🇱🇻|拉脱维亚|\\\\bLV\\\\b|latvia", "i"), icon: "" },
+  { name: "🇱🇹 立陶宛节点", flag: "🇱🇹", regex: new RegExp("🇱🇹|立陶宛|\\\\bLT\\\\b|lithuania", "i"), icon: "" },
+  { name: "🇱🇺 卢森堡节点", flag: "🇱🇺", regex: new RegExp("🇱🇺|卢森堡|\\\\bLU\\\\b|luxembourg", "i"), icon: "" },
+  { name: "🇲🇹 马耳他节点", flag: "🇲🇹", regex: new RegExp("🇲🇹|马耳他|\\\\bMT\\\\b|malta", "i"), icon: "" },
+  { name: "🇵🇱 波兰节点", flag: "🇵🇱", regex: new RegExp("🇵🇱|波兰|\\\\bPL\\\\b|poland|warsaw|华沙", "i"), icon: "" },
+  { name: "🇵🇹 葡萄牙节点", flag: "🇵🇹", regex: new RegExp("🇵🇹|葡萄牙|\\\\bPT\\\\b|portugal|lisbon|里斯本", "i"), icon: "" },
+  { name: "🇷🇴 罗马尼亚节点", flag: "🇷🇴", regex: new RegExp("🇷🇴|罗马尼亚|\\\\bRO\\\\b|romania|bucharest|布加勒斯特", "i"), icon: "" },
+  { name: "🇸🇰 斯洛伐克节点", flag: "🇸🇰", regex: new RegExp("🇸🇰|斯洛伐克|\\\\bSK\\\\b|slovakia", "i"), icon: "" },
+  { name: "🇸🇮 斯洛文尼亚节点", flag: "🇸🇮", regex: new RegExp("🇸🇮|斯洛文尼亚|\\\\bSI\\\\b|slovenia", "i"), icon: "" },
+  { name: "🇪🇸 西班牙节点", flag: "🇪🇸", regex: new RegExp("🇪🇸|西班牙|\\\\bES\\\\b|\\\\bspain\\\\b|madrid|马德里", "i"), icon: "" },
+  { name: "🇸🇪 瑞典节点", flag: "🇸🇪", regex: new RegExp("🇸🇪|瑞典|\\\\bSE\\\\b|sweden|stockholm|斯德哥尔摩", "i"), icon: "" },
+  { name: "🇩🇿 阿尔及利亚节点", flag: "🇩🇿", regex: new RegExp("🇩🇿|阿尔及利亚|\\\\bDZ\\\\b|algeria", "i"), icon: "" },
+  { name: "🇦🇴 安哥拉节点", flag: "🇦🇴", regex: new RegExp("🇦🇴|安哥拉|\\\\bAO\\\\b|angola", "i"), icon: "" },
+  { name: "🇧🇯 贝宁节点", flag: "🇧🇯", regex: new RegExp("🇧🇯|贝宁|\\\\bBJ\\\\b|benin", "i"), icon: "" },
+  { name: "🇧🇼 博茨瓦纳节点", flag: "🇧🇼", regex: new RegExp("🇧🇼|博茨瓦纳|\\\\bBW\\\\b|botswana", "i"), icon: "" },
+  { name: "🇧🇫 布基纳法索节点", flag: "🇧🇫", regex: new RegExp("🇧🇫|布基纳法索|\\\\bBF\\\\b|burkina[\\\\s_-]*faso", "i"), icon: "" },
+  { name: "🇧🇮 布隆迪节点", flag: "🇧🇮", regex: new RegExp("🇧🇮|布隆迪|\\\\bBI\\\\b|burundi", "i"), icon: "" },
+  { name: "🇨🇻 佛得角节点", flag: "🇨🇻", regex: new RegExp("🇨🇻|佛得角|\\\\bCV\\\\b|cabo[\\\\s_-]*verde|cape[\\\\s_-]*verde", "i"), icon: "" },
+  { name: "🇨🇲 喀麦隆节点", flag: "🇨🇲", regex: new RegExp("🇨🇲|喀麦隆|\\\\bCM\\\\b|cameroon", "i"), icon: "" },
+  { name: "🇨🇫 中非共和国节点", flag: "🇨🇫", regex: new RegExp("🇨🇫|中非共和国|中非|\\\\bCF\\\\b|central[\\\\s_-]*african", "i"), icon: "" },
+  { name: "🇹🇩 乍得节点", flag: "🇹🇩", regex: new RegExp("🇹🇩|乍得|\\\\bTD\\\\b|\\\\bchad\\\\b", "i"), icon: "" },
+  { name: "🇰🇲 科摩罗节点", flag: "🇰🇲", regex: new RegExp("🇰🇲|科摩罗|\\\\bKM\\\\b|comoros", "i"), icon: "" },
+  { name: "🇨🇬 刚果共和国节点", flag: "🇨🇬", regex: new RegExp("🇨🇬|刚果共和国|刚果（布）|\\\\bCG\\\\b|\\\\bcongo\\\\b", "i"), icon: "" },
+  { name: "🇨🇩 刚果民主共和国节点", flag: "🇨🇩", regex: new RegExp("🇨🇩|刚果民主共和国|刚果（金）|民主刚果|\\\\bCD\\\\b|dr[\\\\s_-]*congo|democratic[\\\\s_-]*republic[\\\\s_-]*of[\\\\s_-]*the[\\\\s_-]*congo", "i"), icon: "" },
+  { name: "🇨🇮 科特迪瓦节点", flag: "🇨🇮", regex: new RegExp("🇨🇮|科特迪瓦|象牙海岸|\\\\bCI\\\\b|cote[\\\\s_-]*d.ivoire|ivory[\\\\s_-]*coast", "i"), icon: "" },
+  { name: "🇩🇯 吉布提节点", flag: "🇩🇯", regex: new RegExp("🇩🇯|吉布提|\\\\bDJ\\\\b|djibouti", "i"), icon: "" },
+  { name: "🇪🇬 埃及节点", flag: "🇪🇬", regex: new RegExp("🇪🇬|埃及|\\\\bEG\\\\b|egypt|cairo|开罗", "i"), icon: "" },
+  { name: "🇬🇶 赤道几内亚节点", flag: "🇬🇶", regex: new RegExp("🇬🇶|赤道几内亚|\\\\bGQ\\\\b|equatorial[\\\\s_-]*guinea", "i"), icon: "" },
+  { name: "🇪🇷 厄立特里亚节点", flag: "🇪🇷", regex: new RegExp("🇪🇷|厄立特里亚|\\\\bER\\\\b|eritrea", "i"), icon: "" },
+  { name: "🇸🇿 斯威士兰节点", flag: "🇸🇿", regex: new RegExp("🇸🇿|斯威士兰|埃斯瓦蒂尼|\\\\bSZ\\\\b|eswatini|swaziland", "i"), icon: "" },
+  { name: "🇪🇹 埃塞俄比亚节点", flag: "🇪🇹", regex: new RegExp("🇪🇹|埃塞俄比亚|\\\\bET\\\\b|ethiopia", "i"), icon: "" },
+  { name: "🇬🇦 加蓬节点", flag: "🇬🇦", regex: new RegExp("🇬🇦|加蓬|\\\\bGA\\\\b|\\\\bgabon\\\\b", "i"), icon: "" },
+  { name: "🇬🇲 冈比亚节点", flag: "🇬🇲", regex: new RegExp("🇬🇲|冈比亚|\\\\bGM\\\\b|gambia", "i"), icon: "" },
+  { name: "🇬🇭 加纳节点", flag: "🇬🇭", regex: new RegExp("🇬🇭|加纳|\\\\bGH\\\\b|\\\\bghana\\\\b", "i"), icon: "" },
+  { name: "🇬🇳 几内亚节点", flag: "🇬🇳", regex: new RegExp("🇬🇳|几内亚|\\\\bGN\\\\b|\\\\bguinea\\\\b", "i"), icon: "" },
+  { name: "🇬🇼 几内亚比绍节点", flag: "🇬🇼", regex: new RegExp("🇬🇼|几内亚比绍|\\\\bGW\\\\b|guinea-bissau|guinea[\\\\s_-]*bissau", "i"), icon: "" },
+  { name: "🇰🇪 肯尼亚节点", flag: "🇰🇪", regex: new RegExp("🇰🇪|肯尼亚|\\\\bKE\\\\b|kenya|nairobi|内罗毕", "i"), icon: "" },
+  { name: "🇱🇸 莱索托节点", flag: "🇱🇸", regex: new RegExp("🇱🇸|莱索托|\\\\bLS\\\\b|lesotho", "i"), icon: "" },
+  { name: "🇱🇷 利比里亚节点", flag: "🇱🇷", regex: new RegExp("🇱🇷|利比里亚|\\\\bLR\\\\b|liberia", "i"), icon: "" },
+  { name: "🇱🇾 利比亚节点", flag: "🇱🇾", regex: new RegExp("🇱🇾|利比亚|\\\\bLY\\\\b|\\\\blibya\\\\b", "i"), icon: "" },
+  { name: "🇲🇬 马达加斯加节点", flag: "🇲🇬", regex: new RegExp("🇲🇬|马达加斯加|\\\\bMG\\\\b|madagascar", "i"), icon: "" },
+  { name: "🇲🇼 马拉维节点", flag: "🇲🇼", regex: new RegExp("🇲🇼|马拉维|\\\\bMW\\\\b|malawi", "i"), icon: "" },
+  { name: "🇲🇱 马里节点", flag: "🇲🇱", regex: new RegExp("🇲🇱|马里|\\\\bML\\\\b|\\\\bmali\\\\b", "i"), icon: "" },
+  { name: "🇲🇷 毛里塔尼亚节点", flag: "🇲🇷", regex: new RegExp("🇲🇷|毛里塔尼亚|\\\\bMR\\\\b|mauritania", "i"), icon: "" },
+  { name: "🇲🇺 毛里求斯节点", flag: "🇲🇺", regex: new RegExp("🇲🇺|毛里求斯|\\\\bMU\\\\b|mauritius", "i"), icon: "" },
+  { name: "🇲🇦 摩洛哥节点", flag: "🇲🇦", regex: new RegExp("🇲🇦|摩洛哥|\\\\bMA\\\\b|morocco|casablanca|卡萨布兰卡", "i"), icon: "" },
+  { name: "🇲🇿 莫桑比克节点", flag: "🇲🇿", regex: new RegExp("🇲🇿|莫桑比克|\\\\bMZ\\\\b|mozambique", "i"), icon: "" },
+  { name: "🇳🇦 纳米比亚节点", flag: "🇳🇦", regex: new RegExp("🇳🇦|纳米比亚|\\\\bNA\\\\b|\\\\bnamibia\\\\b", "i"), icon: "" },
+  { name: "🇳🇪 尼日尔节点", flag: "🇳🇪", regex: new RegExp("🇳🇪|尼日尔|\\\\bNE\\\\b|\\\\bniger\\\\b", "i"), icon: "" },
+  { name: "🇳🇬 尼日利亚节点", flag: "🇳🇬", regex: new RegExp("🇳🇬|尼日利亚|\\\\bNG\\\\b|nigeria|lagos|拉各斯", "i"), icon: "" },
+  { name: "🇷🇼 卢旺达节点", flag: "🇷🇼", regex: new RegExp("🇷🇼|卢旺达|\\\\bRW\\\\b|rwanda", "i"), icon: "" },
+  { name: "🇸🇹 圣多美和普林西比节点", flag: "🇸🇹", regex: new RegExp("🇸🇹|圣多美和普林西比|\\\\bST\\\\b|sao[\\\\s_-]*tome", "i"), icon: "" },
+  { name: "🇸🇳 塞内加尔节点", flag: "🇸🇳", regex: new RegExp("🇸🇳|塞内加尔|\\\\bSN\\\\b|senegal", "i"), icon: "" },
+  { name: "🇸🇨 塞舌尔节点", flag: "🇸🇨", regex: new RegExp("🇸🇨|塞舌尔|\\\\bSC\\\\b|seychelles", "i"), icon: "" },
+  { name: "🇸🇱 塞拉利昂节点", flag: "🇸🇱", regex: new RegExp("🇸🇱|塞拉利昂|\\\\bSL\\\\b|sierra[\\\\s_-]*leone", "i"), icon: "" },
+  { name: "🇸🇴 索马里节点", flag: "🇸🇴", regex: new RegExp("🇸🇴|索马里|\\\\bSO\\\\b|somalia", "i"), icon: "" },
+  { name: "🇸🇸 南苏丹节点", flag: "🇸🇸", regex: new RegExp("🇸🇸|南苏丹|\\\\bSS\\\\b|south[\\\\s_-]*sudan", "i"), icon: "" },
+  { name: "🇸🇩 苏丹节点", flag: "🇸🇩", regex: new RegExp("🇸🇩|苏丹|\\\\bSD\\\\b|\\\\bsudan\\\\b", "i"), icon: "" },
+  { name: "🇹🇿 坦桑尼亚节点", flag: "🇹🇿", regex: new RegExp("🇹🇿|坦桑尼亚|\\\\bTZ\\\\b|tanzania", "i"), icon: "" },
+  { name: "🇹🇬 多哥节点", flag: "🇹🇬", regex: new RegExp("🇹🇬|多哥|\\\\bTG\\\\b|\\\\btogo\\\\b", "i"), icon: "" },
+  { name: "🇹🇳 突尼斯节点", flag: "🇹🇳", regex: new RegExp("🇹🇳|突尼斯|\\\\bTN\\\\b|tunisia", "i"), icon: "" },
+  { name: "🇺🇬 乌干达节点", flag: "🇺🇬", regex: new RegExp("🇺🇬|乌干达|\\\\bUG\\\\b|uganda", "i"), icon: "" },
+  { name: "🇿🇲 赞比亚节点", flag: "🇿🇲", regex: new RegExp("🇿🇲|赞比亚|\\\\bZM\\\\b|zambia", "i"), icon: "" },
+  { name: "🇿🇼 津巴布韦节点", flag: "🇿🇼", regex: new RegExp("🇿🇼|津巴布韦|\\\\bZW\\\\b|zimbabwe", "i"), icon: "" },
 ];
 
 // 定义倍率策略组
@@ -923,7 +998,6 @@ function buildRegionGroups(filteredProxies, customProxies) {
       otherProxies.push(proxy.name);
     }
   }
-
   const generatedRegionGroups = allRegionDefinitions
     .filter((r) => regionGroups[r.name].length > 0 && (generateRateGroupEnabled || !rateRegionDefinitions.includes(r)))
     .flatMap((r) => createRegionGroup(r.name, r.icon, regionGroups[r.name]));
@@ -1538,6 +1612,119 @@ function buildDnsAndHostsConfig(config, filteredProxies) {
   return { dns, hosts, proxies: mappedProxies };
 }
 
+
+// --- 安全基线（合并自 MY脚本） ---
+const securityBaseline = {
+  'mixed-port': 17890,
+  'allow-lan': false,
+  'bind-address': '127.0.0.1',
+  'ipv6': true,
+  'mode': 'rule',
+  'log-level': 'info',
+  'unified-delay': true,
+  'tcp-concurrent': true,
+  'keep-alive-interval': 15,
+  'keep-alive-idle': 15,
+  'disable-keep-alive': false,
+  'find-process-mode': 'strict',
+  'etag-support': true,
+  'external-controller': '127.0.0.1:19090',
+  'external-ui': 'ui',
+  'external-ui-url': 'https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip',
+  'geodata-mode': false,
+  'geodata-loader': 'memconservative',
+  'geo-auto-update': true,
+  'geo-update-interval': 168,
+  'geox-url': {
+    geoip: 'https://gcore.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.dat',
+    geosite: 'https://gcore.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat',
+    mmdb: 'https://gcore.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.metadb',
+    asn: 'https://gcore.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/GeoLite2-ASN.mmdb',
+  },
+  profile: {
+    'store-selected': false,
+    'store-fake-ip': false,
+  },
+  ntp: {
+    enable: false,
+    'write-to-system': false,
+    server: 'ntp.aliyun.com',
+    port: 123,
+    interval: 30,
+  },
+  experimental: {
+    'quic-go-disable-gso': false,
+    'quic-go-disable-ecn': false,
+  },
+  'external-controller-cors': {
+    'allow-origins': [
+      'http://127.0.0.1:19090',
+      'https://127.0.0.1:19090',
+      'http://localhost:19090',
+      'https://localhost:19090',
+    ],
+    'allow-private-network': false,
+  },
+};
+
+const securitySniffer = {
+  enable: true,
+  'force-dns-mapping': true,
+  'parse-pure-ip': true,
+  'override-destination': true,
+  sniff: {
+    HTTP: { ports: [80, '8080-8880'], enable: true, 'override-destination': true },
+    TLS: { ports: [443, 8443], enable: true, 'override-destination': true },
+  },
+  'force-domain': [
+    '+.google.com', '+.youtube.com', '+.telegram.org', '+.openai.com',
+    '+.anthropic.com', '+.twitter.com', '+.x.com', '+.googlevideo.com',
+    '+.ytimg.com', '+.chatgpt.com', '+.claude.ai',
+  ],
+  'skip-dst-address': [
+    '91.105.192.0/23', '91.108.4.0/22', '91.108.8.0/21',
+    '91.108.16.0/21', '91.108.56.0/22', '95.161.64.0/20',
+    '149.154.160.0/20', '185.76.151.0/24', '2001:b28:f23d::/48',
+    '2001:b28:f23f::/48', '2001:67c:4e8::/48',
+  ],
+  'skip-domain': [
+    'geosite:cn', 'geosite:geolocation-cn', 'geosite:category-ads-all',
+    'geosite:category-games-cn', '+.gstatic.com', '+.msftconnecttest.com',
+    '+.msftncsi.com', '+.captive.apple.com', '+.router.asus.com',
+    '+.tplogin.cn', '+.hiwifi.com', '+.phicomm.me', '+.local', '+.lan',
+    '+.home.arpa', '+.unionpay.com', '+.95516.com', '+.alipay.com',
+    '+.alipayobjects.com', '+.tenpay.com', '+.wechatpay.cn', '+.abchina.com',
+    '+.abchina.com.cn', '+.icbc.com.cn', '+.ccb.com', '+.boc.cn',
+    '+.bankofchina.com', '+.cmbchina.com', '+.bankcomm.com', '+.psbc.com',
+    '+.spdb.com.cn', '+.cib.com.cn', '+.cmbc.com.cn', '+.pingan.com',
+    '+.cgbchina.com.cn', '+.hxb.com.cn', '+.cebbank.com', '+.citicbank.com',
+    '+.ecitic.com', '+.gfbazc.com', '+.fzuol.com', '+.netsunion.org.cn',
+    '+.tongdun.net', '+.ishumei.com', '+.geetest.com', '+.trustdevice.net',
+    '+.rongcloud.cn', '+.rongcloud.com', '+.umeng.com', '+.umengcloud.com',
+    '+.tongduncdn.com', '+.dingxiangyun.com', '+.dingxiangyun.cn',
+    '+.rong360.com', '+.99bill.com', '+.chinapay.com', '+.yeepay.com',
+    '+.jdpay.com', '+.unionpaysecure.com', '+.pingan.com.cn', '+.aegis.qq.com',
+    '+.riskradar.net', '+.cpic.com.cn', '+.zhongan.com', '+.eastmoney.com',
+    '+.htsc.com.cn', '+.gtja.com', '+.jpush.cn', '+.jpush.io', '+.jiguang.cn',
+    '+.weixin.qq.com', '+.wx.qq.com', '+.servicewechat.com', '+.12306.cn',
+    '+.railway12306.cn', '+.chinatax.gov.cn', '+.fuwu.nhsa.gov.cn',
+    '+.gjzwfw.gov.cn', '+.xiaojukeji.com', '+.didichuxing.com',
+    '+.work.weixin.qq.com', '+.meeting.tencent.com', '+.taobao.com',
+    '+.jd.com', '+.pinduoduo.com', '+.meituan.com', '+.dianping.com',
+    '+.ele.me', '+.amap.com', '+.baidu.com', '+.xiaohongshu.com',
+    '+.kuaishou.com', '+.163.com', '+.weibo.com', '+.zhihu.com',
+    '+.ctrip.com', '+.qunar.com', '+.sf-express.com', '+.dingtalk.com',
+    '+.feishu.cn', '+.xuexi.cn', '+.chsi.com.cn',
+  ],
+};
+
+const securityHosts = {
+  'dns.alidns.com': ['223.5.5.5', '223.6.6.6', '2400:3200::1', '2400:3200:baba::1'],
+  'doh.pub': ['1.12.12.12', '120.53.53.53', '2402:4e00::', '2402:4e00:1::'],
+  'dns.google': ['8.8.8.8', '8.8.4.4', '2001:4860:4860::8888', '2001:4860:4860::8844'],
+  'cloudflare-dns.com': ['1.1.1.1', '1.0.0.1', '2606:4700:4700::1111', '2606:4700:4700::1001'],
+};
+
 // --- 主入口 ---
 
 /**
@@ -1562,34 +1749,9 @@ function main(config) {
   const { dns, hosts, proxies: mappedProxies } = buildDnsAndHostsConfig(config, filteredProxies);
 
   newConfig['dns'] = dns;
-  newConfig['hosts'] = hosts;
-  newConfig['mixed-port'] = 7890;
-  newConfig['allow-lan'] = true;
-  newConfig['ipv6'] = true;
-  newConfig['mode'] = 'rule';
-  newConfig['log-level'] = 'info';
-  newConfig['bind-address'] = '*';
-  newConfig['unified-delay'] = true;
-  newConfig['tcp-concurrent'] = true;
-  newConfig['keep-alive-interval'] = 60;
-  newConfig['find-process-mode'] = 'strict';
-
-  newConfig['external-controller'] = '127.0.0.1:9090';
-  newConfig['external-ui'] = 'ui';
-  newConfig['external-ui-url'] = 'https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip';
-
-  newConfig['profile'] = {
-    'store-selected': true,
-    'store-fake-ip': true,
-  };
-
-  newConfig['ntp'] = {
-    enable: true,
-    'write-to-system': false,
-    server: 'ntp.aliyun.com',
-    port: 123,
-    interval: 60,
-  };
+  newConfig['hosts'] = { ...securityHosts, ...hosts };
+  Object.assign(newConfig, securityBaseline);
+  newConfig['sniffer'] = securitySniffer;
 
   newConfig['tun'] = {
     enable: true,
