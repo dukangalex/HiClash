@@ -1,15 +1,13 @@
 /**
- * mihomo配置覆写脚本（全量版 · 100+地区自动识别 + 安全基线合并）
- * 作者：dukangalex
- * 源仓库：https://github.com/dukangalex/MeClash
- * 脚本链接：https://raw.githubusercontent.com/dukangalex/MeClash/main/Script/mihomoScript.js
- * 友情推荐，非常好用、省电且内存占用低的代理软件：https://github.com/appshubcc/Bettbox
+ * HiClash Mihomo 配置覆写脚本（全量版 · 多地区自动识别 + 安全基线）
+ * 原作者：AIsouler
+ * 二次维护：dukangalex
+ * 上游项目：https://github.com/AIsouler/MyClash
+ * 项目仓库：https://github.com/dukangalex/HiClash
+ * 脚本链接：https://raw.githubusercontent.com/dukangalex/HiClash/main/Script/mihomoScript.js
  */
 
 // --- 静态配置区域 ---
-
-// 适配 Bettbox 自定义配置参数
-const Compatible_With_Bettbox = { ruleOptionsEnable: true };
 
 /**
  * 自定义配置选项
@@ -105,6 +103,12 @@ const excludeFilter =
   /群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|电报|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|优惠|福利|邀请|好友|失联|选择|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|过滤|⚠️|@|t\.me\/\+|\bexpire\b|\bhttps?:\/\/|\.com|\btraffic\b/iu;
 
 // 屏蔽国外QUIC
+const blockWebRtcStun = [
+  'AND,((NETWORK,UDP),(DST-PORT,3478-3497)),REJECT',
+  'AND,((NETWORK,UDP),(DST-PORT,5349)),REJECT',
+  'AND,((NETWORK,UDP),(DST-PORT,19302-19309)),REJECT',
+];
+
 const blockForeignQuic = [
   'AND,((NETWORK,UDP),(DST-PORT,443),(NOT,((OR,((RULE-SET,cn_additional),(RULE-SET,cn_ip,no-resolve)))))),REJECT',
 ];
@@ -245,6 +249,110 @@ const regionDefinitions = [
   { name: "🇺🇬 乌干达节点", flag: "🇺🇬", regex: new RegExp("🇺🇬|乌干达|\\bUG\\b|uganda", "i"), icon: "" },
   { name: "🇿🇲 赞比亚节点", flag: "🇿🇲", regex: new RegExp("🇿🇲|赞比亚|\\bZM\\b|zambia", "i"), icon: "" },
   { name: "🇿🇼 津巴布韦节点", flag: "🇿🇼", regex: new RegExp("🇿🇼|津巴布韦|\\bZW\\b|zimbabwe", "i"), icon: "" },
+  { name: "🇦🇫 阿富汗节点", flag: "🇦🇫", regex: new RegExp("🇦🇫|阿富汗|afghanistan", "i"), icon: "" },
+  { name: "🇦🇲 亚美尼亚节点", flag: "🇦🇲", regex: new RegExp("🇦🇲|亚美尼亚|armenia", "i"), icon: "" },
+  { name: "🇦🇿 阿塞拜疆节点", flag: "🇦🇿", regex: new RegExp("🇦🇿|阿塞拜疆|azerbaijan", "i"), icon: "" },
+  { name: "🇧🇭 巴林节点", flag: "🇧🇭", regex: new RegExp("🇧🇭|巴林|bahrain", "i"), icon: "" },
+  { name: "🇧🇩 孟加拉国节点", flag: "🇧🇩", regex: new RegExp("🇧🇩|孟加拉国|bangladesh", "i"), icon: "" },
+  { name: "🇧🇹 不丹节点", flag: "🇧🇹", regex: new RegExp("🇧🇹|不丹|bhutan", "i"), icon: "" },
+  { name: "🇬🇪 格鲁吉亚节点", flag: "🇬🇪", regex: new RegExp("🇬🇪|格鲁吉亚|georgia", "i"), icon: "" },
+  { name: "🇮🇷 伊朗节点", flag: "🇮🇷", regex: new RegExp("🇮🇷|伊朗|iran", "i"), icon: "" },
+  { name: "🇮🇶 伊拉克节点", flag: "🇮🇶", regex: new RegExp("🇮🇶|伊拉克|iraq", "i"), icon: "" },
+  { name: "🇮🇱 以色列节点", flag: "🇮🇱", regex: new RegExp("🇮🇱|以色列|israel", "i"), icon: "" },
+  { name: "🇯🇴 约旦节点", flag: "🇯🇴", regex: new RegExp("🇯🇴|约旦|jordan", "i"), icon: "" },
+  { name: "🇰🇿 哈萨克斯坦节点", flag: "🇰🇿", regex: new RegExp("🇰🇿|哈萨克斯坦|kazakhstan", "i"), icon: "" },
+  { name: "🇰🇼 科威特节点", flag: "🇰🇼", regex: new RegExp("🇰🇼|科威特|kuwait", "i"), icon: "" },
+  { name: "🇰🇬 吉尔吉斯斯坦节点", flag: "🇰🇬", regex: new RegExp("🇰🇬|吉尔吉斯斯坦|kyrgyzstan", "i"), icon: "" },
+  { name: "🇱🇧 黎巴嫩节点", flag: "🇱🇧", regex: new RegExp("🇱🇧|黎巴嫩|lebanon", "i"), icon: "" },
+  { name: "🇲🇻 马尔代夫节点", flag: "🇲🇻", regex: new RegExp("🇲🇻|马尔代夫|maldives", "i"), icon: "" },
+  { name: "🇲🇳 蒙古节点", flag: "🇲🇳", regex: new RegExp("🇲🇳|蒙古|mongolia", "i"), icon: "" },
+  { name: "🇳🇵 尼泊尔节点", flag: "🇳🇵", regex: new RegExp("🇳🇵|尼泊尔|nepal", "i"), icon: "" },
+  { name: "🇰🇵 朝鲜节点", flag: "🇰🇵", regex: new RegExp("🇰🇵|朝鲜|north[\s_-]*korea|dprk", "i"), icon: "" },
+  { name: "🇴🇲 阿曼节点", flag: "🇴🇲", regex: new RegExp("🇴🇲|阿曼|oman", "i"), icon: "" },
+  { name: "🇵🇰 巴基斯坦节点", flag: "🇵🇰", regex: new RegExp("🇵🇰|巴基斯坦|pakistan", "i"), icon: "" },
+  { name: "🇵🇸 巴勒斯坦节点", flag: "🇵🇸", regex: new RegExp("🇵🇸|巴勒斯坦|palestine|west[\s_-]*bank|gaza", "i"), icon: "" },
+  { name: "🇶🇦 卡塔尔节点", flag: "🇶🇦", regex: new RegExp("🇶🇦|卡塔尔|qatar", "i"), icon: "" },
+  { name: "🇱🇰 斯里兰卡节点", flag: "🇱🇰", regex: new RegExp("🇱🇰|斯里兰卡|sri[\s_-]*lanka", "i"), icon: "" },
+  { name: "🇸🇾 叙利亚节点", flag: "🇸🇾", regex: new RegExp("🇸🇾|叙利亚|syria", "i"), icon: "" },
+  { name: "🇹🇯 塔吉克斯坦节点", flag: "🇹🇯", regex: new RegExp("🇹🇯|塔吉克斯坦|tajikistan", "i"), icon: "" },
+  { name: "🇹🇱 东帝汶节点", flag: "🇹🇱", regex: new RegExp("🇹🇱|东帝汶|timor[\s_-]*leste|east[\s_-]*timor", "i"), icon: "" },
+  { name: "🇹🇲 土库曼斯坦节点", flag: "🇹🇲", regex: new RegExp("🇹🇲|土库曼斯坦|turkmenistan", "i"), icon: "" },
+  { name: "🇦🇪 阿联酋节点", flag: "🇦🇪", regex: new RegExp("🇦🇪|阿联酋|uae|united[\s_-]*arab[\s_-]*emirates", "i"), icon: "" },
+  { name: "🇺🇿 乌兹别克斯坦节点", flag: "🇺🇿", regex: new RegExp("🇺🇿|乌兹别克斯坦|uzbekistan", "i"), icon: "" },
+  { name: "🇾🇪 也门节点", flag: "🇾🇪", regex: new RegExp("🇾🇪|也门|yemen", "i"), icon: "" },
+  { name: "🇲🇴 澳门节点", flag: "🇲🇴", regex: new RegExp("🇲🇴|澳门|macau|macao", "i"), icon: "" },
+  { name: "🇦🇱 阿尔巴尼亚节点", flag: "🇦🇱", regex: new RegExp("🇦🇱|阿尔巴尼亚|albania", "i"), icon: "" },
+  { name: "🇦🇩 安道尔节点", flag: "🇦🇩", regex: new RegExp("🇦🇩|安道尔|andorra", "i"), icon: "" },
+  { name: "🇧🇾 白俄罗斯节点", flag: "🇧🇾", regex: new RegExp("🇧🇾|白俄罗斯|belarus", "i"), icon: "" },
+  { name: "🇧🇦 波斯尼亚和黑塞哥维那节点", flag: "🇧🇦", regex: new RegExp("🇧🇦|波斯尼亚和黑塞哥维那|bosnia|bosnia[\s_-]*and[\s_-]*herzegovina", "i"), icon: "" },
+  { name: "🇮🇸 冰岛节点", flag: "🇮🇸", regex: new RegExp("🇮🇸|冰岛|iceland", "i"), icon: "" },
+  { name: "🇱🇮 列支敦士登节点", flag: "🇱🇮", regex: new RegExp("🇱🇮|列支敦士登|liechtenstein", "i"), icon: "" },
+  { name: "🇲🇩 摩尔多瓦节点", flag: "🇲🇩", regex: new RegExp("🇲🇩|摩尔多瓦|moldova", "i"), icon: "" },
+  { name: "🇲🇨 摩纳哥节点", flag: "🇲🇨", regex: new RegExp("🇲🇨|摩纳哥|monaco", "i"), icon: "" },
+  { name: "🇲🇪 黑山节点", flag: "🇲🇪", regex: new RegExp("🇲🇪|黑山|montenegro", "i"), icon: "" },
+  { name: "🇲🇰 北马其顿节点", flag: "🇲🇰", regex: new RegExp("🇲🇰|北马其顿|north[\s_-]*macedonia|macedonia", "i"), icon: "" },
+  { name: "🇳🇴 挪威节点", flag: "🇳🇴", regex: new RegExp("🇳🇴|挪威|norway", "i"), icon: "" },
+  { name: "🇸🇲 圣马力诺节点", flag: "🇸🇲", regex: new RegExp("🇸🇲|圣马力诺|san[\s_-]*marino", "i"), icon: "" },
+  { name: "🇷🇸 塞尔维亚节点", flag: "🇷🇸", regex: new RegExp("🇷🇸|塞尔维亚|serbia", "i"), icon: "" },
+  { name: "🇨🇭 瑞士节点", flag: "🇨🇭", regex: new RegExp("🇨🇭|瑞士|switzerland", "i"), icon: "" },
+  { name: "🇺🇦 乌克兰节点", flag: "🇺🇦", regex: new RegExp("🇺🇦|乌克兰|ukraine", "i"), icon: "" },
+  { name: "🇻🇦 梵蒂冈节点", flag: "🇻🇦", regex: new RegExp("🇻🇦|梵蒂冈|vatican", "i"), icon: "" },
+  { name: "🇽🇰 科索沃节点", flag: "🇽🇰", regex: new RegExp("🇽🇰|科索沃|kosovo", "i"), icon: "" },
+  { name: "🇧🇸 巴哈马节点", flag: "🇧🇸", regex: new RegExp("🇧🇸|巴哈马|bahamas", "i"), icon: "" },
+  { name: "🇧🇧 巴巴多斯节点", flag: "🇧🇧", regex: new RegExp("🇧🇧|巴巴多斯|barbados", "i"), icon: "" },
+  { name: "🇧🇿 伯利兹节点", flag: "🇧🇿", regex: new RegExp("🇧🇿|伯利兹|belize", "i"), icon: "" },
+  { name: "🇨🇷 哥斯达黎加节点", flag: "🇨🇷", regex: new RegExp("🇨🇷|哥斯达黎加|costa[\s_-]*rica", "i"), icon: "" },
+  { name: "🇨🇺 古巴节点", flag: "🇨🇺", regex: new RegExp("🇨🇺|古巴|cuba", "i"), icon: "" },
+  { name: "🇩🇲 多米尼克节点", flag: "🇩🇲", regex: new RegExp("🇩🇲|多米尼克|dominica", "i"), icon: "" },
+  { name: "🇩🇴 多米尼加节点", flag: "🇩🇴", regex: new RegExp("🇩🇴|多米尼加|dominican[\s_-]*republic|dominican", "i"), icon: "" },
+  { name: "🇸🇻 萨尔瓦多节点", flag: "🇸🇻", regex: new RegExp("🇸🇻|萨尔瓦多|el[\s_-]*salvador", "i"), icon: "" },
+  { name: "🇬🇩 格林纳达节点", flag: "🇬🇩", regex: new RegExp("🇬🇩|格林纳达|grenada", "i"), icon: "" },
+  { name: "🇬🇹 危地马拉节点", flag: "🇬🇹", regex: new RegExp("🇬🇹|危地马拉|guatemala", "i"), icon: "" },
+  { name: "🇭🇹 海地节点", flag: "🇭🇹", regex: new RegExp("🇭🇹|海地|haiti", "i"), icon: "" },
+  { name: "🇭🇳 洪都拉斯节点", flag: "🇭🇳", regex: new RegExp("🇭🇳|洪都拉斯|honduras", "i"), icon: "" },
+  { name: "🇯🇲 牙买加节点", flag: "🇯🇲", regex: new RegExp("🇯🇲|牙买加|jamaica", "i"), icon: "" },
+  { name: "🇳🇮 尼加拉瓜节点", flag: "🇳🇮", regex: new RegExp("🇳🇮|尼加拉瓜|nicaragua", "i"), icon: "" },
+  { name: "🇵🇦 巴拿马节点", flag: "🇵🇦", regex: new RegExp("🇵🇦|巴拿马|panama", "i"), icon: "" },
+  { name: "🇰🇳 圣基茨和尼维斯节点", flag: "🇰🇳", regex: new RegExp("🇰🇳|圣基茨和尼维斯|saint[\s_-]*kitts|st[\s_-]*kitts", "i"), icon: "" },
+  { name: "🇱🇨 圣卢西亚节点", flag: "🇱🇨", regex: new RegExp("🇱🇨|圣卢西亚|saint[\s_-]*lucia|st[\s_-]*lucia", "i"), icon: "" },
+  { name: "🇻🇨 圣文森特和格林纳丁斯节点", flag: "🇻🇨", regex: new RegExp("🇻🇨|圣文森特和格林纳丁斯|saint[\s_-]*vincent|st[\s_-]*vincent", "i"), icon: "" },
+  { name: "🇹🇹 特立尼达和多巴哥节点", flag: "🇹🇹", regex: new RegExp("🇹🇹|特立尼达和多巴哥|trinidad[\s_-]*and[\s_-]*tobago", "i"), icon: "" },
+  { name: "🇦🇬 安提瓜和巴布达节点", flag: "🇦🇬", regex: new RegExp("🇦🇬|安提瓜和巴布达|antigua[\s_-]*and[\s_-]*barbuda", "i"), icon: "" },
+  { name: "🇨🇴 哥伦比亚节点", flag: "🇨🇴", regex: new RegExp("🇨🇴|哥伦比亚|colombia", "i"), icon: "" },
+  { name: "🇨🇱 智利节点", flag: "🇨🇱", regex: new RegExp("🇨🇱|智利|chile", "i"), icon: "" },
+  { name: "🇵🇪 秘鲁节点", flag: "🇵🇪", regex: new RegExp("🇵🇪|秘鲁|peru", "i"), icon: "" },
+  { name: "🇺🇾 乌拉圭节点", flag: "🇺🇾", regex: new RegExp("🇺🇾|乌拉圭|uruguay", "i"), icon: "" },
+  { name: "🇵🇾 巴拉圭节点", flag: "🇵🇾", regex: new RegExp("🇵🇾|巴拉圭|paraguay", "i"), icon: "" },
+  { name: "🇧🇴 玻利维亚节点", flag: "🇧🇴", regex: new RegExp("🇧🇴|玻利维亚|bolivia", "i"), icon: "" },
+  { name: "🇪🇨 厄瓜多尔节点", flag: "🇪🇨", regex: new RegExp("🇪🇨|厄瓜多尔|ecuador", "i"), icon: "" },
+  { name: "🇻🇪 委内瑞拉节点", flag: "🇻🇪", regex: new RegExp("🇻🇪|委内瑞拉|venezuela", "i"), icon: "" },
+  { name: "🇬🇾 圭亚那节点", flag: "🇬🇾", regex: new RegExp("🇬🇾|圭亚那|guyana", "i"), icon: "" },
+  { name: "🇸🇷 苏里南节点", flag: "🇸🇷", regex: new RegExp("🇸🇷|苏里南|suriname", "i"), icon: "" },
+  { name: "🇫🇯 斐济节点", flag: "🇫🇯", regex: new RegExp("🇫🇯|斐济|fiji", "i"), icon: "" },
+  { name: "🇵🇬 巴布亚新几内亚节点", flag: "🇵🇬", regex: new RegExp("🇵🇬|巴布亚新几内亚|papua[\s_-]*new[\s_-]*guinea", "i"), icon: "" },
+  { name: "🇸🇧 所罗门群岛节点", flag: "🇸🇧", regex: new RegExp("🇸🇧|所罗门群岛|solomon[\s_-]*islands", "i"), icon: "" },
+  { name: "🇻🇺 瓦努阿图节点", flag: "🇻🇺", regex: new RegExp("🇻🇺|瓦努阿图|vanuatu", "i"), icon: "" },
+  { name: "🇼🇸 萨摩亚节点", flag: "🇼🇸", regex: new RegExp("🇼🇸|萨摩亚|samoa", "i"), icon: "" },
+  { name: "🇹🇴 汤加节点", flag: "🇹🇴", regex: new RegExp("🇹🇴|汤加|tonga", "i"), icon: "" },
+  { name: "🇰🇮 基里巴斯节点", flag: "🇰🇮", regex: new RegExp("🇰🇮|基里巴斯|kiribati", "i"), icon: "" },
+  { name: "🇹🇻 图瓦卢节点", flag: "🇹🇻", regex: new RegExp("🇹🇻|图瓦卢|tuvalu", "i"), icon: "" },
+  { name: "🇳🇷 瑙鲁节点", flag: "🇳🇷", regex: new RegExp("🇳🇷|瑙鲁|nauru", "i"), icon: "" },
+  { name: "🇵🇼 帕劳节点", flag: "🇵🇼", regex: new RegExp("🇵🇼|帕劳|palau", "i"), icon: "" },
+  { name: "🇲🇭 马绍尔群岛节点", flag: "🇲🇭", regex: new RegExp("🇲🇭|马绍尔群岛|marshall[\s_-]*islands", "i"), icon: "" },
+  { name: "🇫🇲 密克罗尼西亚节点", flag: "🇫🇲", regex: new RegExp("🇫🇲|密克罗尼西亚|micronesia|federated[\s_-]*states[\s_-]*of[\s_-]*micronesia", "i"), icon: "" },
+  { name: "🇬🇺 关岛节点", flag: "🇬🇺", regex: new RegExp("🇬🇺|关岛|guam", "i"), icon: "" },
+  { name: "🇵🇷 波多黎各节点", flag: "🇵🇷", regex: new RegExp("🇵🇷|波多黎各|puerto[\s_-]*rico", "i"), icon: "" },
+  { name: "🇧🇲 百慕大节点", flag: "🇧🇲", regex: new RegExp("🇧🇲|百慕大|bermuda", "i"), icon: "" },
+  { name: "🇬🇱 格陵兰节点", flag: "🇬🇱", regex: new RegExp("🇬🇱|格陵兰|greenland", "i"), icon: "" },
+  { name: "🇨🇼 库拉索节点", flag: "🇨🇼", regex: new RegExp("🇨🇼|库拉索|curacao|curaçao", "i"), icon: "" },
+  { name: "🇦🇼 阿鲁巴节点", flag: "🇦🇼", regex: new RegExp("🇦🇼|阿鲁巴|aruba", "i"), icon: "" },
+  { name: "🇰🇾 开曼群岛节点", flag: "🇰🇾", regex: new RegExp("🇰🇾|开曼群岛|cayman[\s_-]*islands", "i"), icon: "" },
+  { name: "🇻🇬 英属维尔京群岛节点", flag: "🇻🇬", regex: new RegExp("🇻🇬|英属维尔京群岛|british[\s_-]*virgin[\s_-]*islands", "i"), icon: "" },
+  { name: "🇻🇮 美属维尔京群岛节点", flag: "🇻🇮", regex: new RegExp("🇻🇮|美属维尔京群岛|us[\s_-]*virgin[\s_-]*islands|u\.s\.[\s_-]*virgin[\s_-]*islands", "i"), icon: "" },
+  { name: "🇳🇨 新喀里多尼亚节点", flag: "🇳🇨", regex: new RegExp("🇳🇨|新喀里多尼亚|new[\s_-]*caledonia", "i"), icon: "" },
+  { name: "🇵🇫 法属波利尼西亚节点", flag: "🇵🇫", regex: new RegExp("🇵🇫|法属波利尼西亚|french[\s_-]*polynesia", "i"), icon: "" },
+  { name: "🇨🇰 库克群岛节点", flag: "🇨🇰", regex: new RegExp("🇨🇰|库克群岛|cook[\s_-]*islands", "i"), icon: "" },
+  { name: "🇳🇺 纽埃节点", flag: "🇳🇺", regex: new RegExp("🇳🇺|纽埃|niue", "i"), icon: "" },
 ];
 
 // 定义倍率策略组
@@ -256,13 +364,13 @@ const rateRegionDefinitions = [
     name: lowRateRegionName,
     regex:
       /^(?!.*(?:剩|期)).*(?:(?<!\d)0\.[0-5]|(?<=[ \[\(|｜丨∣┃\-‐–—−－﹣])0[*×✕✖⨯⨉x倍])|(?:(?<=[ \[\(|｜丨∣┃\-‐–—−－﹣])[*×✕✖⨯⨉x]0(?=[ \)\]]|倍|$))|^(?!.*(?:客户端|软件)).*下载|低倍|免费|(?<![A-Za-z])free(?![A-Za-z])/i,
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/Available.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Available.svg',
   },
   {
     name: highRateRegionName,
     regex:
       /(?<=[ \[\(|｜丨∣┃\-‐–—−－﹣])((?:[*×✕✖⨯⨉x]\s*(?:[2-9]\d*|[1-9]\d+)(?:\.\d+)?)|(?:(?<![\d.])(?:[2-9]\d*|[1-9]\d+)(?:\.\d+)?\s*(?:倍|[*×✕✖⨯⨉x])))/i,
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/Airport.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Airport.svg',
   },
 ];
 
@@ -395,7 +503,7 @@ const urlTestBaseOption = {
   type: 'url-test',
   tolerance: 50,
   'exclude-type': 'DIRECT',
-  icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/Auto.svg',
+  icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Auto.svg',
   hidden: true,
 };
 
@@ -405,7 +513,7 @@ const loadBalanceBaseOption = {
   type: 'load-balance',
   strategy: 'sticky-sessions',
   'exclude-type': 'DIRECT',
-  icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/RoundRobin.svg',
+  icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/RoundRobin.svg',
   hidden: true,
 };
 
@@ -415,19 +523,19 @@ const baseGroups = [
     name: '手动选择',
     baseOption: selectBaseOption,
     includeAll: true,
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/Static.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Static.svg',
   },
   {
     name: '自动选择',
     baseOption: urlTestBaseOption,
     includeAll: true,
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/Auto.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Auto.svg',
   },
   {
     name: '负载均衡',
     baseOption: loadBalanceBaseOption,
     includeAll: true,
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/RoundRobin.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/RoundRobin.svg',
   },
 ];
 
@@ -447,7 +555,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geosite/googlefcm.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/Fcm.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Fcm.svg',
     rules: ['RULE-SET,googlefcm,FCM'],
   },
   {
@@ -461,7 +569,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geosite/youtube.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/YouTube.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/YouTube.svg',
     rules: ['RULE-SET,youtube,YouTube'],
   },
   {
@@ -481,7 +589,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geoip/google.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/Google.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Google.svg',
     rules: ['RULE-SET,google,Google', 'RULE-SET,google_ip,Google,no-resolve'],
   },
   {
@@ -496,7 +604,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geosite/category-ai-!cn.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/ChatGPT.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/ChatGPT.svg',
     rules: ['RULE-SET,ai,AI'],
   },
   {
@@ -523,7 +631,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geoip/microsoft.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/Microsoft.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Microsoft.svg',
     rules: ['RULE-SET,github,默认代理', 'RULE-SET,microsoft,Microsoft', 'RULE-SET,microsoft_ip,Microsoft,no-resolve'],
   },
   {
@@ -544,7 +652,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geoip/apple.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/Apple.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Apple.svg',
     rules: ['RULE-SET,apple,Apple', 'RULE-SET,apple_ip,Apple,no-resolve'],
   },
   {
@@ -564,7 +672,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geoip/telegram.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/Telegram.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Telegram.svg',
     rules: ['RULE-SET,telegram,Telegram', 'RULE-SET,telegram_ip,Telegram,no-resolve'],
   },
   {
@@ -585,7 +693,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geoip/steam.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/Steam.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Steam.svg',
     rules: ['RULE-SET,steam,Steam', 'RULE-SET,steam_ip,Steam,no-resolve'],
   },
   {
@@ -606,7 +714,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geoip/tiktok.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/TikTok.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/TikTok.svg',
     rules: ['RULE-SET,tiktok,TikTok', 'RULE-SET,tiktok_ip,TikTok,no-resolve'],
   },
   {
@@ -626,7 +734,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geoip/twitter.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/Twitter.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Twitter.svg',
     rules: ['RULE-SET,twitter,Twitter', 'RULE-SET,twitter_ip,Twitter,no-resolve'],
   },
   {
@@ -646,7 +754,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geoip/facebook.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/Meta.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Meta.svg',
     rules: ['RULE-SET,meta,Meta', 'RULE-SET,facebook_ip,Meta,no-resolve'],
   },
   {
@@ -660,7 +768,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geosite/line.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/Line.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Line.svg',
     rules: ['RULE-SET,line,Line'],
   },
   {
@@ -680,7 +788,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geoip/netflix.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/Netflix.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Netflix.svg',
     rules: ['RULE-SET,netflix,Netflix', 'RULE-SET,netflix_ip,Netflix,no-resolve'],
   },
   {
@@ -701,7 +809,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geosite/category-emby.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/Emby.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Emby.svg',
     rules: [
       'RULE-SET,emby,Emby',
       'RULE-SET,emos,Emby',
@@ -729,7 +837,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geosite/pikpak.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/Pikpak.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Pikpak.svg',
     rules: ['RULE-SET,pikpak,PikPak'],
   },
   {
@@ -750,7 +858,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geoip/spotify.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/Spotify.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Spotify.svg',
     rules: ['RULE-SET,spotify,Spotify', 'RULE-SET,spotify_ip,Spotify,no-resolve'],
   },
   {
@@ -765,7 +873,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geosite/category-cryptocurrency.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/Bitcoin.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Bitcoin.svg',
     rules: ['RULE-SET,cryptocurrency,Crypto'],
   },
   {
@@ -781,7 +889,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geosite/ehentai.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/Ehentai.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Ehentai.svg',
     rules: ['RULE-SET,ehentai,EHentai'],
   },
   {
@@ -796,7 +904,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geosite/category-ads-all.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/AdBlock.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/AdBlock.svg',
     rules: ['RULE-SET,adblockmihomolite,AdBlock'],
   },
 ];
@@ -1006,7 +1114,7 @@ function buildRegionGroups(filteredProxies, customProxies) {
     generatedRegionGroups.push(
       ...createRegionGroup(
         '其他节点',
-        'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/WorldMap.svg',
+        'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/WorldMap.svg',
         otherProxies,
       ),
     );
@@ -1057,7 +1165,7 @@ function buildCustomizeGroups(filteredProxies, customizeList = customizeProxies)
     ...selectBaseOption,
     name: chainEnabled ? '链式落地' : '自建节点',
     proxies: customProxyNames,
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/Server.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Server.svg',
   };
 
   return {
@@ -1100,7 +1208,7 @@ function buildFunctionalGroups(filteredProxies, generatedRegionGroups, customize
           ...selectBaseOption,
           name: dialerProxyName,
           proxies: filteredProxyNames,
-          icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/Bypass.svg',
+          icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Bypass.svg',
         }
       : null;
 
@@ -1109,7 +1217,7 @@ function buildFunctionalGroups(filteredProxies, generatedRegionGroups, customize
       ...selectBaseOption,
       name: '默认代理',
       proxies: allProxiesNames,
-      icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/Proxy.svg',
+      icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Proxy.svg',
     };
     const finalRuleProviders = { ...baseRuleProviders };
     if (!blockForeignQuicEnabled) delete finalRuleProviders.cn_additional;
@@ -1117,14 +1225,14 @@ function buildFunctionalGroups(filteredProxies, generatedRegionGroups, customize
       ...selectBaseOption,
       name: '直连',
       proxies: [...directProxies.map((p) => p.name)],
-      icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/China.svg',
+      icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/China.svg',
       hidden: true,
     };
     const globalGroup = {
       ...selectBaseOption,
       name: 'GLOBAL',
       proxies: ['默认代理', ...customGroupNames, ...(chainGroup ? [chainGroup.name] : []), '直连'],
-      icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/Global.svg',
+      icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Global.svg',
     };
     return {
       globalGroup,
@@ -1140,7 +1248,7 @@ function buildFunctionalGroups(filteredProxies, generatedRegionGroups, customize
     ...selectBaseOption,
     name: '默认代理',
     proxies: [...groupNamesOfSelect, ...baseGroupNames, ...customGroupNames],
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/Proxy.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Proxy.svg',
   });
 
   const orderedServiceConfigs = [
@@ -1190,14 +1298,14 @@ function buildFunctionalGroups(filteredProxies, generatedRegionGroups, customize
     ...selectBaseOption,
     name: '漏网之鱼',
     proxies: ['默认代理', '直连', ...groupNamesOfSelect],
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/Stack.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Stack.svg',
   });
 
   const directGroup = {
     ...selectBaseOption,
     name: '直连',
     proxies: [...directProxies.map((p) => p.name)],
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/China.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/China.svg',
     hidden: hideManualSelectGroupEnabled,
   };
 
@@ -1211,7 +1319,7 @@ function buildFunctionalGroups(filteredProxies, generatedRegionGroups, customize
       directGroup.name,
       ...generatedRegionGroups.map((g) => g.name),
     ],
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/Global.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Global.svg',
   };
 
   return { globalGroup, functionalGroups, functionalRules, finalRuleProviders, chainGroup, directGroup };
@@ -1613,7 +1721,7 @@ function buildDnsAndHostsConfig(config, filteredProxies) {
 }
 
 
-// --- MeClash 安全基线（对齐 Mihomo v1.19.31） ---
+// --- HiClash 安全基线（对齐 Mihomo v1.19.31） ---
 const securityBaseline = {
   'mixed-port': 17890,
   'allow-lan': false,
@@ -1675,6 +1783,7 @@ const securitySniffer = {
   sniff: {
     HTTP: { ports: [80, '8080-8880'], enable: true, 'override-destination': true },
     TLS: { ports: [443, 8443], enable: true, 'override-destination': true },
+    QUIC: { ports: [443, 8443], enable: true, 'override-destination': true },
   },
   'force-domain': [
     '+.google.com', '+.youtube.com', '+.telegram.org', '+.openai.com',
@@ -1776,6 +1885,7 @@ function main(config) {
 
   newConfig['rules'] = [
     ...prefixRules,
+    ...blockWebRtcStun,
     ...(ruleOptionsEnable.屏蔽国外QUIC ? blockForeignQuic : []),
     ...functionalRules,
 
