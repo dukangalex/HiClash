@@ -52,18 +52,18 @@
 - [mihomoScript.js（全量版）](/Script/mihomoScript.js)，复制下面这个链接使用👇👇👇
 
 ```txt
-https://raw.githubusercontent.com/AIsouler/MyClash/main/Script/mihomoScript.js
+https://raw.githubusercontent.com/dukangalex/MyClash/main/Script/mihomoScript.js
 ```
 
 - [Script.js（精简版）](/Script/Script.js)，仅包含少量分流策略组，复制下面这个链接使用👇👇👇
 
 ```txt
-https://raw.githubusercontent.com/AIsouler/MyClash/main/Script/Script.js
+https://raw.githubusercontent.com/dukangalex/MyClash/main/Script/Script.js
 ```
 
 |                                                                                   |
 | --------------------------------------------------------------------------------- |
-| ![img](https://raw.githubusercontent.com/AIsouler/MyClash/main/Image/import.webp) |
+| ![img](https://raw.githubusercontent.com/dukangalex/MyClash/main/Image/import.webp) |
 
 ## 配置文件
 
@@ -83,13 +83,13 @@ https://raw.githubusercontent.com/AIsouler/MyClash/main/Script/Script.js
 - [mihomoConfig.yaml（全量版）](/Config/mihomoConfig.yaml)，复制下面这个链接使用👇👇👇
 
 ```txt
-https://raw.githubusercontent.com/AIsouler/MyClash/main/Config/mihomoConfig.yaml
+https://raw.githubusercontent.com/dukangalex/MyClash/main/Config/mihomoConfig.yaml
 ```
 
 - [mihomoConfigLite.yaml（精简版）](/Config/mihomoConfigLite.yaml)，仅包含少量分流策略组，复制下面这个链接使用👇👇👇
 
 ```txt
-https://raw.githubusercontent.com/AIsouler/MyClash/main/Config/mihomoConfigLite.yaml
+https://raw.githubusercontent.com/dukangalex/MyClash/main/Config/mihomoConfigLite.yaml
 ```
 
 ## 功能说明
@@ -163,8 +163,8 @@ https://raw.githubusercontent.com/AIsouler/MyClash/main/Config/mihomoConfigLite.
 
 |                                                                                  |                                                                                  |                                                                                  |                                                                                  |
 | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| ![img](https://raw.githubusercontent.com/AIsouler/MyClash/main/Image/IMG_1.webp) | ![img](https://raw.githubusercontent.com/AIsouler/MyClash/main/Image/IMG_2.webp) | ![img](https://raw.githubusercontent.com/AIsouler/MyClash/main/Image/IMG_3.webp) | ![img](https://raw.githubusercontent.com/AIsouler/MyClash/main/Image/IMG_4.webp) |
-| ![img](https://raw.githubusercontent.com/AIsouler/MyClash/main/Image/IMG_5.webp) | ![img](https://raw.githubusercontent.com/AIsouler/MyClash/main/Image/IMG_6.webp) | ![img](https://raw.githubusercontent.com/AIsouler/MyClash/main/Image/IMG_7.webp) | ![img](https://raw.githubusercontent.com/AIsouler/MyClash/main/Image/IMG_8.webp) |
+| ![img](https://raw.githubusercontent.com/dukangalex/MyClash/main/Image/IMG_1.webp) | ![img](https://raw.githubusercontent.com/dukangalex/MyClash/main/Image/IMG_2.webp) | ![img](https://raw.githubusercontent.com/dukangalex/MyClash/main/Image/IMG_3.webp) | ![img](https://raw.githubusercontent.com/dukangalex/MyClash/main/Image/IMG_4.webp) |
+| ![img](https://raw.githubusercontent.com/dukangalex/MyClash/main/Image/IMG_5.webp) | ![img](https://raw.githubusercontent.com/dukangalex/MyClash/main/Image/IMG_6.webp) | ![img](https://raw.githubusercontent.com/dukangalex/MyClash/main/Image/IMG_7.webp) | ![img](https://raw.githubusercontent.com/dukangalex/MyClash/main/Image/IMG_8.webp) |
 
 ## 致谢
 
@@ -182,4 +182,4 @@ https://raw.githubusercontent.com/AIsouler/MyClash/main/Config/mihomoConfigLite.
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/chart?repos=aisouler/myclash&type=date&legend=top-left)](https://www.star-history.com/?repos=aisouler%2Fmyclash&type=date&legend=top-left)
+[![Star History Chart](https://api.star-history.com/chart?repos=dukangalex/myclash&type=date&legend=top-left)](https://www.star-history.com/?repos=dukangalex%2Fmyclash&type=date&legend=top-left)
