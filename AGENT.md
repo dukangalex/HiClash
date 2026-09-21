@@ -12,7 +12,7 @@
 | 原始位图参考                     | `Icons/png/<Name>.png`                                                                                                |
 | 统一化矢量（对外提供的就是这套） | `Icons/svg/<Name>.svg`                                                                                                |
 | 命名                             | PascalCase、无下划线/连字符；png 与 svg **同名一一对应**（当前 36 对）                                                |
-| 引用格式                         | `https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/<Name>.svg`                                           |
+| 引用格式                         | `https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/<Name>.svg`                                           |
 | 引用位置                         | `Script/mihomoScript.js`、`Script/Script.js`、`Config/mihomoConfig.yaml`、`Config/mihomoConfigLite.yaml`（共 116 处） |
 | 回归测试                         | `node Test/run-tests.js`（改过脚本必跑，当前 192 项）                                                                 |
 
@@ -164,7 +164,7 @@ const box = [vbX + x0 * upp, vbY + y0 * upp, (x1 - x0 + 1) * upp, (y1 - y0 + 1) 
 
 ### 3.1 vtracer 描摹（位图 → 矢量）
 
-工具不在仓库里：`%LOCALAPPDATA%\MyClash\tools\vtracer.exe`（Rust CLI，**不要**用 Python 绑定，cp314 wheel 会崩）。
+工具不在仓库里：`%LOCALAPPDATA%\MeClash\tools\vtracer.exe`（Rust CLI，**不要**用 Python 绑定，cp314 wheel 会崩）。
 
 ```powershell
 # 彩色图标（默认这套参数：色聚类 + 马赛克 + 样条 + 保留抗锯齿碎片 + 2 位小数）
@@ -212,10 +212,10 @@ vtracer.exe -i in.png -o out.svg --clustering color-cluster --hierarchical cutou
 - 引用格式（**CDN 前缀固定不变**）：
 
 ```
-https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/<Name>.svg
+https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/<Name>.svg
 ```
 
-- 改完必须审计：4 个文件里所有 `fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/(svg|png)/...` 的目标文件都存在，且没有残留的第三方图标 CDN（Koolson / MiToverG422 / lige47）。
+- 改完必须审计：4 个文件里所有 `fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/(svg|png)/...` 的目标文件都存在，且没有残留的第三方图标 CDN（Koolson / MiToverG422 / lige47）。
 - jsDelivr 走 `@main` 分支，**commit + push 之后**链接才生效。
 - ⚠️ Windows 下仅大小写不同的改名（`fcm.png` → `Fcm.png`）git 可能不记录 → 必要时 `git rm --cached <旧名>` 再 `git add <新名>`，保证 index 里的文件名与 URL 逐字符一致。
 
@@ -242,7 +242,7 @@ Start-Process -FilePath "<python.exe>" -ArgumentList '-m','http.server','8765','
 
 - ❌ 不要在 PowerShell 里写多行 `python -c "..."`：转义规则不同会让会话卡在 `>>` 续行，之后 sync 命令全被吞（要用 `.py` 文件或新开 async 终端）。
 - ❌ 批量改文件禁止 `open(f,'wb').write(open(f,'rb').read()...)`：写模式会**先截断**，参数里的读取拿到空文件（曾把 32 个图标清成 0 字节；靠 git index 才恢复）。
-- ✅ Python 一律用绝对路径：`C:\Users\AIsouler\AppData\Local\Python\pythoncore-3.14-64\python.exe`（脚本内用 `os.environ["TEMP"]`，别写字面 `%TEMP%`）。
+- ✅ Python 一律用绝对路径：`C:\Users\dukangalex\AppData\Local\Python\pythoncore-3.14-64\python.exe`（脚本内用 `os.environ["TEMP"]`，别写字面 `%TEMP%`）。
 - ✅ PowerShell 里 `foreach (...) {...} | ...` 会报错，用 `$arr | ForEach-Object {...}`。
 - 仓库 `core.autocrlf=true`：提交时行尾会被规范化（SVG 内容不受影响），别为此改动文件。
 - `Icons/svg` 里 **不要**放进位图；需要位图时放 `Icons/png`。
