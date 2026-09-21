@@ -1,6 +1,6 @@
-# MyClash
+# MeClash
 
-> **dukangalex/MyClash · Mihomo 全量增强版**
+> **dukangalex/MeClash · Mihomo 全量增强版**
 >
 > 基于 Mihomo 的个人增强版配置与覆写脚本。当前核心版本为 **100+ 地区自动识别 + 动态节点归类 + 倍率识别 + DNS/Hosts 优化 + 安全基线**。
 
@@ -26,11 +26,11 @@
 
 Raw 地址：
 
-`https://raw.githubusercontent.com/dukangalex/MyClash/main/Script/mihomoScript.js`
+`https://raw.githubusercontent.com/dukangalex/MeClash/main/Script/mihomoScript.js`
 
 GitHub：
 
-`https://github.com/dukangalex/MyClash/blob/main/Script/mihomoScript.js`
+`https://github.com/dukangalex/MeClash/blob/main/Script/mihomoScript.js`
 
 ## 🌍 100+ 地区自动识别
 
@@ -102,21 +102,21 @@ GitHub：
 
 将以下地址复制到支持 Mihomo Script / 覆写功能的客户端：
 
-`https://raw.githubusercontent.com/dukangalex/MyClash/main/Script/mihomoScript.js`
+`https://raw.githubusercontent.com/dukangalex/MeClash/main/Script/mihomoScript.js`
 
 ### 精简版
 
-`https://raw.githubusercontent.com/dukangalex/MyClash/main/Script/Script.js`
+`https://raw.githubusercontent.com/dukangalex/MeClash/main/Script/Script.js`
 
 ## 📄 配置文件
 
 全量版：
 
-`https://raw.githubusercontent.com/dukangalex/MyClash/main/Config/mihomoConfig.yaml`
+`https://raw.githubusercontent.com/dukangalex/MeClash/main/Config/mihomoConfig.yaml`
 
 精简版：
 
-`https://raw.githubusercontent.com/dukangalex/MyClash/main/Config/mihomoConfigLite.yaml`
+`https://raw.githubusercontent.com/dukangalex/MeClash/main/Config/mihomoConfigLite.yaml`
 
 配置文件与脚本版目标一致，但无法像脚本一样根据实际节点动态生成策略组，也不具备脚本中的全部自定义选项。
 
@@ -143,6 +143,6 @@ GitHub：
 
 **维护者：dukangalex**
 
-**仓库：** https://github.com/dukangalex/MyClash
+**仓库：** https://github.com/dukangalex/MeClash
 
 如果这个版本对你有帮助，欢迎给项目点个 Star ⭐
