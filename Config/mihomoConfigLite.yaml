@@ -1,8 +1,8 @@
 #  ---------说明---------
 #  mihomo配置（精简版）
-#  作者：AIsouler
-#  原仓库：https://github.com/AIsouler/MyClash
-#  配置链接：https://raw.githubusercontent.com/AIsouler/MyClash/main/Config/mihomoConfigLite.yaml
+#  作者：dukangalex
+#  原仓库：https://github.com/dukangalex/MeClash
+#  配置链接：https://raw.githubusercontent.com/dukangalex/MeClash/main/Config/mihomoConfigLite.yaml
 #  友情推荐，非常好用、省电且内存占用低的代理软件：https://github.com/appshubcc/Bettbox
 #  ---------------------
 
@@ -269,7 +269,7 @@ group_common:
       tolerance: 50,
       include-all: true,
       exclude-type: 'DIRECT',
-      icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Auto.svg',
+      icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/Auto.svg',
       hidden: true,
     }
 
@@ -344,54 +344,54 @@ proxy-groups:
     <<: *group_common_select
     proxies:
       ['香港', '日本', '美国', '新加坡', '台湾省', '低倍率节点', '高倍率节点', '手动选择', '自动选择', '其他节点']
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Proxy.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/Proxy.svg'
 
   - name: '手动选择'
     <<: *group_common_select
     include-all: true
     exclude-type: 'DIRECT'
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Static.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/Static.svg'
 
   - name: '自动选择'
     <<: *group_common_auto
 
   - name: 'Google'
     <<: [*group_common_select, *proxies_default]
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Google.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/Google.svg'
 
   - name: 'AI'
     <<: [*group_common_select, *proxies_default]
     default-selected: '美国'
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/ChatGPT.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/ChatGPT.svg'
 
   - name: 'Telegram'
     <<: [*group_common_select, *proxies_default]
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Telegram.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/Telegram.svg'
 
   - name: 'Steam'
     <<: [*group_common_select, *proxies_direct]
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Steam.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/Steam.svg'
 
   - name: 'AdBlock'
     <<: [*group_common_select, *proxies_reject]
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/AdBlock.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/AdBlock.svg'
 
   - name: '漏网之鱼'
     <<: *group_common_select
     proxies: ['默认代理', '直连']
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Stack.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/Stack.svg'
 
   - name: '直连'
     <<: *group_common_select
     proxies: ['🇨🇳 直连 | 双栈', '🇨🇳 直连 | IPv4优先', '🇨🇳 直连 | IPv6优先', '🇨🇳 直连 | 仅IPv4', '🇨🇳 直连 | 仅IPv6']
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/China.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/China.svg'
 
   # 定义地区策略组
   - name: '香港'
     <<: [*group_common_select, *HK_filter]
     include-all: true
     proxies: ['香港-自动选择']
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/HongKong.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/HongKong.svg'
   - name: '香港-自动选择'
     <<: [*group_common_auto, *HK_filter]
 
@@ -399,7 +399,7 @@ proxy-groups:
     <<: [*group_common_select, *JP_filter]
     include-all: true
     proxies: ['日本-自动选择']
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Japan.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/Japan.svg'
   - name: '日本-自动选择'
     <<: [*group_common_auto, *JP_filter]
 
@@ -407,7 +407,7 @@ proxy-groups:
     <<: [*group_common_select, *US_filter]
     include-all: true
     proxies: ['美国-自动选择']
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/America.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/America.svg'
   - name: '美国-自动选择'
     <<: [*group_common_auto, *US_filter]
 
@@ -415,7 +415,7 @@ proxy-groups:
     <<: [*group_common_select, *SG_filter]
     include-all: true
     proxies: ['新加坡-自动选择']
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Singapore.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/Singapore.svg'
   - name: '新加坡-自动选择'
     <<: [*group_common_auto, *SG_filter]
 
@@ -423,7 +423,7 @@ proxy-groups:
     <<: [*group_common_select, *TW_filter]
     include-all: true
     proxies: ['台湾省-自动选择']
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Taiwan.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/Taiwan.svg'
   - name: '台湾省-自动选择'
     <<: [*group_common_auto, *TW_filter]
 
@@ -431,7 +431,7 @@ proxy-groups:
     <<: [*group_common_select, *low_filter]
     include-all: true
     proxies: ['低倍率节点-自动选择']
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Available.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/Available.svg'
   - name: '低倍率节点-自动选择'
     <<: [*group_common_auto, *low_filter]
 
@@ -439,7 +439,7 @@ proxy-groups:
     <<: [*group_common_select, *high_filter]
     include-all: true
     proxies: ['高倍率节点-自动选择']
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Airport.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/Airport.svg'
   - name: '高倍率节点-自动选择'
     <<: [*group_common_auto, *high_filter]
 
@@ -447,7 +447,7 @@ proxy-groups:
     <<: [*group_common_select, *exclude_filter]
     include-all: true
     proxies: ['其他节点-自动选择']
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/WorldMap.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MeClash@main/Icons/svg/WorldMap.svg'
   - name: '其他节点-自动选择'
     <<: [*group_common_auto, *exclude_filter]
 
