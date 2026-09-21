@@ -1613,7 +1613,7 @@ function buildDnsAndHostsConfig(config, filteredProxies) {
 }
 
 
-// --- 安全基线（合并自 MY脚本） ---
+// --- MeClash 安全基线（对齐 Mihomo v1.19.31） ---
 const securityBaseline = {
   'mixed-port': 17890,
   'allow-lan': false,
