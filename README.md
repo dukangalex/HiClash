@@ -1,6 +1,6 @@
-# MeClash
+# HiClash
 
-> **dukangalex/MeClash · Mihomo 全量增强版**
+> **dukangalex/HiClash · Mihomo 全量增强版**
 >
 > 基于 Mihomo 的个人增强版配置与覆写脚本。当前核心版本为 **100+ 地区自动识别 + 动态节点归类 + 倍率识别 + DNS/Hosts 优化 + 安全基线**。
 
@@ -26,11 +26,11 @@
 
 Raw 地址：
 
-`https://raw.githubusercontent.com/dukangalex/MeClash/main/Script/mihomoScript.js`
+`https://raw.githubusercontent.com/dukangalex/HiClash/main/Script/mihomoScript.js`
 
 GitHub：
 
-`https://github.com/dukangalex/MeClash/blob/main/Script/mihomoScript.js`
+`https://github.com/dukangalex/HiClash/blob/main/Script/mihomoScript.js`
 
 ## 🌍 100+ 地区自动识别
 
@@ -102,29 +102,27 @@ GitHub：
 
 将以下地址复制到支持 Mihomo Script / 覆写功能的客户端：
 
-`https://raw.githubusercontent.com/dukangalex/MeClash/main/Script/mihomoScript.js`
+`https://raw.githubusercontent.com/dukangalex/HiClash/main/Script/mihomoScript.js`
 
 ### 精简版
 
-`https://raw.githubusercontent.com/dukangalex/MeClash/main/Script/Script.js`
+`https://raw.githubusercontent.com/dukangalex/HiClash/main/Script/Script.js`
 
 ## 📄 配置文件
 
 全量版：
 
-`https://raw.githubusercontent.com/dukangalex/MeClash/main/Config/mihomoConfig.yaml`
+`https://raw.githubusercontent.com/dukangalex/HiClash/main/Config/mihomoConfig.yaml`
 
 精简版：
 
-`https://raw.githubusercontent.com/dukangalex/MeClash/main/Config/mihomoConfigLite.yaml`
+`https://raw.githubusercontent.com/dukangalex/HiClash/main/Config/mihomoConfigLite.yaml`
 
 配置文件与脚本版目标一致，但无法像脚本一样根据实际节点动态生成策略组，也不具备脚本中的全部自定义选项。
 
 ## 💻 客户端
 
-本项目针对 **Mihomo 内核**设计，并适配 Bettbox 图形化配置管理。
-
-[Bettbox](https://github.com/appshubcc/Bettbox)
+本项目针对 **Mihomo 内核**设计，不绑定任何特定客户端。
 
 ## ⚠️ 使用注意
 
@@ -137,12 +135,19 @@ GitHub：
 
 ## 🙏 致谢
 
-感谢所有上游开源项目及规则资源，包括 YaNet、YiXuanZX/rules、bett-rules、adblockfilters、Qure 等。
+感谢原作者与所有上游开源项目及规则资源：
+
+- [AIsouler/MyClash（原作者项目）](https://github.com/AIsouler/MyClash)
+- [dahaha-365/YaNet](https://github.com/dahaha-365/YaNet)
+- [YiXuanZX/rules](https://github.com/YiXuanZX/rules)
+- [appshubcc/bett-rules](https://github.com/appshubcc/bett-rules)
+- [217heidai/adblockfilters](https://github.com/217heidai/adblockfilters)
+- [Koolson/Qure](https://github.com/Koolson/Qure)
 
 ## ⭐ 项目
 
 **维护者：dukangalex**
 
-**仓库：** https://github.com/dukangalex/MeClash
+**仓库：** https://github.com/dukangalex/HiClash
 
 如果这个版本对你有帮助，欢迎给项目点个 Star ⭐
