@@ -1,8 +1,8 @@
 /**
  * mihomo配置覆写脚本（全量版 · 100+地区自动识别 + 安全基线合并）
- * 作者：AIsouler
- * 源仓库：https://github.com/AIsouler/MyClash
- * 脚本链接：https://raw.githubusercontent.com/AIsouler/MyClash/main/Script/mihomoScript.js
+ * 作者：dukangalex
+ * 源仓库：https://github.com/dukangalex/MyClash
+ * 脚本链接：https://raw.githubusercontent.com/dukangalex/MyClash/main/Script/mihomoScript.js
  * 友情推荐，非常好用、省电且内存占用低的代理软件：https://github.com/appshubcc/Bettbox
  */
 
@@ -256,13 +256,13 @@ const rateRegionDefinitions = [
     name: lowRateRegionName,
     regex:
       /^(?!.*(?:剩|期)).*(?:(?<!\d)0\.[0-5]|(?<=[ \[\(|｜丨∣┃\-‐–—−－﹣])0[*×✕✖⨯⨉x倍])|(?:(?<=[ \[\(|｜丨∣┃\-‐–—−－﹣])[*×✕✖⨯⨉x]0(?=[ \)\]]|倍|$))|^(?!.*(?:客户端|软件)).*下载|低倍|免费|(?<![A-Za-z])free(?![A-Za-z])/i,
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Available.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MyClash@main/Icons/svg/Available.svg',
   },
   {
     name: highRateRegionName,
     regex:
       /(?<=[ \[\(|｜丨∣┃\-‐–—−－﹣])((?:[*×✕✖⨯⨉x]\s*(?:[2-9]\d*|[1-9]\d+)(?:\.\d+)?)|(?:(?<![\d.])(?:[2-9]\d*|[1-9]\d+)(?:\.\d+)?\s*(?:倍|[*×✕✖⨯⨉x])))/i,
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Airport.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MyClash@main/Icons/svg/Airport.svg',
   },
 ];
 
@@ -395,7 +395,7 @@ const urlTestBaseOption = {
   type: 'url-test',
   tolerance: 50,
   'exclude-type': 'DIRECT',
-  icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Auto.svg',
+  icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MyClash@main/Icons/svg/Auto.svg',
   hidden: true,
 };
 
@@ -405,7 +405,7 @@ const loadBalanceBaseOption = {
   type: 'load-balance',
   strategy: 'sticky-sessions',
   'exclude-type': 'DIRECT',
-  icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/RoundRobin.svg',
+  icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MyClash@main/Icons/svg/RoundRobin.svg',
   hidden: true,
 };
 
@@ -415,19 +415,19 @@ const baseGroups = [
     name: '手动选择',
     baseOption: selectBaseOption,
     includeAll: true,
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Static.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MyClash@main/Icons/svg/Static.svg',
   },
   {
     name: '自动选择',
     baseOption: urlTestBaseOption,
     includeAll: true,
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Auto.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MyClash@main/Icons/svg/Auto.svg',
   },
   {
     name: '负载均衡',
     baseOption: loadBalanceBaseOption,
     includeAll: true,
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/RoundRobin.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MyClash@main/Icons/svg/RoundRobin.svg',
   },
 ];
 
@@ -447,7 +447,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geosite/googlefcm.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Fcm.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MyClash@main/Icons/svg/Fcm.svg',
     rules: ['RULE-SET,googlefcm,FCM'],
   },
   {
@@ -461,7 +461,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geosite/youtube.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/YouTube.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MyClash@main/Icons/svg/YouTube.svg',
     rules: ['RULE-SET,youtube,YouTube'],
   },
   {
@@ -481,7 +481,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geoip/google.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Google.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MyClash@main/Icons/svg/Google.svg',
     rules: ['RULE-SET,google,Google', 'RULE-SET,google_ip,Google,no-resolve'],
   },
   {
@@ -496,7 +496,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geosite/category-ai-!cn.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/ChatGPT.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MyClash@main/Icons/svg/ChatGPT.svg',
     rules: ['RULE-SET,ai,AI'],
   },
   {
@@ -523,7 +523,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geoip/microsoft.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Microsoft.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MyClash@main/Icons/svg/Microsoft.svg',
     rules: ['RULE-SET,github,默认代理', 'RULE-SET,microsoft,Microsoft', 'RULE-SET,microsoft_ip,Microsoft,no-resolve'],
   },
   {
@@ -544,7 +544,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geoip/apple.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Apple.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MyClash@main/Icons/svg/Apple.svg',
     rules: ['RULE-SET,apple,Apple', 'RULE-SET,apple_ip,Apple,no-resolve'],
   },
   {
@@ -564,7 +564,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geoip/telegram.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Telegram.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MyClash@main/Icons/svg/Telegram.svg',
     rules: ['RULE-SET,telegram,Telegram', 'RULE-SET,telegram_ip,Telegram,no-resolve'],
   },
   {
@@ -585,7 +585,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geoip/steam.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Steam.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MyClash@main/Icons/svg/Steam.svg',
     rules: ['RULE-SET,steam,Steam', 'RULE-SET,steam_ip,Steam,no-resolve'],
   },
   {
@@ -606,7 +606,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geoip/tiktok.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/TikTok.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MyClash@main/Icons/svg/TikTok.svg',
     rules: ['RULE-SET,tiktok,TikTok', 'RULE-SET,tiktok_ip,TikTok,no-resolve'],
   },
   {
@@ -626,7 +626,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geoip/twitter.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Twitter.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MyClash@main/Icons/svg/Twitter.svg',
     rules: ['RULE-SET,twitter,Twitter', 'RULE-SET,twitter_ip,Twitter,no-resolve'],
   },
   {
@@ -646,7 +646,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geoip/facebook.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Meta.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MyClash@main/Icons/svg/Meta.svg',
     rules: ['RULE-SET,meta,Meta', 'RULE-SET,facebook_ip,Meta,no-resolve'],
   },
   {
@@ -660,7 +660,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geosite/line.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Line.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MyClash@main/Icons/svg/Line.svg',
     rules: ['RULE-SET,line,Line'],
   },
   {
@@ -680,7 +680,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geoip/netflix.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Netflix.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MyClash@main/Icons/svg/Netflix.svg',
     rules: ['RULE-SET,netflix,Netflix', 'RULE-SET,netflix_ip,Netflix,no-resolve'],
   },
   {
@@ -701,7 +701,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geosite/category-emby.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Emby.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MyClash@main/Icons/svg/Emby.svg',
     rules: [
       'RULE-SET,emby,Emby',
       'RULE-SET,emos,Emby',
@@ -729,7 +729,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geosite/pikpak.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Pikpak.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MyClash@main/Icons/svg/Pikpak.svg',
     rules: ['RULE-SET,pikpak,PikPak'],
   },
   {
@@ -750,7 +750,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geoip/spotify.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Spotify.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MyClash@main/Icons/svg/Spotify.svg',
     rules: ['RULE-SET,spotify,Spotify', 'RULE-SET,spotify_ip,Spotify,no-resolve'],
   },
   {
@@ -765,7 +765,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geosite/category-cryptocurrency.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Bitcoin.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MyClash@main/Icons/svg/Bitcoin.svg',
     rules: ['RULE-SET,cryptocurrency,Crypto'],
   },
   {
@@ -781,7 +781,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geosite/ehentai.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Ehentai.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MyClash@main/Icons/svg/Ehentai.svg',
     rules: ['RULE-SET,ehentai,EHentai'],
   },
   {
@@ -796,7 +796,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geosite/category-ads-all.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/AdBlock.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MyClash@main/Icons/svg/AdBlock.svg',
     rules: ['RULE-SET,adblockmihomolite,AdBlock'],
   },
 ];
@@ -1006,7 +1006,7 @@ function buildRegionGroups(filteredProxies, customProxies) {
     generatedRegionGroups.push(
       ...createRegionGroup(
         '其他节点',
-        'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/WorldMap.svg',
+        'https://fastly.jsdelivr.net/gh/dukangalex/MyClash@main/Icons/svg/WorldMap.svg',
         otherProxies,
       ),
     );
@@ -1057,7 +1057,7 @@ function buildCustomizeGroups(filteredProxies, customizeList = customizeProxies)
     ...selectBaseOption,
     name: chainEnabled ? '链式落地' : '自建节点',
     proxies: customProxyNames,
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Server.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MyClash@main/Icons/svg/Server.svg',
   };
 
   return {
@@ -1100,7 +1100,7 @@ function buildFunctionalGroups(filteredProxies, generatedRegionGroups, customize
           ...selectBaseOption,
           name: dialerProxyName,
           proxies: filteredProxyNames,
-          icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Bypass.svg',
+          icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MyClash@main/Icons/svg/Bypass.svg',
         }
       : null;
 
@@ -1109,7 +1109,7 @@ function buildFunctionalGroups(filteredProxies, generatedRegionGroups, customize
       ...selectBaseOption,
       name: '默认代理',
       proxies: allProxiesNames,
-      icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Proxy.svg',
+      icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MyClash@main/Icons/svg/Proxy.svg',
     };
     const finalRuleProviders = { ...baseRuleProviders };
     if (!blockForeignQuicEnabled) delete finalRuleProviders.cn_additional;
@@ -1117,14 +1117,14 @@ function buildFunctionalGroups(filteredProxies, generatedRegionGroups, customize
       ...selectBaseOption,
       name: '直连',
       proxies: [...directProxies.map((p) => p.name)],
-      icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/China.svg',
+      icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MyClash@main/Icons/svg/China.svg',
       hidden: true,
     };
     const globalGroup = {
       ...selectBaseOption,
       name: 'GLOBAL',
       proxies: ['默认代理', ...customGroupNames, ...(chainGroup ? [chainGroup.name] : []), '直连'],
-      icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Global.svg',
+      icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MyClash@main/Icons/svg/Global.svg',
     };
     return {
       globalGroup,
@@ -1140,7 +1140,7 @@ function buildFunctionalGroups(filteredProxies, generatedRegionGroups, customize
     ...selectBaseOption,
     name: '默认代理',
     proxies: [...groupNamesOfSelect, ...baseGroupNames, ...customGroupNames],
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Proxy.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MyClash@main/Icons/svg/Proxy.svg',
   });
 
   const orderedServiceConfigs = [
@@ -1190,14 +1190,14 @@ function buildFunctionalGroups(filteredProxies, generatedRegionGroups, customize
     ...selectBaseOption,
     name: '漏网之鱼',
     proxies: ['默认代理', '直连', ...groupNamesOfSelect],
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Stack.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MyClash@main/Icons/svg/Stack.svg',
   });
 
   const directGroup = {
     ...selectBaseOption,
     name: '直连',
     proxies: [...directProxies.map((p) => p.name)],
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/China.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MyClash@main/Icons/svg/China.svg',
     hidden: hideManualSelectGroupEnabled,
   };
 
@@ -1211,7 +1211,7 @@ function buildFunctionalGroups(filteredProxies, generatedRegionGroups, customize
       directGroup.name,
       ...generatedRegionGroups.map((g) => g.name),
     ],
-    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Global.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/MyClash@main/Icons/svg/Global.svg',
   };
 
   return { globalGroup, functionalGroups, functionalRules, finalRuleProviders, chainGroup, directGroup };
