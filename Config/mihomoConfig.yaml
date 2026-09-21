@@ -1,6 +1,7 @@
 #  ---------说明---------
 #  mihomo配置（全量版）
-#  作者：dukangalex
+#  原作者：AIsouler
+#  二次维护：dukangalex
 #  原仓库：https://github.com/dukangalex/HiClash
 #  配置链接：https://raw.githubusercontent.com/dukangalex/HiClash/main/Config/mihomoConfig.yaml
 #  友情推荐，非常好用、省电且内存占用低的代理软件：
@@ -62,6 +63,13 @@ tcp-concurrent: true
 keep-alive-interval: 60
 find-process-mode: strict
 external-controller: '127.0.0.1:19090'
+external-controller-cors:
+  allow-origins:
+    - 'http://127.0.0.1:19090'
+    - 'https://127.0.0.1:19090'
+    - 'http://localhost:19090'
+    - 'https://localhost:19090'
+  allow-private-network: false
 external-ui: ui
 external-ui-url: 'https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip'
 
@@ -702,6 +710,8 @@ rules:
   - AND,((NETWORK,UDP),(DST-PORT,3478-3497)),REJECT
   - AND,((NETWORK,UDP),(DST-PORT,5349)),REJECT
   - AND,((NETWORK,UDP),(DST-PORT,19302-19309)),REJECT
+  - AND,((NETWORK,TCP),(DST-PORT,3478-3497)),REJECT
+  - AND,((NETWORK,TCP),(DST-PORT,5349)),REJECT
 
   # 禁用国外 QUIC 流量
   - AND,((NETWORK,UDP),(DST-PORT,443),(NOT,((OR,((RULE-SET,cn_additional),(RULE-SET,cn_ip,no-resolve)))))),REJECT
