@@ -340,7 +340,7 @@ const regionDefinitions = [
   { name: '法属波利尼西亚', flag: '🇵🇫', regex: new RegExp("🇵🇫|法属波利尼西亚|french[\\s_-]*polynesia", "i"), icon: '' },
   { name: '库克群岛', flag: '🇨🇰', regex: new RegExp("🇨🇰|库克群岛|cook[\\s_-]*islands", "i"), icon: '' },
   { name: '纽埃', flag: '🇳🇺', regex: new RegExp("🇳🇺|纽埃|niue", "i"), icon: '' },
-;;
+];
 
 // 定义倍率策略组
 const lowRateRegionName = '低倍率节点';
