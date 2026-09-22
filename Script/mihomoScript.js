@@ -150,7 +150,7 @@ const directProxies = [
 // 定义地区策略组
 const regionDefinitions = [
   { name: '香港', flag: '🇭🇰', regex: new RegExp('🇭🇰|香港|\\bHKG?\\b|hong[\\s_-]*kong', 'i'), icon: '' },
-  { name: '台湾省', flag: '🇹🇼', regex: new RegExp('🇹🇼|台湾|\\bTWN?\\b|taiwan', 'i'), icon: '' },
+  { name: '台湾', flag: '🇹🇼', regex: new RegExp('🇹🇼|台湾|\\bTWN?\\b|taiwan', 'i'), icon: '' },
   { name: '日本', flag: '🇯🇵', regex: new RegExp('🇯🇵|日本|\\bJPN?\\b|japan|tokyo|osaka|东京|大阪', 'i'), icon: '' },
   { name: '韩国', flag: '🇰🇷', regex: new RegExp('🇰🇷|韩国|\\bKR\\b|korea|seoul|首尔', 'i'), icon: '' },
   { name: '新加坡', flag: '🇸🇬', regex: new RegExp('🇸🇬|新加坡|狮城|\\bSGP?\\b|singapore', 'i'), icon: '' },
@@ -1885,6 +1885,7 @@ function buildDnsAndHostsConfig(config, filteredProxies) {
     ipv6: true,
     'use-hosts': true,
     'cache-algorithm': 'arc',
+    'prefer-h3': false,
     'use-system-hosts': true,
     'enhanced-mode': 'fake-ip',
     'fake-ip-range': '198.18.0.1/15',
@@ -1955,8 +1956,8 @@ const securityBaseline = {
     asn: 'https://gcore.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/GeoLite2-ASN.mmdb',
   },
   profile: {
-    'store-selected': false,
-    'store-fake-ip': false,
+    'store-selected': true,
+    'store-fake-ip': true,
   },
   ntp: {
     enable: false,
@@ -2165,6 +2166,7 @@ function main(config) {
     'auto-redirect': true,
     'auto-detect-interface': true,
     'dns-hijack': ['any:53', 'tcp://any:53'],
+    'udp-timeout': 300,
   };
 
   newConfig['proxies'] = [...customProxies, ...mappedProxies, ...directProxies];

@@ -46,6 +46,27 @@ function runIntegrationTests(h, api, meta, fx, loadScript, scriptFile) {
     h.assert(rules.includes('DST-PORT,3478-3497'), '应拦截常见 WebRTC STUN 端口');
     h.assert(rules.includes('DST-PORT,5349'), '应拦截 STUN/TURN TLS 端口');
   });
+  h.test('冷启动优化：记住策略选择与 fake-ip、懒测速、mips 栈', () => {
+    const out = api.main(fx.typicalSubscription());
+    h.assertEqual(out.profile['store-selected'], true, '应记住上次策略组选择，避免重启后重新测速');
+    h.assertEqual(out.profile['store-fake-ip'], true, '应持久化 fake-ip 映射，避免重启后首包等 DNS');
+    h.assertEqual(out.tun.stack, 'mips', '应对齐 mihomo v1.19.31 的 mips 栈');
+    h.assertEqual(out.tun['udp-timeout'], 300);
+    h.assertEqual(out['tcp-concurrent'], true);
+    h.assertEqual(out['unified-delay'], true);
+    h.assertEqual(out['keep-alive-interval'], 15);
+    h.assertEqual(out['keep-alive-idle'], 15);
+    h.assertEqual(out['etag-support'], true);
+    h.assertEqual(out['geodata-loader'], 'memconservative');
+    h.assertEqual(out.dns['cache-algorithm'], 'arc');
+    h.assertEqual(out.dns['prefer-h3'], false, '冷启动勿抢 HTTP/3，避免 UDP 不通时首包卡住');
+    const auto = groupByName(out['proxy-groups'], '自动选择');
+    h.assert(auto, '缺少自动选择组');
+    h.assertEqual(auto.lazy, true, '自动选择组应懒测速，启动时不探测全部节点');
+    const tw = groupByName(out['proxy-groups'], '台湾');
+    h.assert(tw, '应生成台湾策略组');
+    h.assert(!groupByName(out['proxy-groups'], '台湾省'), '不应再使用台湾省作为组名');
+  });
 
   h.test('dialer-proxy 引用修复：重命名同步 / 存活保留 / 被过滤移除', () => {
     const out = api.main(fx.typicalSubscription());

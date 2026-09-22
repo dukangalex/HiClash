@@ -55,8 +55,8 @@ function runUnitTests(h, api, meta) {
     h.assert(!n.includes('几内亚'), '更具体地区应覆盖几内亚');
   });
 
-  h.test('台湾 01 → 台湾省（仅全量版）', () => {
-    if (meta.full) h.assert(matched('台湾 01').includes('台湾省'));
+  h.test('台湾 01 → 台湾', () => {
+    h.assert(matched('台湾 01').includes('台湾'));
   });
   h.test('日本 0.3x 流量 → 低倍率节点 + 日本', () => {
     const n = matched('日本 0.3x 流量');

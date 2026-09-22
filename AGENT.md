@@ -14,7 +14,7 @@
 | 命名                             | PascalCase、无下划线/连字符；png 与 svg **同名一一对应**（当前 37 对）                                                |
 | 引用格式                         | `https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/<Name>.svg`                                           |
 | 引用位置                         | `Script/mihomoScript.js`、`Script/Script.js`、`Config/mihomoConfig.yaml`、`Config/mihomoConfigLite.yaml`（共 116 处） |
-| 回归测试                         | `node Test/run-tests.js`（改过脚本必跑，当前 198 项）                                                                 |
+| 回归测试                         | `node Test/run-tests.js`（改过脚本必跑，当前 200 项）                                                                 |
 
 ---
 

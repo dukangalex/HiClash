@@ -1572,6 +1572,7 @@ function buildDnsAndHostsConfig(config, filteredProxies) {
     ipv6: true,
     'use-hosts': true,
     'cache-algorithm': 'arc',
+    'prefer-h3': false,
     'use-system-hosts': true,
     'enhanced-mode': 'fake-ip',
     'fake-ip-range': '198.18.0.1/15',
@@ -1640,16 +1641,21 @@ function main(config) {
   newConfig['bind-address'] = '127.0.0.1';
   newConfig['unified-delay'] = true;
   newConfig['tcp-concurrent'] = true;
-  newConfig['keep-alive-interval'] = 60;
+  newConfig['keep-alive-interval'] = 15;
+  newConfig['keep-alive-idle'] = 15;
+  newConfig['disable-keep-alive'] = false;
   newConfig['find-process-mode'] = 'strict';
+  newConfig['etag-support'] = true;
+  newConfig['geodata-mode'] = false;
+  newConfig['geodata-loader'] = 'memconservative';
 
   newConfig['external-controller'] = '127.0.0.1:19090';
   newConfig['external-ui'] = 'ui';
   newConfig['external-ui-url'] = 'https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip';
 
   newConfig['profile'] = {
-    'store-selected': false,
-    'store-fake-ip': false,
+    'store-selected': true,
+    'store-fake-ip': true,
   };
 
   newConfig['ntp'] = {

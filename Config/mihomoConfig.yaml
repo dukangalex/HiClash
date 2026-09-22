@@ -60,8 +60,13 @@ log-level: info
 bind-address: '127.0.0.1'
 unified-delay: true
 tcp-concurrent: true
-keep-alive-interval: 60
+keep-alive-interval: 15
+keep-alive-idle: 15
+disable-keep-alive: false
 find-process-mode: strict
+etag-support: true
+geodata-mode: false
+geodata-loader: memconservative
 external-controller: '127.0.0.1:19090'
 external-controller-cors:
   allow-origins:
@@ -74,8 +79,8 @@ external-ui: ui
 external-ui-url: 'https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip'
 
 profile:
-  store-selected: false
-  store-fake-ip: false
+  store-selected: true
+  store-fake-ip: true
 
 # 国内外 DNS 定义
 dns_common:
@@ -90,6 +95,7 @@ dns:
   ipv6: true
   use-hosts: true
   cache-algorithm: arc
+  prefer-h3: false
   use-system-hosts: true
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/15
@@ -448,7 +454,7 @@ proxies_common:
           '日本',
           '美国',
           '新加坡',
-          '台湾省',
+          '台湾',
           '低倍率节点',
           '高倍率节点',
           '其他节点',
@@ -468,7 +474,7 @@ proxies_common:
           '日本',
           '美国',
           '新加坡',
-          '台湾省',
+          '台湾',
           '低倍率节点',
           '高倍率节点',
           '其他节点',
@@ -511,7 +517,7 @@ proxy-groups:
         '日本',
         '美国',
         '新加坡',
-        '台湾省',
+        '台湾',
         '低倍率节点',
         '高倍率节点',
         '手动选择',
@@ -675,12 +681,12 @@ proxy-groups:
   - name: '新加坡-自动选择'
     <<: [*group_common_auto, *SG_filter]
 
-  - name: '台湾省'
+  - name: '台湾'
     <<: [*group_common_select, *TW_filter]
     include-all: true
-    proxies: ['台湾省-自动选择']
+    proxies: ['台湾-自动选择']
     icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Taiwan.svg'
-  - name: '台湾省-自动选择'
+  - name: '台湾-自动选择'
     <<: [*group_common_auto, *TW_filter]
 
   - name: '低倍率节点'
