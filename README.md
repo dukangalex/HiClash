@@ -103,11 +103,11 @@ HiClash 现在保留并加入原作者脚本中的「远控工具」分流，同
 - natapp
 - nblink
 
-「远控工具」策略组默认提供 **REJECT-DROP / 默认代理 / 直连** 三种选择。规则使用 Mihomo 的 `PROCESS-NAME-WILDCARD`，因此 Android 上也可匹配包名。citeturn1search0
+「远控工具」策略组默认提供 **REJECT-DROP / 默认代理 / 直连** 三种选择。规则使用 Mihomo 的 `PROCESS-NAME-WILDCARD`，因此 Android 上也可匹配包名。
 
 ### 🔁 故障转移
 
-「故障转移」使用 Mihomo 的 `fallback` 策略组，自动健康检查组内节点；节点不可用时按组内顺序切换到可用节点。当前使用 600 秒检测周期、3000ms 超时、连续 3 次失败阈值，并以 `REJECT` 作为空组兜底。Mihomo 官方文档确认 `fallback` 策略组支持健康检查以及代理组作为成员。citeturn0search0
+「故障转移」使用 Mihomo 的 `fallback` 策略组，自动健康检查组内节点；节点不可用时按组内顺序切换到可用节点。当前使用 600 秒检测周期、3000ms 超时、连续 3 次失败阈值，并以 `REJECT` 作为空组兜底。
 
 ## ⚙️ 原作者自定义功能（完整保留）
 
@@ -152,6 +152,7 @@ const customizeProxies = [
 ```
 
 > 自定义节点不会参与订阅节点的过滤与 Hosts 改写；开启链式代理后会自动设置 `dialer-proxy`。配置项为空时不会生成「自建节点」组；开启链式代理但未配置自定义节点会直接提示配置错误。
+
 ## 🔗 自定义节点与链式代理
 
 可以在 `customizeProxies` 中加入自定义 Mihomo 节点。
@@ -165,7 +166,7 @@ const customizeProxies = [
 
 ## 📋 主要策略组
 
-`默认代理`、`手动选择`、`自动选择`、`负载均衡`、`FCM`、`YouTube`、`Google`、`AI`、`Microsoft`、`Apple`、`Telegram`、`Steam`、`TikTok`、`Instagram`、`Netflix`、`Twitter`、`Meta`、`Line`、`Emby`、`PikPak`、`Spotify`、`Crypto`、`EHentai`、`AdBlock`、`直连`、`漏网之鱼`、`自建节点/链式落地`、`链式中转`。
+`默认代理`、`手动选择`、`自动选择`、`负载均衡`、`故障转移`、`远控工具`、`FCM`、`YouTube`、`Google`、`AI`、`Microsoft`、`Apple`、`Telegram`、`Steam`、`TikTok`、`Netflix`、`Twitter`、`Meta`、`Line`、`Emby`、`PikPak`、`Spotify`、`Crypto`、`EHentai`、`AdBlock`、`直连`、`漏网之鱼`、`自建节点/链式落地`、`链式中转`。
 
 ## 📥 使用方法
 
@@ -200,9 +201,16 @@ const customizeProxies = [
 > [!IMPORTANT]
 >
 > 1. 本脚本主要用于覆写机场提供的订阅配置。
-> 2. DNS、TUN、Sniffer、Hosts 等行为可能受到客户端自身设置影响。
-> 3. 如果出现节点解析异常，请检查客户端 DNS 覆写、Fake-IP、TUN / 严格路由等设置。
-> 4. 不同机场节点命名方式不同，地区识别结果取决于节点名称中的可识别信息。
+> 2. 覆写会重置 `mixed-port`（默认 7890）、`allow-lan`、`bind-address`、TUN、外部控制器等安全基线字段；请以覆写结果为准，并按需在客户端设置 `secret`。
+> 3. DNS、TUN、Sniffer、Hosts 等行为可能受到客户端自身设置影响。
+> 4. `tun.stack` 默认 `mips`，需要较新的 Mihomo 内核；旧内核请改为 `mixed` 或 `gvisor`。
+> 5. 如果出现节点解析异常，请检查客户端 DNS 覆写、Fake-IP、TUN / 严格路由等设置。
+> 6. 不同机场节点命名方式不同，地区识别结果取决于节点名称中的可识别信息。
+> 7. 节点 Hosts 改写仅在特定 `proxy-server-nameserver` / `listen` 条件下触发，并非对所有订阅始终生效。
+
+## 📄 许可
+
+本仓库的 HiClash 修改以 [MIT License](LICENSE) 发布。项目衍生自 [AIsouler/MyClash](https://github.com/AIsouler/MyClash)；上游原作版权归其作者所有，MyClash 当时未声明许可证。
 
 ## 🙏 致谢
 

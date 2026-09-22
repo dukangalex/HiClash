@@ -397,6 +397,19 @@ function runIntegrationTests(h, api, meta, fx, loadScript, scriptFile) {
       h.assert(proxyNames(out.proxies).includes('官网公告'), '信息节点应被保留');
     }),
   );
+  h.test('过滤非地区节点=true → 节点名含 .com 但不含信息词时保留', () => {
+    const cfg = fx.minimalSubscription();
+    cfg.proxies.push({
+      name: 'Edge-Premium.com-01',
+      type: 'ss',
+      server: 'edge.example.net',
+      port: 443,
+      cipher: 'aes-256-gcm',
+      password: 'x',
+    });
+    const out = api.main(cfg);
+    h.assert(proxyNames(out.proxies).includes('Edge-Premium.com-01'), '不应仅因节点名含 .com 而过滤有效节点');
+  });
 
   // ---------------- 代理 IP 版本优先 ----------------
   h.section('集成测试 · 代理IP版本优先');

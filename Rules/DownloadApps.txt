@@ -1,3 +1,5 @@
+# 可选参考：下载器进程直连清单。脚本运行时不会自动加载本文件。
+# 如需启用，请将下列 PROCESS-NAME 追加到客户端规则，策略目标为「直连」。
 PROCESS-NAME,aria2
 PROCESS-NAME,aria2.exe
 PROCESS-NAME,aria2c

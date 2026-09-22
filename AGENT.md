@@ -11,10 +11,10 @@
 | -------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
 | 原始位图参考                     | `Icons/png/<Name>.png`                                                                                                |
 | 统一化矢量（对外提供的就是这套） | `Icons/svg/<Name>.svg`                                                                                                |
-| 命名                             | PascalCase、无下划线/连字符；png 与 svg **同名一一对应**（当前 36 对）                                                |
+| 命名                             | PascalCase、无下划线/连字符；png 与 svg **同名一一对应**（当前 37 对）                                                |
 | 引用格式                         | `https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/<Name>.svg`                                           |
 | 引用位置                         | `Script/mihomoScript.js`、`Script/Script.js`、`Config/mihomoConfig.yaml`、`Config/mihomoConfigLite.yaml`（共 116 处） |
-| 回归测试                         | `node Test/run-tests.js`（改过脚本必跑，当前 192 项）                                                                 |
+| 回归测试                         | `node Test/run-tests.js`（改过脚本必跑，当前 198 项）                                                                 |
 
 ---
 
@@ -249,8 +249,8 @@ Start-Process -FilePath "<python.exe>" -ArgumentList '-m','http.server','8765','
 
 ---
 
-## 7. 当前图标清单（36）
+## 7. 当前图标清单（37）
 
-`AdBlock, Airport, America, Apple, Auto, Available, Bitcoin, Bypass, ChatGPT, China, Ehentai, Emby, Fcm, Global, Google, HongKong, Japan, Line, Meta, Microsoft, Netflix, Pikpak, Proxy, RoundRobin, Server, Singapore, Spotify, Stack, Static, Steam, Taiwan, Telegram, TikTok, Twitter, WorldMap, YouTube`
+`AdBlock, Airport, America, Apple, Auto, Available, Bitcoin, Bypass, ChatGPT, China, Ehentai, Emby, Fcm, Global, Google, HongKong, Japan, Line, Meta, Microsoft, Netflix, Pikpak, Proxy, Remote, RoundRobin, Server, Singapore, Spotify, Stack, Static, Steam, Taiwan, Telegram, TikTok, Twitter, WorldMap, YouTube`
 
 每个文件里都已烘焙好 `translate(tx ty) scale(s)`，需要复现规则时直接读该文件的 `transform` 即可。

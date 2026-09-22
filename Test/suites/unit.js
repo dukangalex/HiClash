@@ -44,6 +44,17 @@ function runUnitTests(h, api, meta) {
   h.test('NZ Auckland → 新西兰', () => h.assert(matched('NZ Auckland').includes('新西兰')));
   h.test('PH Manila → 菲律宾', () => h.assert(matched('PH Manila').includes('菲律宾')));
 
+  h.test('Papua New Guinea → 仅巴布亚新几内亚', () => {
+    const n = matched('Papua New Guinea');
+    h.assert(n.includes('巴布亚新几内亚'));
+    h.assert(!n.includes('几内亚'), '更具体地区应覆盖几内亚');
+  });
+  h.test('Equatorial Guinea → 仅赤道几内亚', () => {
+    const n = matched('Equatorial Guinea');
+    h.assert(n.includes('赤道几内亚'));
+    h.assert(!n.includes('几内亚'), '更具体地区应覆盖几内亚');
+  });
+
   h.test('台湾 01 → 台湾省（仅全量版）', () => {
     if (meta.full) h.assert(matched('台湾 01').includes('台湾省'));
   });

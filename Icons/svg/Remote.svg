@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="remoteBlue" gradientUnits="userSpaceOnUse" x1="512" y1="80" x2="512" y2="944">
+      <stop offset="0" stop-color="#4BA7F3" />
+      <stop offset="1" stop-color="#0047BA" />
+    </linearGradient>
+  </defs>
+  <path fill="url(#remoteBlue)" d="M176 96h672c44.18 0 80 35.82 80 80v480c0 44.18-35.82 80-80 80H176c-44.18 0-80-35.82-80-80V176c0-44.18 35.82-80 80-80z" />
+  <path fill="#FFFFFF" d="M208 176h608c17.67 0 32 14.33 32 32v400c0 17.67-14.33 32-32 32H208c-17.67 0-32-14.33-32-32V208c0-17.67 14.33-32 32-32z" />
+  <path fill="url(#remoteBlue)" d="M456 768h112v72H456z" />
+  <path fill="url(#remoteBlue)" d="M304 840h416c26.51 0 48 21.49 48 48v24H256v-24c0-26.51 21.49-48 48-48z" />
+  <path fill="url(#remoteBlue)" d="M616 232h184c22.09 0 40 17.91 40 40v256c0 22.09-17.91 40-40 40H616c-22.09 0-40-17.91-40-40V272c0-22.09 17.91-40 40-40z" />
+  <path fill="#FFFFFF" d="M656 284h104c8.84 0 16 7.16 16 16v40c0 8.84-7.16 16-16 16H656c-8.84 0-16-7.16-16-16v-40c0-8.84 7.16-16 16-16z" />
+  <path fill="#FFFFFF" d="M668 388c13.25 0 24 10.75 24 24s-10.75 24-24 24-24-10.75-24-24 10.75-24 24-24z" />
+  <path fill="#FFFFFF" d="M748 388c13.25 0 24 10.75 24 24s-10.75 24-24 24-24-10.75-24-24 10.75-24 24-24z" />
+  <path fill="#FFFFFF" d="M668 468c13.25 0 24 10.75 24 24s-10.75 24-24 24-24-10.75-24-24 10.75-24 24-24z" />
+  <path fill="#FFFFFF" d="M748 468c13.25 0 24 10.75 24 24s-10.75 24-24 24-24-10.75-24-24 10.75-24 24-24z" />
+</svg>

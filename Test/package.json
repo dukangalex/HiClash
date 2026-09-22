@@ -1,8 +1,8 @@
 {
-    "name": "myclash-script-tests",
+    "name": "hiclash-script-tests",
     "version": "1.0.0",
     "private": true,
-    "description": "MyClash 覆写脚本（Script/Script.js 与 Script/mihomoScript.js）的测试套件",
+    "description": "HiClash 覆写脚本（Script/Script.js 与 Script/mihomoScript.js）的测试套件",
     "scripts": {
         "test": "node run-tests.js",
         "test:quickjs": "node run-tests.js --quickjs",

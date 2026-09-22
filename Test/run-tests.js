@@ -35,7 +35,7 @@ function printDemo(api, label, meta) {
 }
 
 async function main() {
-  console.log('MyClash 覆写脚本测试');
+  console.log('HiClash 覆写脚本测试');
   console.log('='.repeat(64));
   let totalPassed = 0;
   let totalFailed = 0;

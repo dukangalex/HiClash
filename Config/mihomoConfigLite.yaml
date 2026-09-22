@@ -149,7 +149,6 @@ sniffer:
       ports: [443, 8443]
       override-destination: true
 
-
 # --- 规则集 ---
 
 # Rule Provider 通用配置
@@ -371,7 +370,19 @@ proxy-groups:
   - name: '默认代理'
     <<: *group_common_select
     proxies:
-      ['香港', '日本', '美国', '新加坡', '台湾省', '低倍率节点', '高倍率节点', '手动选择', '自动选择', '故障转移', '其他节点']
+      [
+        '香港',
+        '日本',
+        '美国',
+        '新加坡',
+        '台湾省',
+        '低倍率节点',
+        '高倍率节点',
+        '手动选择',
+        '自动选择',
+        '故障转移',
+        '其他节点',
+      ]
     icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Proxy.svg'
 
   - name: '手动选择'
