@@ -20,6 +20,7 @@ const ruleOptionsEnable = {
   自动选择: true, // 是否启用自动选择策略组
   负载均衡: true, // 是否启用负载均衡策略组
   故障转移: true, // 是否启用故障转移策略组
+  远控工具: true, // 是否启用远控工具分流组
 
   // 以下为分流策略配置
   FCM: true, // GoogleFCM服务
