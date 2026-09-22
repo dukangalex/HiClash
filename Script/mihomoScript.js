@@ -330,6 +330,7 @@ const regionDefinitions = [
   { name: "🇻🇪 委内瑞拉节点", flag: "🇻🇪", regex: new RegExp("🇻🇪|委内瑞拉|venezuela", "i"), icon: "" },
   { name: "🇬🇾 圭亚那节点", flag: "🇬🇾", regex: new RegExp("🇬🇾|圭亚那|guyana", "i"), icon: "" },
   { name: "🇸🇷 苏里南节点", flag: "🇸🇷", regex: new RegExp("🇸🇷|苏里南|suriname", "i"), icon: "" },
+  { name: "🇳🇿 新西兰节点", flag: "🇳🇿", regex: new RegExp("🇳🇿|新西兰|new[\\s_-]*zealand|auckland|奥克兰|wellington|惠灵顿", "i"), icon: "" },
   { name: "🇫🇯 斐济节点", flag: "🇫🇯", regex: new RegExp("🇫🇯|斐济|fiji", "i"), icon: "" },
   { name: "🇵🇬 巴布亚新几内亚节点", flag: "🇵🇬", regex: new RegExp("🇵🇬|巴布亚新几内亚|papua[\\s_-]*new[\\s_-]*guinea", "i"), icon: "" },
   { name: "🇸🇧 所罗门群岛节点", flag: "🇸🇧", regex: new RegExp("🇸🇧|所罗门群岛|solomon[\\s_-]*islands", "i"), icon: "" },
