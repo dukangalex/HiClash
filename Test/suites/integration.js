@@ -34,6 +34,19 @@ function runIntegrationTests(h, api, meta, fx, loadScript, scriptFile) {
     h.assert(n.includes('🇯🇵 JAPAN-02'));
     h.assert(n.includes('🇸🇬 SG 01 | 新加坡'));
   });
+  h.test('安全基线：本地绑定、严格 TUN 路由、Sniffer 与 WebRTC STUN 拦截', () => {
+    const out = api.main(fx.typicalSubscription());
+    h.assertEqual(out['allow-lan'], false);
+    h.assertEqual(out['bind-address'], '127.0.0.1');
+    h.assertEqual(out.tun['strict-route'], true);
+    h.assertEqual(out.tun['auto-route'], true);
+    h.assertEqual(out.tun['dns-hijack'][0], 'any:53');
+    h.assertEqual(out.sniffer.enable, true);
+    const rules = out.rules.join('\n');
+    h.assert(rules.includes('DST-PORT,3478-3497'), '应拦截常见 WebRTC STUN 端口');
+    h.assert(rules.includes('DST-PORT,5349'), '应拦截 STUN/TURN TLS 端口');
+  });
+
   h.test('dialer-proxy 引用修复：重命名同步 / 存活保留 / 被过滤移除', () => {
     const out = api.main(fx.typicalSubscription());
     // 指向被重命名节点 → 引用同步更新
