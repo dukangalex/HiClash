@@ -308,6 +308,7 @@ proxies_common:
           '默认代理',
           '手动选择',
           '自动选择',
+          '故障转移',
           '香港',
           '日本',
           '美国',
@@ -326,6 +327,7 @@ proxies_common:
           '默认代理',
           '手动选择',
           '自动选择',
+          '故障转移',
           '直连',
           '香港',
           '日本',
@@ -369,7 +371,7 @@ proxy-groups:
   - name: '默认代理'
     <<: *group_common_select
     proxies:
-      ['香港', '日本', '美国', '新加坡', '台湾省', '低倍率节点', '高倍率节点', '手动选择', '自动选择', '其他节点']
+      ['香港', '日本', '美国', '新加坡', '台湾省', '低倍率节点', '高倍率节点', '手动选择', '自动选择', '故障转移', '其他节点']
     icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Proxy.svg'
 
   - name: '手动选择'
@@ -420,7 +422,7 @@ proxy-groups:
 
   - name: '漏网之鱼'
     <<: *group_common_select
-    proxies: ['默认代理', '直连']
+    proxies: ['默认代理', '故障转移', '直连']
     icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Stack.svg'
 
   - name: '直连'
