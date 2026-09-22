@@ -244,6 +244,7 @@ const regionDefinitions = [
   { name: '委内瑞拉', flag: '🇻🇪', regex: /🇻🇪|委内瑞拉|venezuela/i, icon: '' },
   { name: '圭亚那', flag: '🇬🇾', regex: /🇬🇾|圭亚那|guyana/i, icon: '' },
   { name: '苏里南', flag: '🇸🇷', regex: /🇸🇷|苏里南|suriname/i, icon: '' },
+  { name: '新西兰', flag: '🇳🇿', regex: /🇳🇿|新西兰|new[\s_-]*zealand|auckland|奥克兰|wellington|惠灵顿/i, icon: '' },
   { name: '斐济', flag: '🇫🇯', regex: /🇫🇯|斐济|fiji/i, icon: '' },
   { name: '巴布亚新几内亚', flag: '🇵🇬', regex: /🇵🇬|巴布亚新几内亚|papua[\s_-]*new[\s_-]*guinea/i, icon: '' },
   { name: '所罗门群岛', flag: '🇸🇧', regex: /🇸🇧|所罗门群岛|solomon[\s_-]*islands/i, icon: '' },
