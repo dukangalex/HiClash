@@ -1,3 +1,5 @@
+const Compatible_With_Bettbox = { ruleOptionsEnable: true };
+
 /**
  * HiClash Mihomo 配置覆写脚本（精简版 · 多地区自动识别 + 安全基线）
  * 原作者：AIsouler
