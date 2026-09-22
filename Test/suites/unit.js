@@ -39,6 +39,11 @@ function runUnitTests(h, api, meta) {
   h.test('JAPAN-02 → 日本', () => h.assert(matched('JAPAN-02').includes('日本')));
   h.test('US-LosAngeles-02 → 美国', () => h.assert(matched('US-LosAngeles-02').includes('美国')));
   h.test('SG 01 | 新加坡 → 新加坡', () => h.assert(matched('SG 01 | 新加坡').includes('新加坡')));
+  h.test('AE Dubai → 阿联酋', () => h.assert(matched('AE Dubai').includes('阿联酋')));
+  h.test('CO Bogotá → 哥伦比亚', () => h.assert(matched('CO Bogotá').includes('哥伦比亚')));
+  h.test('NZ Auckland → 新西兰', () => h.assert(matched('NZ Auckland').includes('新西兰')));
+  h.test('PH Manila → 菲律宾', () => h.assert(matched('PH Manila').includes('菲律宾')));
+
   h.test('台湾 01 → 台湾省（仅全量版）', () => {
     if (meta.full) h.assert(matched('台湾 01').includes('台湾省'));
   });
