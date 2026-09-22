@@ -584,6 +584,28 @@ const serviceConfigs = [
     rules: ['RULE-SET,steam,Steam', 'RULE-SET,steam_ip,Steam,no-resolve'],
   },
   {
+    name: '远控工具',
+    baseOption: selectBaseOption,
+    fixedProxies: ['REJECT-DROP', '默认代理', '直连'],
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Remote.svg',
+    rules: [
+      'PROCESS-NAME-WILDCARD,*AnyDesk*,远控工具',
+      'PROCESS-NAME-WILDCARD,*ToDesk*,远控工具',
+      'PROCESS-NAME-WILDCARD,*TeamViewer*,远控工具',
+      'PROCESS-NAME-WILDCARD,*RustDesk*,远控工具',
+      'PROCESS-NAME-WILDCARD,*rustdesk*,远控工具',
+      'PROCESS-NAME-WILDCARD,*tailscale*,远控工具',
+      'PROCESS-NAME-WILDCARD,*tailscaled*,远控工具',
+      'PROCESS-NAME-WILDCARD,*zerotier*,远控工具',
+      'PROCESS-NAME-WILDCARD,*ngrok*,远控工具',
+      'PROCESS-NAME-WILDCARD,*frpc*,远控工具',
+      'PROCESS-NAME-WILDCARD,*frps*,远控工具',
+      'PROCESS-NAME-WILDCARD,*cloudflared*,远控工具',
+      'PROCESS-NAME-WILDCARD,*natapp*,远控工具',
+      'PROCESS-NAME-WILDCARD,*nblink*,远控工具',
+    ],
+  },
+  {
     name: 'AdBlock',
     baseOption: selectBaseOption,
     reject: true,
@@ -958,7 +980,9 @@ function buildFunctionalGroups(filteredProxies, generatedRegionGroups, customize
     if (!ruleOptionsEnable[svc.name]) continue;
 
     let groupProxies = [];
-    if (svc.includeAll) {
+    if (svc.fixedProxies) {
+      groupProxies = [...svc.fixedProxies];
+    } else if (svc.includeAll) {
       groupProxies = [...allProxiesNames];
     } else if (svc.reject) {
       groupProxies = ['REJECT', 'REJECT-DROP', 'PASS'];
