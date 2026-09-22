@@ -18,6 +18,8 @@ const ruleOptionsEnable = {
   // 基础策略组
   手动选择: true, // 是否启用手动选择策略组
   自动选择: true, // 是否启用自动选择策略组
+  故障转移: true, // 是否启用故障转移策略组
+  远控工具: true, // 是否启用远控工具分流组
 
   // 以下为分流策略配置
   Google: true, // Google服务
@@ -499,6 +501,17 @@ const baseGroups = [
   {
     name: '自动选择',
     baseOption: urlTestBaseOption,
+    includeAll: true,
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Auto.svg',
+  },
+  {
+    name: '故障转移',
+    baseOption: {
+      ...groupBaseOption,
+      type: 'fallback',
+      'exclude-type': 'DIRECT',
+      icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Auto.svg',
+    },
     includeAll: true,
     icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Auto.svg',
   },
