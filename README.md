@@ -83,6 +83,49 @@ GitHub：
 - IPv4 / IPv6 优先
 - 链式代理
 
+## ⚙️ 原作者自定义功能（完整保留）
+
+HiClash 保留原作者 AIsouler/MyClash 的脚本自定义能力；这些功能属于脚本本身，不依赖特定客户端。
+
+脚本顶部的 `ruleOptionsEnable` 可直接开关以下功能：
+
+- **策略组开关**：手动选择、自动选择、负载均衡，以及 FCM、YouTube、Google、AI、Microsoft、Apple、Telegram、Steam、TikTok、Twitter、Meta、Line、Netflix、Emby、PikPak、Spotify、Crypto、EHentai、AdBlock 等分流组。
+- **极简模式**：仅保留基础代理/直连/兜底分流结构。
+- **地区策略自定义**：控制是否生成地区自动选择组、是否隐藏地区手动选择组。
+- **倍率策略自定义**：控制是否生成低倍率/高倍率节点组。
+- **节点范围自定义**：控制分流组是否加入全部节点。
+- **节点过滤自定义**：分别控制过滤低倍率、高倍率、非地区节点。
+- **QUIC 自定义**：控制国外 QUIC 屏蔽。
+- **IP 版本自定义**：可将订阅节点统一为 IPv4 优先或 IPv6 优先；同时开启时保持原节点设置。
+- **自定义节点**：通过 `customizeProxies` 直接添加自建 Mihomo 节点；与订阅节点重名时自动增加「自建-」前缀。
+- **链式代理**：开启 `链式代理` 后，自定义节点自动作为落地节点，通过「链式中转」使用订阅节点中转，并自动维护 `dialer-proxy` 引用。
+
+### 自定义节点示例
+
+在 `Script/mihomoScript.js` 或 `Script/Script.js` 顶部找到 `customizeProxies`，将空数组替换为自己的节点对象即可：
+
+```javascript
+const customizeProxies = [
+  {
+    name: '自建-日本-01',
+    type: 'vmess',
+    server: '5.6.7.8',
+    port: 443,
+    uuid: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
+    alterId: 0,
+    cipher: 'auto',
+    tls: true,
+    servername: 'example.com',
+    network: 'ws',
+    'ws-opts': {
+      path: '/path',
+      headers: { Host: 'example.com' },
+    },
+  },
+];
+```
+
+> 自定义节点不会参与订阅节点的过滤与 Hosts 改写；开启链式代理后会自动设置 `dialer-proxy`。配置项为空时不会生成「自建节点」组；开启链式代理但未配置自定义节点会直接提示配置错误。
 ## 🔗 自定义节点与链式代理
 
 可以在 `customizeProxies` 中加入自定义 Mihomo 节点。
