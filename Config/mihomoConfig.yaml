@@ -518,6 +518,7 @@ proxy-groups:
         '手动选择',
         '自动选择',
         '负载均衡',
+        '故障转移',
         '其他节点',
       ]
     icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Proxy.svg'
@@ -533,6 +534,18 @@ proxy-groups:
 
   - name: '负载均衡'
     <<: *group_common_load
+
+  - name: '故障转移'
+    type: fallback
+    include-all: true
+    exclude-type: 'DIRECT'
+    url: 'https://www.apple.com/library/test/success.html'
+    interval: 600
+    timeout: 3000
+    max-failed-times: 3
+    empty-fallback: REJECT
+    lazy: true
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Auto.svg'
 
   - name: 'FCM'
     <<: [*group_common_select, *proxies_direct]
@@ -610,6 +623,11 @@ proxy-groups:
     default-selected: '美国'
     <<: [*group_common_select, *proxies_direct]
     icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Ehentai.svg'
+
+  - name: '远控工具'
+    <<: *group_common_select
+    proxies: ['REJECT-DROP', '默认代理', '直连']
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Remote.svg'
 
   - name: 'AdBlock'
     <<: [*group_common_select, *proxies_reject]
@@ -760,6 +778,22 @@ rules:
   - RULE-SET,spotify_ip,Spotify,no-resolve
   - RULE-SET,cryptocurrency,Crypto
   - RULE-SET,ehentai,EHentai
+
+  # 远控工具：默认先拒绝直连式泄漏路径，用户可在组内切换到默认代理或直连
+  - PROCESS-NAME-WILDCARD,*AnyDesk*,远控工具
+  - PROCESS-NAME-WILDCARD,*ToDesk*,远控工具
+  - PROCESS-NAME-WILDCARD,*TeamViewer*,远控工具
+  - PROCESS-NAME-WILDCARD,*RustDesk*,远控工具
+  - PROCESS-NAME-WILDCARD,*rustdesk*,远控工具
+  - PROCESS-NAME-WILDCARD,*tailscale*,远控工具
+  - PROCESS-NAME-WILDCARD,*tailscaled*,远控工具
+  - PROCESS-NAME-WILDCARD,*zerotier*,远控工具
+  - PROCESS-NAME-WILDCARD,*ngrok*,远控工具
+  - PROCESS-NAME-WILDCARD,*frpc*,远控工具
+  - PROCESS-NAME-WILDCARD,*frps*,远控工具
+  - PROCESS-NAME-WILDCARD,*cloudflared*,远控工具
+  - PROCESS-NAME-WILDCARD,*natapp*,远控工具
+  - PROCESS-NAME-WILDCARD,*nblink*,远控工具
 
   # 兜底规则
   - RULE-SET,geolocation-!cn,默认代理
