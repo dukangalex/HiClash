@@ -83,6 +83,32 @@ GitHub：
 - IPv4 / IPv6 优先
 - 链式代理
 
+## 🛠️ 远控工具与故障转移
+
+HiClash 现在保留并加入原作者脚本中的「远控工具」分流，同时新增独立的「故障转移」策略组。
+
+### 🔧 远控工具
+
+默认识别以下常见远控、组网和内网穿透程序：
+
+- AnyDesk
+- ToDesk
+- TeamViewer
+- RustDesk
+- Tailscale / tailscaled
+- ZeroTier
+- ngrok
+- frpc / frps
+- cloudflared
+- natapp
+- nblink
+
+「远控工具」策略组默认提供 **REJECT-DROP / 默认代理 / 直连** 三种选择。规则使用 Mihomo 的 `PROCESS-NAME-WILDCARD`，因此 Android 上也可匹配包名。citeturn1search0
+
+### 🔁 故障转移
+
+「故障转移」使用 Mihomo 的 `fallback` 策略组，自动健康检查组内节点；节点不可用时按组内顺序切换到可用节点。当前使用 600 秒检测周期、3000ms 超时、连续 3 次失败阈值，并以 `REJECT` 作为空组兜底。Mihomo 官方文档确认 `fallback` 策略组支持健康检查以及代理组作为成员。citeturn0search0
+
 ## ⚙️ 原作者自定义功能（完整保留）
 
 HiClash 保留原作者 AIsouler/MyClash 的脚本自定义能力；这些功能属于脚本本身，不依赖特定客户端。
