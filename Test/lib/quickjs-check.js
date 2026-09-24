@@ -79,7 +79,8 @@ async function runQuickJSChecks({ harness, fixtures }) {
   harness.section('QuickJS：实际调用 main()');
   for (const rel of SCRIPT_FILES) {
     const code = fs.readFileSync(path.join(ROOT, rel), 'utf8');
-    const cfgJson = JSON.stringify(fixtures.typicalSubscription());
+    const fixture = rel === 'Script/mihomoScriptProvider.js' ? fixtures.providerSubscription() : fixtures.typicalSubscription();
+    const cfgJson = JSON.stringify(fixture);
     const ctx = QuickJS.newContext();
     let out = null;
     try {
@@ -105,7 +106,7 @@ globalThis.__out = JSON.stringify(__main(JSON.parse(${JSON.stringify(cfgJson)}))
 
       harness.test(`${rel}：与 Node 引擎输出结构一致`, () => {
         harness.assert(out !== null, '前置 main() 未成功运行，无法对照');
-        const nodeOut = loadScript(rel).main(fixtures.typicalSubscription());
+        const nodeOut = loadScript(rel).main(fixture);
         harness.assert(
           out.proxies.length === nodeOut.proxies.length &&
             out['proxy-groups'].length === nodeOut['proxy-groups'].length &&
