@@ -77,6 +77,33 @@ function runIntegrationTests(h, api, meta, fx, loadScript, scriptFile) {
         '故障转移必须保留 empty-fallback: REJECT',
       );
       h.assertEqual(out.rules[out.rules.length - 1], 'MATCH,漏网之鱼', '规则应由 HiClash 接管');
+
+      // provider 模式同样必须保持原有“有节点才建地区组”的语义：
+      // 当前脚本阶段不可见的远程 provider 节点不能被假定存在，因此不能预建空地区组。
+      h.assert(!groupByName(out['proxy-groups'], '香港'), '没有可见香港节点时不应创建空香港组');
+      h.assert(!groupByName(out['proxy-groups'], '香港-自动选择'), '没有可见香港节点时不应创建空香港自动组');
+
+      const withVisibleRegion = {
+        ...cfg,
+        proxies: [
+          ...originalProxies,
+          {
+            name: '🇭🇰 Provider 香港 01',
+            type: 'ss',
+            server: 'hk.example.com',
+            port: 443,
+            cipher: 'aes-256-gcm',
+            password: 'x',
+          },
+        ],
+      };
+      const regionOut = api.main(withVisibleRegion);
+      const hk = groupByName(regionOut['proxy-groups'], '香港');
+      const hkAuto = groupByName(regionOut['proxy-groups'], '香港-自动选择');
+      h.assert(hk, '存在可见香港节点时应创建香港组');
+      h.assert(hkAuto, '存在可见香港节点时应创建香港自动组');
+      h.assert(hk.proxies.includes('🇭🇰 Provider 香港 01'), '香港组应保留原始节点名称');
+      h.assertEqual(hkAuto.filter, '(?i)🇭🇰|香港|\\\\bHKG?\\\\b|hong[\\\\s_-]*kong', '香港自动组应使用地区识别过滤器');
     });
   }
 
