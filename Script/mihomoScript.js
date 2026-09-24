@@ -2254,7 +2254,11 @@ function main(config) {
     enableProviderSources(functionalGroups, chainGroup);
   }
 
-  const { dns, hosts } = buildDnsAndHostsConfig(config, providerMode ? originalProxies : filteredProxies);
+  const {
+    dns,
+    hosts,
+    proxies: mappedProxies,
+  } = buildDnsAndHostsConfig(config, providerMode ? originalProxies : filteredProxies);
 
   newConfig['dns'] = dns;
   newConfig['hosts'] = { ...securityHosts, ...hosts };
