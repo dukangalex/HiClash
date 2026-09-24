@@ -12,24 +12,20 @@ const vm = require('vm');
  */
 // 仅导出测试实际用到的符号（其余内部函数的行为由 main 的集成测试间接覆盖）
 const EXPORT_SUFFIX = `
-;module.exports = {
-  main,
-  matchDomainPattern,
-  applyHostsToProxies,
-  stripDnsSuffix,
-  simplifyDomainPolicy,
-  getMatchedRegions,
-  normalizeProxyName,
-  fixDialerProxy,
-  isIpAddress,
-  defaultDNS,
-  proxyServerDNS,
-  ruleOptionsEnable
-};
-// 仅全量版存在 buildCustomizeGroups，精简版无此函数时保持导出不报错
-if (typeof buildCustomizeGroups !== 'undefined') {
-  module.exports.buildCustomizeGroups = buildCustomizeGroups;
-}`;
+;module.exports = { main };
+if (typeof matchDomainPattern !== 'undefined') module.exports.matchDomainPattern = matchDomainPattern;
+if (typeof applyHostsToProxies !== 'undefined') module.exports.applyHostsToProxies = applyHostsToProxies;
+if (typeof stripDnsSuffix !== 'undefined') module.exports.stripDnsSuffix = stripDnsSuffix;
+if (typeof simplifyDomainPolicy !== 'undefined') module.exports.simplifyDomainPolicy = simplifyDomainPolicy;
+if (typeof getMatchedRegions !== 'undefined') module.exports.getMatchedRegions = getMatchedRegions;
+if (typeof normalizeProxyName !== 'undefined') module.exports.normalizeProxyName = normalizeProxyName;
+if (typeof fixDialerProxy !== 'undefined') module.exports.fixDialerProxy = fixDialerProxy;
+if (typeof isIpAddress !== 'undefined') module.exports.isIpAddress = isIpAddress;
+if (typeof defaultDNS !== 'undefined') module.exports.defaultDNS = defaultDNS;
+if (typeof proxyServerDNS !== 'undefined') module.exports.proxyServerDNS = proxyServerDNS;
+if (typeof ruleOptionsEnable !== 'undefined') module.exports.ruleOptionsEnable = ruleOptionsEnable;
+if (typeof buildCustomizeGroups !== 'undefined') module.exports.buildCustomizeGroups = buildCustomizeGroups;
+`;
 
 /**
  * 加载指定覆写脚本，返回其导出的符号。
