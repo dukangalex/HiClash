@@ -40,8 +40,6 @@ jobs:
 
       - name: check formatting
         run: |
-          prettier Script/Script.js > /tmp/script.formatted.js
-          diff -u Script/Script.js /tmp/script.formatted.js || true
           git ls-files -z '*.js' '*.yml' '*.yaml' | xargs -0 -r prettier --check
 
   test:
