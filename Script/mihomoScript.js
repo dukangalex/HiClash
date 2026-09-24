@@ -2276,7 +2276,7 @@ function main(config) {
   // - 原始 proxies 原样保留；
   // - 原始 proxy-providers 原样保留；
   // 脚本只接管其余配置结构。
-  newConfig['proxies'] = [...originalProxies, ...customProxies, ...directProxies];
+  newConfig['proxies'] = [...(providerMode ? originalProxies : filteredProxies), ...customProxies, ...directProxies];
   if (providerMode) {
     newConfig['proxy-providers'] = config['proxy-providers'];
   }
