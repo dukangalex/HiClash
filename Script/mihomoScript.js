@@ -2130,28 +2130,131 @@ const securityHosts = {
   'cloudflare-dns.com': ['1.1.1.1', '1.0.0.1', '2606:4700:4700::1111', '2606:4700:4700::1001'],
 };
 
+// --- proxy-providers 兼容：保留节点信息，脚本接管其余配置 ---
+
+/**
+ * 判断输入是否包含 proxy-providers。
+ * provider 模式下不尝试在脚本运行期展开远端订阅，而是直接让 Mihomo
+ * 通过 include-all/filter 使用 provider 中的节点；这样不会修改或丢失原节点信息。
+ */
+function hasProxyProviders(config) {
+  return !!(
+    config &&
+    config['proxy-providers'] &&
+    typeof config['proxy-providers'] === 'object' &&
+    !Array.isArray(config['proxy-providers']) &&
+    Object.keys(config['proxy-providers']).length > 0
+  );
+}
+
+/**
+ * provider 模式的地区组。
+ * Mihomo 会在运行期从 proxy-providers 中加载节点，因此这里使用 include-all + filter，
+ * 不需要脚本读取/下载机场订阅内容。
+ */
+function buildProviderRegionGroups() {
+  const generateRegionAutoSelectEnabled = ruleOptionsEnable.生成地区自动选择组;
+  const hideManualSelectGroupEnabled = ruleOptionsEnable.隐藏地区手动选择组;
+  const groups = [];
+
+  for (const region of regionDefinitions) {
+    const filter = '(?i)' + region.regex.source;
+    if (generateRegionAutoSelectEnabled) {
+      groups.push({
+        ...urlTestBaseOption,
+        name: `${region.name}-自动选择`,
+        'include-all': true,
+        filter,
+        'exclude-filter': excludeFilter.source,
+        'exclude-type': 'DIRECT|REJECT|REJECT-DROP|PASS',
+      });
+      groups.push({
+        ...selectBaseOption,
+        name: region.name,
+        icon: region.icon,
+        'include-all': true,
+        filter,
+        'exclude-filter': excludeFilter.source,
+        'exclude-type': 'DIRECT|REJECT|REJECT-DROP|PASS',
+        hidden: hideManualSelectGroupEnabled,
+      });
+    } else {
+      groups.push({
+        ...selectBaseOption,
+        name: region.name,
+        icon: region.icon,
+        'include-all': true,
+        filter,
+        'exclude-filter': excludeFilter.source,
+        'exclude-type': 'DIRECT|REJECT|REJECT-DROP|PASS',
+        hidden: hideManualSelectGroupEnabled,
+      });
+    }
+  }
+
+  // Provider 节点无法在脚本执行阶段可靠判断“其他节点”，因此保留一个全量兜底组，
+  // 避免因 provider 节点尚未加载而误判为空。
+  groups.push({
+    ...selectBaseOption,
+    name: '其他节点',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/WorldMap.svg',
+    'include-all': true,
+    'exclude-filter': excludeFilter.source,
+    'exclude-type': 'DIRECT|REJECT|REJECT-DROP|PASS',
+  });
+
+  return groups;
+}
+
+/**
+ * provider 模式下让原有基础组直接消费 provider 节点。
+ * 仅补充节点来源，不删除原有规则、组结构或功能。
+ */
+function enableProviderSources(groups, chainGroup) {
+  const baseNames = new Set(baseGroups.map((group) => group.name));
+  for (const group of groups) {
+    if (!group || !baseNames.has(group.name)) continue;
+    group['include-all'] = true;
+    group['exclude-filter'] = excludeFilter.source;
+    group['exclude-type'] = 'DIRECT|REJECT|REJECT-DROP|PASS';
+  }
+
+  if (chainGroup) {
+    chainGroup['include-all'] = true;
+    chainGroup['exclude-filter'] = excludeFilter.source;
+    chainGroup['exclude-type'] = 'DIRECT|REJECT|REJECT-DROP|PASS';
+  }
+}
+
 // --- 主入口 ---
 
 /**
  * 主入口：覆写机场订阅配置，生成完整 mihomo 配置
  */
 function main(config) {
-  if (config['proxy-providers'] && Object.keys(config['proxy-providers']).length > 0) {
-    throw new Error('配置文件中包含 proxy-providers，请使用机场提供的配置文件进行覆写');
-  }
-
+  const providerMode = hasProxyProviders(config);
   const newConfig = {};
 
-  const filteredProxies = filterAndNormalizeProxies(config);
+  // 普通订阅沿用原有节点标准化流程；provider 配置不下载、不展开、不改写节点。
+  const originalProxies = Array.isArray(config.proxies) ? config.proxies : [];
+  const filteredProxies = providerMode ? [] : filterAndNormalizeProxies(config);
 
   const { customProxies, customProxyNames, customGroup } = buildCustomizeGroups(filteredProxies);
 
-  const generatedRegionGroups = ruleOptionsEnable.极简模式 ? [] : buildRegionGroups(filteredProxies, customProxies);
+  const generatedRegionGroups = ruleOptionsEnable.极简模式
+    ? []
+    : providerMode
+      ? buildProviderRegionGroups()
+      : buildRegionGroups(filteredProxies, customProxies);
 
   const { globalGroup, functionalGroups, functionalRules, finalRuleProviders, chainGroup, directGroup } =
     buildFunctionalGroups(filteredProxies, generatedRegionGroups, { customProxyNames, customGroup });
 
-  const { dns, hosts, proxies: mappedProxies } = buildDnsAndHostsConfig(config, filteredProxies);
+  if (providerMode) {
+    enableProviderSources(functionalGroups, chainGroup);
+  }
+
+  const { dns, hosts } = buildDnsAndHostsConfig(config, providerMode ? originalProxies : filteredProxies);
 
   newConfig['dns'] = dns;
   newConfig['hosts'] = { ...securityHosts, ...hosts };
@@ -2169,7 +2272,14 @@ function main(config) {
     'udp-timeout': 300,
   };
 
-  newConfig['proxies'] = [...customProxies, ...mappedProxies, ...directProxies];
+  // 节点信息是唯一不由脚本覆盖的部分：
+  // - 原始 proxies 原样保留；
+  // - 原始 proxy-providers 原样保留；
+  // 脚本只接管其余配置结构。
+  newConfig['proxies'] = [...originalProxies, ...customProxies, ...directProxies];
+  if (providerMode) {
+    newConfig['proxy-providers'] = config['proxy-providers'];
+  }
   newConfig['proxy-groups'] = [
     globalGroup,
     ...functionalGroups,
