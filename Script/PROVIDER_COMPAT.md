@@ -1,6 +1,6 @@
 # HiClash `proxy-providers` 兼容层
 
-`mihomoScriptProvider.js` 用于机场/完整 Mihomo 配置已经包含 `proxy-providers` 的场景。
+当前 `Script/Script.js` 与 `Script/mihomoScript.js` 已原生支持包含 `proxy-providers` 的完整 Mihomo 配置：直接覆写控制面，原始 `proxies` / `proxy-providers` 节点信息原样保留。`mihomoScriptProvider.js` 保留作为独立兼容层，不再是使用主脚本的前置条件。
 
 ## 修复内容
 
@@ -14,11 +14,14 @@
 
 ## 适用场景
 
-当机场返回的是完整 Mihomo 配置，节点位于 `proxy-providers`，而不是直接展开到 `proxies` 时，使用：
+包含 `proxy-providers` 的完整配置现在可直接使用：
 
-`Script/mihomoScriptProvider.js`
+- `Script/Script.js`
+- `Script/mihomoScript.js`
 
-普通机场订阅已经直接提供节点到 `proxies` 时，继续使用原有 `Script.js` / `mihomoScript.js`。
+主脚本不会在脚本阶段下载或展开 provider，而是使用 Mihomo 的 `include-all` / `filter` 机制在运行期消费 provider 节点；这样可以保留原节点信息，同时由 HiClash 接管 DNS、TUN、Sniffer、策略组和规则。
+
+`Script/mihomoScriptProvider.js` 继续保留，供需要独立 provider 兼容层的场景使用。
 
 ## 验证
 
