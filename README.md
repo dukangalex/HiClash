@@ -1,51 +1,284 @@
 # HiClash
 
-> **dukangalex/HiClash · Mihomo 全量增强版 + Universal Core 方案B**
+> **dukangalex/HiClash · Mihomo 全量增强版**
 >
-> 基于 Mihomo 的个人增强版配置与覆写脚本，并新增可承载 Mihomo / sing-box / Xray 的统一控制平面。
+> 基于 Mihomo 的个人增强版配置与覆写脚本。当前核心版本为 **200+ 地区自动识别 + 动态节点归类 + 倍率识别 + DNS/Hosts 优化 + 安全基线 + 冷启动优化**，对齐 **Mihomo v1.19.31**。
 
-## Universal Core（方案B）
+## 🚀 本版本的核心特色
 
-项目新增 `Core/` 与 `Dashboard/`，在不破坏现有 Mihomo 覆写体系的前提下，把配置识别、链式编译、网络上下文、安全策略和自愈逻辑抽成独立控制层。
+- 🌍 **200+ 地区自动识别**：内置大量国家/地区、英文名称、常见缩写及城市关键词，自动识别节点归属。
+- 🧩 **动态地区策略组**：根据实际节点匹配结果生成和整理地区组，减少无效策略组。
+- 📊 **倍率自动识别**：自动识别低倍率/高倍率节点，并分别归类。
+- 🧹 **智能节点过滤**：自动排除官网、客服、订阅、通知、流量、到期等非代理信息节点。
+- 🛡️ **安全基线增强**：默认限制局域网访问、管理接口本地绑定，并强化 CORS、进程匹配等配置。
+- ⚡ **冷启动优化**：记住策略选择与 fake-ip 映射，策略组懒测速，TUN 使用 mihomo v1.19.31 的 `mips` 栈。
+- 🌐 **DNS / Hosts 优化**：针对机场私有 DNS、Hosts 映射和节点域名解析问题进行统一处理。
+- 🔍 **Sniffer 增强**：提供 HTTP/TLS 等流量嗅探及必要的域名覆盖配置。
+- 🚫 **QUIC 控制**：支持屏蔽国外 QUIC 流量。
+- 🔀 **IPv4 / IPv6 策略**：支持双栈、IPv4 优先、IPv6 优先、仅 IPv4、仅 IPv6。
+- 🔗 **链式代理**：支持自定义节点作为落地节点，经订阅节点中转。
+- ⚙️ **高度可配置**：通过 `ruleOptionsEnable` 可按需启用或关闭大量功能。
 
-### 已实现
+## ⭐ 推荐使用：全量版
 
-- **格式自动嗅探**：Share Link、Mihomo YAML、sing-box JSON、Xray JSON 自动绑定内核。
-- **三内核统一 Adapter**：Mihomo / sing-box / Xray 使用统一生命周期与控制接口。
-- **四种链式拓扑**：节点→节点、节点→订阅、订阅→节点、订阅→订阅；编译到 Mihomo `dialer-proxy`、sing-box `detour`、Xray `dialerProxy`。
-- **网络环境状态机**：离线、可信网络、公共网络、Captive Portal 与 UDP 高丢包降级策略。
-- **精准国内旁路引擎**：进程、SNI、ASN、低延迟四信号交叉判断。
-- **安全中心基础**：Kill Switch、WebRTC STUN 阻断、IPv6 泄漏保护、禁止意外 DIRECT fallback。
-- **Self-Healing**：连续失败阈值、备用节点选择与冷却时间。
-- **本地 REST 控制面**：`Core/server.js`，默认只监听 `127.0.0.1:8787`。
-- **极简控制台**：`Dashboard/index.html`。
-- **自动化回归测试**：Universal Core 与原有 200+ 覆写测试共同进入 CI。
+当前项目重点维护：
 
-### 启动 Universal Core
+**`Script/mihomoScript.js` — 全量版 · 200+地区自动识别 + 安全基线**
+
+Raw 地址：
+
+`https://raw.githubusercontent.com/dukangalex/HiClash/main/Script/mihomoScript.js`
+
+GitHub：
+
+`https://github.com/dukangalex/HiClash/blob/main/Script/mihomoScript.js`
+
+## 🌍 200+ 地区自动识别
+
+脚本内置 200+ 地区定义，可通过国家/地区名称、英文名称、常见缩写以及部分城市名称匹配节点。例如香港、台湾、日本、韩国、新加坡、美国、英国、德国、法国、加拿大、澳大利亚、俄罗斯、印度、巴西、南非等，并覆盖更多国家和地区。
+
+节点匹配成功后会自动进入对应地区策略组；无法匹配具体地区但属于有效节点的内容会归入「其他节点」。
+
+## 🛡️ 安全基线
+
+本版本在原有覆写能力基础上加入安全基线，重点包括：
+
+- `allow-lan: false`，默认不开放局域网访问
+- `bind-address: 127.0.0.1`，管理相关服务默认本机绑定
+- 本地 CORS 限制
+- 严格进程匹配相关配置
+- DNS、Hosts、Sniffer 统一处理
+- Mihomo GeoData / GeoIP / GeoSite / MMDB / ASN 数据配置
+- 默认关闭 NTP 写系统时钟
+- HTTP / TLS / QUIC Sniffer 配置
+- 针对常见 Google、YouTube、Telegram、AI 等服务的必要域名处理
+- TUN 严格路由与 DNS 劫持
+- 阻断常见 WebRTC STUN UDP/TCP 端口，降低浏览器真实地址暴露风险
+
+> 安全基线用于提高默认配置的安全性；实际安全效果仍取决于客户端、系统、订阅内容和网络环境。
+
+## ⚡ 冷启动优化
+
+针对「打开客户端后前几秒打不开网页 / 全部节点一起测速」做了内核级优化，对齐 **Mihomo v1.19.31**（2026-09-14）：
+
+| 项                                              | 作用                                                  |
+| ----------------------------------------------- | ----------------------------------------------------- |
+| `profile.store-selected: true`                  | 记住上次策略组选择，重启后不必重新测速                |
+| `profile.store-fake-ip: true`                   | 持久化 fake-ip 映射，首包不再等 DNS                   |
+| `lazy: true`                                    | url-test / fallback / 负载均衡仅在被选中时测速        |
+| `tcp-concurrent` + `unified-delay`              | 并发握手，延迟读数不受协议握手差影响                  |
+| `keep-alive-interval/idle: 15`                  | 复用已建立连接，缩短二次请求                          |
+| `etag-support: true`                            | 规则集按 ETag 跳过重复下载                            |
+| `geodata-loader: memconservative`               | 低内存加载 Geo 数据，弱设备启动更快                   |
+| `dns.cache-algorithm: arc` + `prefer-h3: false` | ARC 缓存；冷启动不做 HTTP/3 探测，避免 UDP 不通时卡住 |
+| `tun.stack: mips`                               | v1.19.31 新增的 mihomo 自研 IP 栈，内存低于 gVisor    |
+
+> `tun.stack: mips` 需要 **Mihomo ≥ v1.19.31**。更早的内核请把栈改成 `mixed`。
+
+## 🌐 DNS / Hosts 优化
+
+针对部分机场常见的私有 DNS、节点域名 Hosts 映射、DNS 覆写导致的解析异常等问题，本版本会对 DNS 与 Hosts 进行统一处理，并将必要的节点 Hosts 映射应用到节点配置。
+
+## 📊 倍率与节点过滤
+
+- **低倍率节点**：默认识别倍率 ≤ 0.5
+- **高倍率节点**：默认识别倍率 ≥ 2
+- 自动排除官网、客服、订阅、流量、到期、通知、教程、优惠等常见信息节点
+
+## ⚙️ 主要可配置功能
+
+脚本顶部的 `ruleOptionsEnable` 支持控制：
+
+- 手动选择 / 自动选择 / 负载均衡
+- FCM、YouTube、Google、AI、Microsoft、Apple
+- Telegram、Steam、TikTok、Twitter、Meta、Line
+- Netflix、Emby、PikPak、Spotify、Crypto、EHentai、AdBlock
+- 极简模式
+- 地区自动选择及地区手动组显示
+- 高/低倍率节点组
+- 分流组是否加入全部节点
+- 低倍率 / 高倍率 / 非地区节点过滤
+- 国外 QUIC 屏蔽
+- IPv4 / IPv6 优先
+- 链式代理
+
+## 🛠️ 远控工具与故障转移
+
+HiClash 现在保留并加入原作者脚本中的「远控工具」分流，同时新增独立的「故障转移」策略组。
+
+### 🔧 远控工具
+
+默认识别以下常见远控、组网和内网穿透程序：
+
+- AnyDesk
+- ToDesk
+- TeamViewer
+- RustDesk
+- Tailscale / tailscaled
+- ZeroTier
+- ngrok
+- frpc / frps
+- cloudflared
+- natapp
+- nblink
+
+「远控工具」策略组默认提供 **REJECT-DROP / 默认代理 / 直连** 三种选择。规则使用 Mihomo 的 `PROCESS-NAME-WILDCARD`，因此 Android 上也可匹配包名。
+
+### 🔁 故障转移
+
+「故障转移」使用 Mihomo 的 `fallback` 策略组，自动健康检查组内节点；节点不可用时按组内顺序切换到可用节点。当前使用 600 秒检测周期、3000ms 超时、连续 3 次失败阈值，并以 `REJECT` 作为空组兜底。
+
+## ⚙️ 原作者自定义功能（完整保留）
+
+HiClash 保留原作者 AIsouler/MyClash 的脚本自定义能力；这些功能属于脚本本身，不依赖特定客户端。
+
+脚本顶部的 `ruleOptionsEnable` 可直接开关以下功能：
+
+- **策略组开关**：手动选择、自动选择、负载均衡，以及 FCM、YouTube、Google、AI、Microsoft、Apple、Telegram、Steam、TikTok、Twitter、Meta、Line、Netflix、Emby、PikPak、Spotify、Crypto、EHentai、AdBlock 等分流组。
+- **极简模式**：仅保留基础代理/直连/兜底分流结构。
+- **地区策略自定义**：控制是否生成地区自动选择组、是否隐藏地区手动选择组。
+- **倍率策略自定义**：控制是否生成低倍率/高倍率节点组。
+- **节点范围自定义**：控制分流组是否加入全部节点。
+- **节点过滤自定义**：分别控制过滤低倍率、高倍率、非地区节点。
+- **QUIC 自定义**：控制国外 QUIC 屏蔽。
+- **IP 版本自定义**：可将订阅节点统一为 IPv4 优先或 IPv6 优先；同时开启时保持原节点设置。
+- **自定义节点**：通过 `customizeProxies` 直接添加自建 Mihomo 节点；与订阅节点重名时自动增加「自建-」前缀。
+- **链式代理**：开启 `链式代理` 后，自定义节点自动作为落地节点，通过「链式中转」使用订阅节点中转，并自动维护 `dialer-proxy` 引用。
+
+### 自定义节点示例
+
+在 `Script/mihomoScript.js` 或 `Script/Script.js` 顶部找到 `customizeProxies`，将空数组替换为自己的节点对象即可：
+
+```javascript
+const customizeProxies = [
+  {
+    name: '自建-日本-01',
+    type: 'vmess',
+    server: '5.6.7.8',
+    port: 443,
+    uuid: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
+    alterId: 0,
+    cipher: 'auto',
+    tls: true,
+    servername: 'example.com',
+    network: 'ws',
+    'ws-opts': {
+      path: '/path',
+      headers: { Host: 'example.com' },
+    },
+  },
+];
+```
+
+> 自定义节点不会参与订阅节点的过滤与 Hosts 改写；开启链式代理后会自动设置 `dialer-proxy`。配置项为空时不会生成「自建节点」组；开启链式代理但未配置自定义节点会直接提示配置错误。
+
+## 🔗 自定义节点与链式代理
+
+可以在 `customizeProxies` 中加入自定义 Mihomo 节点。
+
+支持：
+
+- 自动生成「自建节点」策略组
+- 与订阅节点重名时自动添加「自建-」前缀
+- 自定义节点不参与订阅节点过滤
+- 启用链式代理后，通过「链式中转」使用订阅节点作为中转
+
+## 📋 主要策略组
+
+`默认代理`、`手动选择`、`自动选择`、`负载均衡`、`故障转移`、`远控工具`、`FCM`、`YouTube`、`Google`、`AI`、`Microsoft`、`Apple`、`Telegram`、`Steam`、`TikTok`、`Netflix`、`Twitter`、`Meta`、`Line`、`Emby`、`PikPak`、`Spotify`、`Crypto`、`EHentai`、`AdBlock`、`直连`、`漏网之鱼`、`自建节点/链式落地`、`链式中转`。
+
+## 📥 使用方法
+
+### 全量版
+
+将以下地址复制到支持 Mihomo Script / 覆写功能的客户端：
+
+`https://raw.githubusercontent.com/dukangalex/HiClash/main/Script/mihomoScript.js`
+
+### 精简版
+
+将以下地址复制到支持 Mihomo Script / 覆写功能的客户端：
+
+`https://raw.githubusercontent.com/dukangalex/HiClash/main/Script/Script.js`
+
+## 📄 配置文件
+
+全量版：
+
+`https://raw.githubusercontent.com/dukangalex/HiClash/main/Config/mihomoConfig.yaml`
+
+精简版：
+
+`https://raw.githubusercontent.com/dukangalex/HiClash/main/Config/mihomoConfigLite.yaml`
+
+配置文件与脚本版目标一致，但无法像脚本一样根据实际节点动态生成策略组，也不具备脚本中的全部自定义选项。
+
+## 💻 客户端
+
+本项目针对 **Mihomo 内核**设计，不绑定任何特定客户端。
+
+## ⚠️ 使用注意
+
+> [!IMPORTANT]
+>
+> 1. 本脚本直接覆写输入配置的控制面；原始 `proxies` 与 `proxy-providers` 节点信息保留，其余配置由 HiClash 接管。
+> 2. 包含 `proxy-providers` 的完整 Mihomo 配置也可直接使用 `Script.js` / `mihomoScript.js` 覆写，无需再切换到专用 provider 脚本。
+> 3. 覆写会重置 `mixed-port`（默认 7890）、`allow-lan`、`bind-address`、TUN、外部控制器等安全基线字段；请以覆写结果为准，并按需在客户端设置 `secret`。
+> 4. DNS、TUN、Sniffer、Hosts 等行为可能受到客户端自身设置影响。
+> 5. `tun.stack` 默认 `mips`，需要较新的 Mihomo 内核；旧内核请改为 `mixed` 或 `gvisor`。
+> 6. 如果出现节点解析异常，请检查客户端 DNS 覆写、Fake-IP、TUN / 严格路由等设置。
+> 7. 不同机场节点命名方式不同，地区识别结果取决于节点名称中的可识别信息。
+> 8. 节点 Hosts 改写仅在特定 `proxy-server-nameserver` / `listen` 条件下触发，并非对所有订阅始终生效。
+
+## 🧠 Universal Core · 方案B
+
+在保留以上 Mihomo 全量版能力的基础上，项目新增跨内核控制层：
+
+- `Core/config-sniffer.js`：Share Link / Mihomo YAML / sing-box JSON / Xray JSON 自动识别。
+- `Core/adapters.js`：统一 Mihomo / sing-box / Xray Adapter 生命周期接口。
+- `Core/chain-compiler.js`：四种节点/订阅链式拓扑，分别编译为 `dialer-proxy` / `detour` / `dialerProxy`。
+- `Core/network-context.js`：网络环境、Captive Portal、UDP 丢包状态机。
+- `Core/bypass-engine.js`：进程、SNI、ASN、低延迟交叉旁路。
+- `Core/security-policy.js`：Kill Switch、WebRTC、IPv6、防止意外直连回退。
+- `Core/self-healing.js`：连续失败检测与备用节点选择。
+- `Core/server.js`：本机 REST 控制面，默认 `127.0.0.1:8787`。
+- `Dashboard/index.html`：统一控制台原型。
+- `Test/universal-core.test.js`：跨内核核心回归测试。
+
+启动：
 
 ```bash
 node Core/server.js
 ```
 
-默认地址：`127.0.0.1:8787`。
-
-### 测试
+测试：
 
 ```bash
 node Test/universal-core.test.js
 node Test/run-tests.js
 ```
 
-> `Core/` 是跨平台控制与编译层，不直接携带 Go 内核二进制。Android `VpnService/JNI`、Windows WFP/TUN 以及真实 Mihomo REST/WS、sing-box Command/WS、Xray gRPC 的平台绑定应分别实现为 Adapter，以保持 UI、控制逻辑和内核解耦。
+`Core/` 不直接携带 Go 内核二进制。Android `VpnService/JNI`、Windows WFP/TUN、真实 Mihomo REST/WS、sing-box Command/WS、Xray gRPC 等平台绑定应作为 Adapter 接入，以保持 UI、控制层和内核解耦。
 
-## Mihomo 全量版
+## 📄 许可
 
-当前核心覆写脚本仍为：
+本仓库的 HiClash 修改以 [MIT License](LICENSE) 发布。项目衍生自 [AIsouler/MyClash](https://github.com/AIsouler/MyClash)；上游原作版权归其作者所有，MyClash 当时未声明许可证。
 
-`Script/mihomoScript.js`
+## 🙏 致谢
 
-Raw：
+感谢原作者与所有上游开源项目及规则资源：
 
-`https://raw.githubusercontent.com/dukangalex/HiClash/main/Script/mihomoScript.js`
+- [AIsouler/MyClash（原作者项目）](https://github.com/AIsouler/MyClash)
+- [dahaha-365/YaNet](https://github.com/dahaha-365/YaNet)
+- [YiXuanZX/rules](https://github.com/YiXuanZX/rules)
+- [appshubcc/bett-rules](https://github.com/appshubcc/bett-rules)
+- [217heidai/adblockfilters](https://github.com/217heidai/adblockfilters)
+- [Koolson/Qure](https://github.com/Koolson/Qure)
 
-原有 200+ 地区自动识别、动态地区组、倍率识别、节点过滤、安全基线、DNS/Hosts、Sniffer、IPv4/IPv6、链式代理、远控工具与故障转移等能力保持不变。
+## ⭐ 项目
+
+**维护者：dukangalex**
+
+**仓库：** https://github.com/dukangalex/HiClash
+
+如果这个版本对你有帮助，欢迎给项目点个 Star ⭐
