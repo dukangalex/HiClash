@@ -79,7 +79,8 @@ async function runQuickJSChecks({ harness, fixtures }) {
   harness.section('QuickJS：实际调用 main()');
   for (const rel of SCRIPT_FILES) {
     const code = fs.readFileSync(path.join(ROOT, rel), 'utf8');
-    const fixture = rel === 'Script/mihomoScriptProvider.js' ? fixtures.providerSubscription() : fixtures.typicalSubscription();
+    const fixture =
+      rel === 'Script/mihomoScriptProvider.js' ? fixtures.providerSubscription() : fixtures.typicalSubscription();
     const cfgJson = JSON.stringify(fixture);
     const ctx = QuickJS.newContext();
     let out = null;
