@@ -28,15 +28,21 @@ const result = sandbox.__main(config);
 
 assert.deepStrictEqual(result.proxies, originalProxies);
 assert.ok(result['proxy-providers'].provider1);
-assert.ok(result['proxy-groups'].some(function (group) {
-  return group.name === 'HiClash-自动选择' && group.use.indexOf('provider1') !== -1;
-}));
-assert.ok(result['proxy-groups'].some(function (group) {
-  return group.name === 'HiClash-故障转移' && group.use.indexOf('provider1') !== -1;
-}));
-assert.ok(result['proxy-groups'].some(function (group) {
-  return group.name === 'HiClash-故障转移' && group['empty-fallback'] === 'REJECT';
-}));
+assert.ok(
+  result['proxy-groups'].some(function (group) {
+    return group.name === 'HiClash-自动选择' && group.use.indexOf('provider1') !== -1;
+  }),
+);
+assert.ok(
+  result['proxy-groups'].some(function (group) {
+    return group.name === 'HiClash-故障转移' && group.use.indexOf('provider1') !== -1;
+  }),
+);
+assert.ok(
+  result['proxy-groups'].some(function (group) {
+    return group.name === 'HiClash-故障转移' && group['empty-fallback'] === 'REJECT';
+  }),
+);
 assert.strictEqual(result.rules[result.rules.length - 1], 'MATCH,默认代理');
 
 console.log('providerCompat: PASS');
