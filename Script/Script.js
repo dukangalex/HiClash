@@ -142,7 +142,7 @@ const regionDefinitions = [
     name: '美国',
     flag: '🇺🇸',
     regex: new RegExp(
-      '🇺🇸|美国|\\bUSA?\\b|america|united[\\s_-]*states|los[\\s_-]*angeles|洛杉矶|san[\\s_-]*jose|圣何塞',
+      '🇺🇸|美国|(?:^|[^A-Za-z])US(?:$|[^A-Za-z])|(?:^|[^A-Za-z])USA(?:$|[^A-Za-z])|america|united[\\s_-]*states|los[\\s_-]*angeles|洛杉矶|san[\\s_-]*jose|圣何塞',
       'i',
     ),
     icon: '',
