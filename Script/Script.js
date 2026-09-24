@@ -1644,60 +1644,23 @@ function getProviderRegionFilter(region) {
   return '(?i)' + region.regex.source;
 }
 
-function buildProviderRegionGroups() {
-  const generateRegionAutoSelectEnabled = ruleOptionsEnable.生成地区自动选择组;
-  const generateRateGroupEnabled = ruleOptionsEnable.生成倍率组;
-  const hideManualSelectGroupEnabled = ruleOptionsEnable.隐藏地区手动选择组;
-  const groups = [];
+function buildProviderRegionGroups(filteredProxies, customProxies) {
+  // Provider 本身的远程节点在脚本执行阶段不可见，因此严格沿用原有
+  // getMatchedRegions() + buildRegionGroups() 逻辑：只有当前脚本实际可见的
+  // 节点能够证明某地区存在时，才创建该地区组；绝不为未知/空地区预建空组。
+  const groups = buildRegionGroups(filteredProxies, customProxies);
+  const regionByName = new Map(allRegionDefinitions.map((region) => [region.name, region]));
 
-  for (const region of allRegionDefinitions) {
-    if (rateRegionDefinitions.includes(region) && !generateRateGroupEnabled) continue;
+  for (const group of groups) {
+    const regionName = group.name.endsWith('-自动选择') ? group.name.slice(0, -5) : group.name;
+    const region = regionByName.get(regionName);
+    if (!region) continue;
 
-    const filter = getProviderRegionFilter(region);
-
-    if (generateRegionAutoSelectEnabled) {
-      groups.push({
-        ...urlTestBaseOption,
-        name: `${region.name}-自动选择`,
-        'include-all': true,
-        filter,
-        'exclude-filter': excludeFilter.source,
-        'exclude-type': 'DIRECT|REJECT|REJECT-DROP|PASS',
-      });
-      groups.push({
-        ...selectBaseOption,
-        name: region.name,
-        icon: region.icon,
-        'include-all': true,
-        filter,
-        'exclude-filter': excludeFilter.source,
-        'exclude-type': 'DIRECT|REJECT|REJECT-DROP|PASS',
-        hidden: hideManualSelectGroupEnabled,
-      });
-    } else {
-      groups.push({
-        ...selectBaseOption,
-        name: region.name,
-        icon: region.icon,
-        'include-all': true,
-        filter,
-        'exclude-filter': excludeFilter.source,
-        'exclude-type': 'DIRECT|REJECT|REJECT-DROP|PASS',
-        hidden: hideManualSelectGroupEnabled,
-      });
-    }
+    group['include-all'] = true;
+    group.filter = getProviderRegionFilter(region);
+    group['exclude-filter'] = excludeFilter.source;
+    group['exclude-type'] = 'DIRECT|REJECT|REJECT-DROP|PASS';
   }
-
-  // Provider 节点无法在脚本执行阶段可靠判断“其他节点”，因此保留一个全量兜底组，
-  // 避免因 provider 节点尚未加载而误判为空。
-  groups.push({
-    ...selectBaseOption,
-    name: '其他节点',
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/WorldMap.svg',
-    'include-all': true,
-    'exclude-filter': excludeFilter.source,
-    'exclude-type': 'DIRECT|REJECT|REJECT-DROP|PASS',
-  });
 
   return groups;
 }
@@ -1733,14 +1696,14 @@ function main(config) {
 
   // 普通订阅沿用原有节点标准化流程；provider 配置不下载、不展开、不改写节点。
   const originalProxies = Array.isArray(config.proxies) ? config.proxies : [];
-  const filteredProxies = providerMode ? [] : filterAndNormalizeProxies(config);
+  const filteredProxies = filterAndNormalizeProxies(config);
 
   const { customProxies, customProxyNames, customGroup } = buildCustomizeGroups(filteredProxies);
 
   const generatedRegionGroups = ruleOptionsEnable.极简模式
     ? []
     : providerMode
-      ? buildProviderRegionGroups()
+      ? buildProviderRegionGroups(filteredProxies, customProxies)
       : buildRegionGroups(filteredProxies, customProxies);
 
   const { globalGroup, functionalGroups, functionalRules, finalRuleProviders, chainGroup, directGroup } =
