@@ -119,7 +119,6 @@ function main(config) {
     lazy: true,
     'max-failed-times': 3,
     timeout: 3000,
-    'empty-fallback': 'REJECT',
     icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Auto.svg',
   });
 
