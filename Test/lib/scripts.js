@@ -25,6 +25,6 @@ const SCRIPTS = [
 ];
 
 /** 脚本文件路径列表（供兼容性检查模块使用） */
-const SCRIPT_FILES = SCRIPTS.map((s) => s.file);
+const SCRIPT_FILES = [...SCRIPTS.map((s) => s.file), 'Script/mihomoScriptProvider.js'];
 
 module.exports = { SCRIPTS, SCRIPT_FILES };
