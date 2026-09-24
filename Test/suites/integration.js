@@ -30,7 +30,7 @@ function runIntegrationTests(h, api, meta, fx, loadScript, scriptFile) {
     h.test('包含 proxy-providers 时不再报错，节点信息保留且脚本接管配置', () => {
       const originalProxies = [
         {
-          name: '🇭🇰 Provider 前置节点',
+          name: 'Provider 前置节点',
           type: 'ss',
           server: 'provider.example.com',
           port: 443,
