@@ -71,6 +71,8 @@ function runIntegrationTests(h, api, meta, fx, loadScript, scriptFile) {
       h.assert(groupByName(out['proxy-groups'], '默认代理'), '应生成 HiClash 默认代理组');
       h.assert(groupByName(out['proxy-groups'], '自动选择'), '应生成自动选择组');
       h.assert(groupByName(out['proxy-groups'], '故障转移'), '应生成故障转移组');
+      h.assertDeep(groupByName(out['proxy-groups'], '自动选择').use, ['provider1'], '自动选择应接入 proxy-provider');
+      h.assertDeep(groupByName(out['proxy-groups'], '故障转移').use, ['provider1'], '故障转移应接入 proxy-provider');
       h.assertEqual(
         groupByName(out['proxy-groups'], '故障转移')['empty-fallback'],
         'REJECT',
@@ -102,6 +104,8 @@ function runIntegrationTests(h, api, meta, fx, loadScript, scriptFile) {
       const hkAuto = groupByName(regionOut['proxy-groups'], '香港-自动选择');
       h.assert(hk, '存在可见香港节点时应创建香港组');
       h.assert(hkAuto, '存在可见香港节点时应创建香港自动组');
+      h.assertDeep(hk.use, ['provider1'], '香港组应接入 proxy-provider');
+      h.assertDeep(hkAuto.use, ['provider1'], '香港自动组应接入 proxy-provider');
       h.assert(hk.proxies.includes('🇭🇰 Provider 香港 01'), '香港组应保留原始节点名称');
       h.assertEqual(hkAuto.filter, '(?i)🇭🇰|香港|\\bHKG?\\b|hong[\\s_-]*kong', '香港自动组应使用地区识别过滤器');
     });
