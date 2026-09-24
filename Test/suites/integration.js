@@ -621,25 +621,10 @@ function runIntegrationTests(h, api, meta, fx, loadScript, scriptFile) {
   h.section('集成测试 · 链式代理');
   // 注入自定义节点（首个节点自带 dialer-proxy，用于验证覆盖行为；与订阅节点“香港 01 | 中转”标准化后重名）
   const chainCustomInjection = `const customizeProxies = [
-    {
-      name: '香港 01 | 中转',
-      type: 'ss',
-      server: 'custom1.example.com',
-      port: 443,
-      cipher: 'aes-256-gcm',
-      password: 'x',
-      'dialer-proxy': '旧中转',
-    },
-    {
-            name: '自建独享',
-            type: 'vmess',
-            server: 'custom2.example.com',
-            port: 443,
-            uuid: 'x',
-            alterId: 0,
-          },
+    { name: '香港 01 | 中转', type: 'ss', server: 'custom1.example.com', port: 443, cipher: 'aes-256-gcm', password: 'x', 'dialer-proxy': '旧中转' },
+    { name: '自建独享', type: 'vmess', server: 'custom2.example.com', port: 443, uuid: 'x', alterId: 0 },
     { name: '自建-日本-01', type: 'trojan', server: 'custom3.example.com', port: 443, password: 'x' },
-  ];`;
+  ]`;
 
   h.test('未启用链式代理：自定义节点保持自建- 前缀且 dialer-proxy 不被修改', () => {
     const customApi = loadScript(scriptFile, (code) =>
