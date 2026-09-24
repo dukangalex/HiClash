@@ -80,6 +80,34 @@ function runIntegrationTests(h, api, meta, fx, loadScript, scriptFile) {
     });
   }
 
+  h.test('仅 proxy-providers 且启用极简模式 → 默认代理直接消费 Provider 节点', () => {
+    withOptions(api, { 极简模式: true }, () => {
+      const cfg = {
+        proxies: [],
+        'proxy-providers': {
+          provider1: {
+            type: 'http',
+            url: 'https://example.com/sub',
+            path: './proxy_providers/provider1.yaml',
+          },
+        },
+        'proxy-groups': [],
+        rules: [],
+      };
+      const out = api.main(cfg);
+      const defaultGroup = groupByName(out['proxy-groups'], '默认代理');
+      h.assert(defaultGroup, '极简模式下应生成默认代理组');
+      h.assertEqual(defaultGroup['include-all'], true, '默认代理组必须启用 include-all');
+      h.assertEqual(
+        defaultGroup['exclude-type'],
+        'DIRECT|REJECT|REJECT-DROP|PASS',
+        '默认代理组必须排除内置非代理类型',
+      );
+      h.assertDeep(out['proxy-providers'], cfg['proxy-providers'], 'Provider 定义必须原样保留');
+      h.assertEqual(out.rules[out.rules.length - 1], 'MATCH,默认代理', '极简模式 MATCH 应指向默认代理');
+    });
+  });
+
   // ---------------- 节点过滤与标准化 ----------------
   h.section('集成测试 · 节点过滤与标准化');
   h.test('节点过滤与标准化：剔除无效节点、保留有效节点并补国旗', () => {
