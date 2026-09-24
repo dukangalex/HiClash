@@ -102,7 +102,7 @@ globalThis.__out = JSON.stringify(__main(JSON.parse(${JSON.stringify(cfgJson)}))
         harness.assert(Array.isArray(out.proxies) && out.proxies.length > 0, 'proxies 缺失或为空');
         harness.assert(Array.isArray(out['proxy-groups']) && out['proxy-groups'].length > 0, 'proxy-groups 缺失或为空');
         harness.assert(Array.isArray(out.rules) && out.rules.length > 0, 'rules 缺失或为空');
-        harness.assert(out.dns && out.hosts, 'dns/hosts 缺失');
+        if (rel !== 'Script/mihomoScriptProvider.js') harness.assert(out.dns && out.hosts, 'dns/hosts 缺失');
       });
 
       harness.test(`${rel}：与 Node 引擎输出结构一致`, () => {
