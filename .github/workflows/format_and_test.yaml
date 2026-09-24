@@ -1,5 +1,8 @@
 name: format_and_test
 
+permissions:
+  contents: write
+
 on:
   push:
     branches: ['main']
@@ -40,7 +43,14 @@ jobs:
 
       - name: check formatting
         run: |
-          git ls-files -z '*.js' '*.yml' '*.yaml' | xargs -0 -r prettier --write && git diff -- Script/Script.js Script/mihomoScript.js
+          git ls-files -z '*.js' '*.yml' '*.yaml' | xargs -0 -r prettier --write
+          if ! git diff --quiet; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add Script/Script.js Script/mihomoScript.js
+            git commit -m "style: format provider scripts"
+            git push
+          fi
 
   test:
     needs: format
