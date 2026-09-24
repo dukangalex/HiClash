@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "HiClash Universal Proxy Profile",
+  "type": "object",
+  "required": ["kernel", "security", "chain"],
+  "properties": {
+    "kernel": { "enum": ["mihomo", "sing-box", "xray", "auto"] },
+    "security": {
+      "type": "object",
+      "properties": {
+        "killSwitch": { "type": "boolean" },
+        "blockWebRTCStun": { "type": "boolean" },
+        "blockIPv6Leak": { "type": "boolean" },
+        "dnsMode": { "enum": ["encrypted", "system", "fake-ip", "redir-host"] },
+        "preventDirectFallback": { "type": "boolean" }
+      }
+    },
+    "chain": {
+      "type": "array",
+      "minItems": 0,
+      "items": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "source": { "enum": ["node", "subscription"] },
+          "proxy": { "type": "object" },
+          "outbound": { "type": "object" }
+        }
+      }
+    }
+  }
+}
