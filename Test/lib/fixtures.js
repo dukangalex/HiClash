@@ -140,6 +140,24 @@ function minimalSubscription() {
   };
 }
 
+/** 包含 proxy-providers 的完整配置：用于 Provider 兼容层与 QuickJS 验证 */
+function providerSubscription() {
+  return {
+    proxies: [
+      { name: 'Provider 前置节点', type: 'ss', server: 'provider.example.com', port: 443, cipher: 'aes-256-gcm', password: 'x' },
+    ],
+    'proxy-providers': {
+      provider1: {
+        type: 'http',
+        url: 'https://example.com/sub',
+        path: './proxy_providers/provider1.yaml',
+      },
+    },
+    'proxy-groups': [{ name: '原始代理组', type: 'select', proxies: ['Provider 前置节点'] }],
+    rules: ['MATCH,原始代理组'],
+  };
+}
+
 /** 空节点列表 */
 function emptySubscription() {
   return { proxies: [] };
@@ -184,6 +202,7 @@ function hostsMappedSubscription() {
 
 module.exports = {
   typicalSubscription,
+  providerSubscription,
   minimalSubscription,
   emptySubscription,
   allFilteredSubscription,
