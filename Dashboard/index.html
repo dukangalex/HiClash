@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>HiClash Universal Console</title>
+  <style>
+    :root { color-scheme: dark; font-family: system-ui, sans-serif; }
+    body { margin: 0; background: #0b0d10; color: #f5f7fa; }
+    main { max-width: 980px; margin: 0 auto; padding: 24px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap: 14px; }
+    .card { border: 1px solid #272c33; border-radius: 14px; padding: 16px; background: #11151a; }
+    .muted { color: #9aa4af; font-size: 13px; }
+    button { border: 1px solid #3a424d; border-radius: 9px; padding: 9px 12px; background: #171c22; color: inherit; cursor: pointer; }
+    pre { white-space: pre-wrap; overflow: auto; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>HiClash Universal Console</h1>
+  <p class="muted">统一控制面：内核识别、链式编译、网络上下文与安全状态。</p>
+  <section class="grid">
+    <div class="card"><strong>Kernel</strong><p id="kernel">未检测</p><button onclick="health()">刷新</button></div>
+    <div class="card"><strong>Security</strong><p>Kill Switch：启用</p><p>Direct fallback：禁止</p><p>WebRTC STUN：阻断</p></div>
+    <div class="card"><strong>Network</strong><p id="network">等待平台事件</p></div>
+    <div class="card"><strong>Self-Healing</strong><p>连续失败达到阈值后交由 Adapter 切换备用节点。</p></div>
+  </section>
+  <section class="card" style="margin-top:14px"><strong>API</strong><pre>POST /api/sniff
+POST /api/chain/compile
+POST /api/adapter/status</pre></section>
+</main>
+<script>
+async function health() {
+  try {
+    const r = await fetch('/api/health');
+    const data = await r.json();
+    document.getElementById('kernel').textContent = data.ok ? 'Universal Core 在线' : '异常';
+  } catch (_) {
+    document.getElementById('kernel').textContent = '未连接 Core';
+  }
+}
+health();
+</script>
+</body>
+</html>
