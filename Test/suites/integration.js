@@ -22,6 +22,52 @@ function withOptions(api, patch, fn) {
  * meta: { full, regions }
  */
 function runIntegrationTests(h, api, meta, fx, loadScript, scriptFile) {
+  // ---------------- proxy-providers 直接覆写 ----------------
+  // Script.js / mihomoScript.js 必须能够直接处理已经包含 proxy-providers 的完整配置：
+  // 原始节点信息原样保留，其余配置由 HiClash 接管。
+  if (scriptFile === 'Script/Script.js' || scriptFile === 'Script/mihomoScript.js') {
+    h.section('集成测试 · proxy-providers 直接覆写');
+    h.test('包含 proxy-providers 时不再报错，节点信息保留且脚本接管配置', () => {
+      const originalProxies = [
+        { name: '🇭🇰 Provider 前置节点', type: 'ss', server: 'provider.example.com', port: 443, cipher: 'aes-256-gcm', password: 'x' },
+        { name: '机场自带节点', type: 'vmess', server: 'node.example.com', port: 443, uuid: 'x', alterId: 0 },
+      ];
+      const originalProviders = {
+        provider1: {
+          type: 'http',
+          url: 'https://example.com/sub',
+          path: './proxy_providers/provider1.yaml',
+        },
+      };
+      const cfg = {
+        proxies: originalProxies,
+        'proxy-providers': originalProviders,
+        'proxy-groups': [
+          { name: '机场原组', type: 'select', proxies: ['机场自带节点'] },
+        ],
+        rules: ['MATCH,机场原组'],
+        dns: {
+          enable: true,
+          nameserver: ['223.5.5.5'],
+        },
+      };
+
+      const out = api.main(cfg);
+
+      h.assertDeep(out.proxies.slice(0, originalProxies.length), originalProxies, '原始 proxies 必须原样保留');
+      h.assertDeep(out['proxy-providers'], originalProviders, '原始 proxy-providers 必须原样保留');
+      h.assert(groupByName(out['proxy-groups'], '默认代理'), '应生成 HiClash 默认代理组');
+      h.assert(groupByName(out['proxy-groups'], '自动选择'), '应生成自动选择组');
+      h.assert(groupByName(out['proxy-groups'], '故障转移'), '应生成故障转移组');
+      h.assertEqual(
+        groupByName(out['proxy-groups'], '故障转移')['empty-fallback'],
+        'REJECT',
+        '故障转移必须保留 empty-fallback: REJECT',
+      );
+      h.assertEqual(out.rules[out.rules.length - 1], 'MATCH,漏网之鱼', '规则应由 HiClash 接管');
+    });
+  }
+
   // ---------------- 节点过滤与标准化 ----------------
   h.section('集成测试 · 节点过滤与标准化');
   h.test('节点过滤与标准化：剔除无效节点、保留有效节点并补国旗', () => {
