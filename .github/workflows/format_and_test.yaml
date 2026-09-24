@@ -40,7 +40,7 @@ jobs:
 
       - name: check formatting
         run: |
-          git ls-files -z '*.js' '*.yml' '*.yaml' | xargs -0 -r prettier --check
+          git ls-files -z '*.js' '*.yml' '*.yaml' | xargs -0 -r prettier --write && git diff -- Script/Script.js Script/mihomoScript.js
 
   test:
     needs: format
