@@ -160,7 +160,11 @@ function runIntegrationTests(h, api, meta, fx, loadScript, scriptFile) {
     const out = api.main(cfg);
     const n = proxyNames(out.proxies);
     h.assertEqual(n.filter((x) => x === '🇭🇰 香港 A').length, 1, '同名节点应只保留一个');
-    h.assertEqual(out.proxies.find((p) => p.name === '🇭🇰 香港 A').server, 'a.example.com', '应保留首个出现的节点');
+    h.assertEqual(
+      out.proxies.find((p) => p.name === '🇭🇰 香港 A').server,
+      'a.example.com',
+      '应保留首个出现的节点',
+    );
     const hkGroup = groupByName(out['proxy-groups'], '香港');
     h.assertEqual(hkGroup.proxies.filter((x) => x === '🇭🇰 香港 A').length, 1, '地区组内不应出现重复节点');
   });
@@ -186,7 +190,10 @@ function runIntegrationTests(h, api, meta, fx, loadScript, scriptFile) {
     delete cfg.dns.listen;
     delete cfg.dns['proxy-server-nameserver-policy'];
     cfg.dns['nameserver'] = ['8.8.8.8', 'https://private.example-dns.com/dns-query#proxy'];
-    cfg.dns['proxy-server-nameserver'] = ['223.5.5.5', 'https://private-proxy.example-dns.com/dns-query#proxy'];
+    cfg.dns['proxy-server-nameserver'] = [
+      '223.5.5.5',
+      'https://private-proxy.example-dns.com/dns-query#proxy',
+    ];
     const out = api.main(cfg);
     h.assertEqual(out.dns.enable, true);
     h.assertEqual(out.dns['enhanced-mode'], 'fake-ip');
@@ -219,7 +226,10 @@ function runIntegrationTests(h, api, meta, fx, loadScript, scriptFile) {
     const policy = out.dns['proxy-server-nameserver-policy'];
     // 未改写的多个 example.com 节点共享 DNS，策略应压缩为后缀规则
     const privateDNS = policy['+.example.com'];
-    h.assert(privateDNS.includes('https://private.example-dns.com/dns-query#DIRECT'), '应规范化 #direct 后缀');
+    h.assert(
+      privateDNS.includes('https://private.example-dns.com/dns-query#DIRECT'),
+      '应规范化 #direct 后缀',
+    );
     h.assertEqual(
       privateDNS.filter((dns) => dns === 'https://private.example-dns.com/dns-query#DIRECT').length,
       1,
@@ -316,7 +326,11 @@ function runIntegrationTests(h, api, meta, fx, loadScript, scriptFile) {
     cfg = fx.typicalSubscription();
     cfg.dns.listen = '0.0.0.0:7874';
     cfg.dns['proxy-server-nameserver'] = ['udp://1.2.3.4:7874'];
-    h.assertEqual(find(cfg).server, 'hk1.example.com', 'proxy-server-nameserver 不含 127.0.0.1 时不应改写');
+    h.assertEqual(
+      find(cfg).server,
+      'hk1.example.com',
+      'proxy-server-nameserver 不含 127.0.0.1 时不应改写',
+    );
     // 新写法：listen 不含 0.0.0.0 → 不触发
     cfg = fx.typicalSubscription();
     cfg.dns['proxy-server-nameserver'] = ['udp://127.0.0.1:7874'];
@@ -354,8 +368,14 @@ function runIntegrationTests(h, api, meta, fx, loadScript, scriptFile) {
     delete cfg.dns['proxy-server-nameserver-policy'];
     const out3 = api.main(cfg);
     const privateDNS = out3.dns['proxy-server-nameserver-policy']['+.example.com'];
-    h.assert(!privateDNS.some((d) => d.includes('udp://127.0.0.1')), 'listen 对应的本地 DNS 不应被误留为私有 DNS');
-    h.assert(privateDNS.includes('https://private.example-dns.com/dns-query'), 'nameserver 中的私有 DNS 仍应保留');
+    h.assert(
+      !privateDNS.some((d) => d.includes('udp://127.0.0.1')),
+      'listen 对应的本地 DNS 不应被误留为私有 DNS',
+    );
+    h.assert(
+      privateDNS.includes('https://private.example-dns.com/dns-query'),
+      'nameserver 中的私有 DNS 仍应保留',
+    );
     h.assertDeep(out3.dns['default-nameserver'], api.defaultDNS);
     h.assertDeep(out3.dns['proxy-server-nameserver'], api.proxyServerDNS);
   });
@@ -386,7 +406,10 @@ function runIntegrationTests(h, api, meta, fx, loadScript, scriptFile) {
         '极简模式策略组应仅保留 GLOBAL、默认代理和直连',
       );
       h.assert(!out.dns['fake-ip-filter'].includes('rule-set:googlefcm'), '不应注入 FCM fake-IP 规则');
-      h.assert(!out.rules.some((rule) => /,(Google|AI|Telegram|Steam|AdBlock)$/.test(rule)), '不应生成分流规则');
+      h.assert(
+        !out.rules.some((rule) => /,(Google|AI|Telegram|Steam|AdBlock)$/.test(rule)),
+        '不应生成分流规则',
+      );
     }),
   );
   h.test('过滤高倍率节点=true → 移除高倍率节点及组', () =>
@@ -452,11 +475,17 @@ function runIntegrationTests(h, api, meta, fx, loadScript, scriptFile) {
   );
   h.test('屏蔽国外QUIC 开关：true 生成 / false 移除 QUIC 规则与 cn_additional', () => {
     // true（默认）→ 生成 cn_additional 规则集
-    h.assert(api.main(fx.minimalSubscription())['rule-providers'].cn_additional, 'cn_additional 规则集应生成');
+    h.assert(
+      api.main(fx.minimalSubscription())['rule-providers'].cn_additional,
+      'cn_additional 规则集应生成',
+    );
     // false → 移除 QUIC 规则与 cn_additional，cn 规则集保留
     withOptions(api, { 屏蔽国外QUIC: false }, () => {
       const out = api.main(fx.minimalSubscription());
-      h.assert(!out.rules.some((r) => r.includes('DST-PORT,443') && r.includes('REJECT')), '不应含 QUIC 规则');
+      h.assert(
+        !out.rules.some((r) => r.includes('DST-PORT,443') && r.includes('REJECT')),
+        '不应含 QUIC 规则',
+      );
       h.assert(!out['rule-providers'].cn_additional, 'cn_additional 规则集不应生成');
       h.assert(out['rule-providers'].cn, 'cn 规则集仍应生成（供 nameserver-policy 使用）');
     });
@@ -569,8 +598,22 @@ function runIntegrationTests(h, api, meta, fx, loadScript, scriptFile) {
       code.replace(
         'const customizeProxies = [];',
         `const customizeProxies = [
-          { name: '香港 01 | 中转', type: 'ss', server: 'custom1.example.com', port: 443, cipher: 'aes-256-gcm', password: 'x' },
-          { name: '自建独享', type: 'vmess', server: 'custom2.example.com', port: 443, uuid: 'x', alterId: 0 },
+          {
+            name: '香港 01 | 中转',
+            type: 'ss',
+            server: 'custom1.example.com',
+            port: 443,
+            cipher: 'aes-256-gcm',
+            password: 'x',
+          },
+          {
+            name: '自建独享',
+            type: 'vmess',
+            server: 'custom2.example.com',
+            port: 443,
+            uuid: 'x',
+            alterId: 0,
+          },
         ];`,
       ),
     );
@@ -607,15 +650,33 @@ function runIntegrationTests(h, api, meta, fx, loadScript, scriptFile) {
     );
 
     // 自定义节点域名不应进入 fake-ip-filter（不参与 DNS 域名处理）
-    h.assert(!out.dns['fake-ip-filter'].includes('custom1.example.com'), '自定义节点域名不应进入 fake-ip-filter');
+    h.assert(
+      !out.dns['fake-ip-filter'].includes('custom1.example.com'),
+      '自定义节点域名不应进入 fake-ip-filter',
+    );
   });
 
   // ---------------- 链式代理 ----------------
   h.section('集成测试 · 链式代理');
   // 注入自定义节点（首个节点自带 dialer-proxy，用于验证覆盖行为；与订阅节点“香港 01 | 中转”标准化后重名）
   const chainCustomInjection = `const customizeProxies = [
-    { name: '香港 01 | 中转', type: 'ss', server: 'custom1.example.com', port: 443, cipher: 'aes-256-gcm', password: 'x', 'dialer-proxy': '旧中转' },
-    { name: '自建独享', type: 'vmess', server: 'custom2.example.com', port: 443, uuid: 'x', alterId: 0 },
+    {
+      name: '香港 01 | 中转',
+      type: 'ss',
+      server: 'custom1.example.com',
+      port: 443,
+      cipher: 'aes-256-gcm',
+      password: 'x',
+      'dialer-proxy': '旧中转',
+    },
+    {
+            name: '自建独享',
+            type: 'vmess',
+            server: 'custom2.example.com',
+            port: 443,
+            uuid: 'x',
+            alterId: 0,
+          },
     { name: '自建-日本-01', type: 'trojan', server: 'custom3.example.com', port: 443, password: 'x' },
   ];`;
 
