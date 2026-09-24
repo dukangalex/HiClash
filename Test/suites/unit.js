@@ -38,6 +38,7 @@ function runUnitTests(h, api, meta) {
   h.test('hongkong-03 → 香港', () => h.assert(matched('hongkong-03').includes('香港')));
   h.test('JAPAN-02 → 日本', () => h.assert(matched('JAPAN-02').includes('日本')));
   h.test('US-LosAngeles-02 → 美国', () => h.assert(matched('US-LosAngeles-02').includes('美国')));
+  h.test('US40 → 美国（紧凑节点编号）', () => h.assert(matched('US40').includes('美国')));
   h.test('SG 01 | 新加坡 → 新加坡', () => h.assert(matched('SG 01 | 新加坡').includes('新加坡')));
   h.test('AE Dubai → 阿联酋', () => h.assert(matched('AE Dubai').includes('阿联酋')));
   h.test('CO Bogotá → 哥伦比亚', () => h.assert(matched('CO Bogotá').includes('哥伦比亚')));
