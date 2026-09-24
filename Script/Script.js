@@ -1732,7 +1732,7 @@ function main(config) {
     enableProviderSources(functionalGroups, chainGroup);
   }
 
-  const { dns, hosts } = buildDnsAndHostsConfig(config, providerMode ? originalProxies : filteredProxies);
+  const { dns, hosts, proxies: mappedProxies } = buildDnsAndHostsConfig(config, providerMode ? originalProxies : filteredProxies);
 
   newConfig['dns'] = dns;
   newConfig['hosts'] = hosts;
@@ -1795,7 +1795,7 @@ function main(config) {
   // - 原始 proxies 原样保留；
   // - 原始 proxy-providers 原样保留；
   // 脚本只接管其余配置结构。
-  newConfig['proxies'] = [...(providerMode ? originalProxies : filteredProxies), ...customProxies, ...directProxies];
+  newConfig['proxies'] = [...(providerMode ? originalProxies : mappedProxies), ...customProxies, ...directProxies];
   if (providerMode) {
     newConfig['proxy-providers'] = config['proxy-providers'];
   }
