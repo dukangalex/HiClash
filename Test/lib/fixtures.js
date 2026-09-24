@@ -144,7 +144,14 @@ function minimalSubscription() {
 function providerSubscription() {
   return {
     proxies: [
-      { name: 'Provider 前置节点', type: 'ss', server: 'provider.example.com', port: 443, cipher: 'aes-256-gcm', password: 'x' },
+      {
+        name: 'Provider 前置节点',
+        type: 'ss',
+        server: 'provider.example.com',
+        port: 443,
+        cipher: 'aes-256-gcm',
+        password: 'x',
+      },
     ],
     'proxy-providers': {
       provider1: {
