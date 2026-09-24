@@ -1121,8 +1121,12 @@ function getMatchedRegions(proxyName) {
   const otherMatches = regions.filter((region) => !regionDefinitions.includes(region));
   let selectedGeo = geoMatches;
   if (geoMatches.length > 1) {
-    const bestLen = Math.max(...geoMatches.map((r) => r.regex.source.length));
-    selectedGeo = geoMatches.filter((r) => r.regex.source.length === bestLen);
+    const matchLength = (region) => {
+      const match = proxyName.match(region.regex);
+      return match ? match[0].length : 0;
+    };
+    const bestLen = Math.max(...geoMatches.map(matchLength));
+    selectedGeo = geoMatches.filter((region) => matchLength(region) === bestLen);
   }
   const result = [...selectedGeo, ...otherMatches];
   regionMatchCache.set(proxyName, result);
