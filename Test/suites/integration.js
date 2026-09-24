@@ -37,7 +37,14 @@ function runIntegrationTests(h, api, meta, fx, loadScript, scriptFile) {
           cipher: 'aes-256-gcm',
           password: 'x',
         },
-        { name: '机场自带节点', type: 'vmess', server: 'node.example.com', port: 443, uuid: 'x', alterId: 0 },
+        {
+          name: '机场自带节点',
+          type: 'vmess',
+          server: 'node.example.com',
+          port: 443,
+          uuid: 'x',
+          alterId: 0,
+        },
       ];
       const originalProviders = {
         provider1: {
