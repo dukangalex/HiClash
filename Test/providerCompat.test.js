@@ -34,6 +34,9 @@ assert.ok(result['proxy-groups'].some(function (group) {
 assert.ok(result['proxy-groups'].some(function (group) {
   return group.name === 'HiClash-故障转移' && group.use.indexOf('provider1') !== -1;
 }));
+assert.ok(result['proxy-groups'].some(function (group) {
+  return group.name === 'HiClash-故障转移' && group['empty-fallback'] === 'REJECT';
+}));
 assert.strictEqual(result.rules[result.rules.length - 1], 'MATCH,默认代理');
 
 console.log('providerCompat: PASS');
