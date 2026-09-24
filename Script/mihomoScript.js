@@ -2213,7 +2213,7 @@ function buildProviderRegionGroups() {
 function enableProviderSources(groups, chainGroup) {
   const baseNames = new Set(baseGroups.map((group) => group.name));
   for (const group of groups) {
-    if (!group || !baseNames.has(group.name)) continue;
+    if (!group || (!baseNames.has(group.name) && group.name !== '默认代理')) continue;
     group['include-all'] = true;
     group['exclude-filter'] = excludeFilter.source;
     group['exclude-type'] = 'DIRECT|REJECT|REJECT-DROP|PASS';
