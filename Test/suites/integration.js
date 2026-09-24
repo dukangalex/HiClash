@@ -56,9 +56,7 @@ function runIntegrationTests(h, api, meta, fx, loadScript, scriptFile) {
       const cfg = {
         proxies: originalProxies,
         'proxy-providers': originalProviders,
-        'proxy-groups': [
-          { name: '机场原组', type: 'select', proxies: ['机场自带节点'] },
-        ],
+        'proxy-groups': [{ name: '机场原组', type: 'select', proxies: ['机场自带节点'] }],
         rules: ['MATCH,机场原组'],
         dns: {
           enable: true,
@@ -68,11 +66,7 @@ function runIntegrationTests(h, api, meta, fx, loadScript, scriptFile) {
 
       const out = api.main(cfg);
 
-      h.assertDeep(
-        out.proxies.slice(0, originalProxies.length),
-        originalProxies,
-        '原始 proxies 必须原样保留',
-      );
+      h.assertDeep(out.proxies.slice(0, originalProxies.length), originalProxies, '原始 proxies 必须原样保留');
       h.assertDeep(out['proxy-providers'], originalProviders, '原始 proxy-providers 必须原样保留');
       h.assert(groupByName(out['proxy-groups'], '默认代理'), '应生成 HiClash 默认代理组');
       h.assert(groupByName(out['proxy-groups'], '自动选择'), '应生成自动选择组');
