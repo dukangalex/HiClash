@@ -2212,7 +2212,7 @@ function getProviderRegionFilter(region) {
   return '(?i)' + region.regex.source;
 }
 
-function buildProviderRegionGroups(filteredProxies, customProxies) {
+function buildProviderRegionGroups(filteredProxies, customProxies, providerNames) {
   // Provider 本身的远程节点在脚本执行阶段不可见，因此严格沿用原有
   // getMatchedRegions() + buildRegionGroups() 逻辑：只有当前脚本实际可见的
   // 节点能够证明某地区存在时，才创建该地区组；绝不为未知/空地区预建空组。
@@ -2225,6 +2225,7 @@ function buildProviderRegionGroups(filteredProxies, customProxies) {
     if (!region) continue;
 
     group['include-all'] = true;
+    group.use = [...providerNames];
     group.filter = getProviderRegionFilter(region);
     group['exclude-filter'] = excludeFilter.source;
     group['exclude-type'] = 'DIRECT|REJECT|REJECT-DROP|PASS';
@@ -2237,17 +2238,19 @@ function buildProviderRegionGroups(filteredProxies, customProxies) {
  * provider 模式下让原有基础组直接消费 provider 节点。
  * 仅补充节点来源，不删除原有规则、组结构或功能。
  */
-function enableProviderSources(groups, chainGroup) {
+function enableProviderSources(groups, chainGroup, providerNames) {
   const baseNames = new Set(baseGroups.map((group) => group.name));
   for (const group of groups) {
     if (!group || (!baseNames.has(group.name) && group.name !== '默认代理')) continue;
     group['include-all'] = true;
+    group.use = [...providerNames];
     group['exclude-filter'] = excludeFilter.source;
     group['exclude-type'] = 'DIRECT|REJECT|REJECT-DROP|PASS';
   }
 
   if (chainGroup) {
     chainGroup['include-all'] = true;
+    chainGroup.use = [...providerNames];
     chainGroup['exclude-filter'] = excludeFilter.source;
     chainGroup['exclude-type'] = 'DIRECT|REJECT|REJECT-DROP|PASS';
   }
@@ -2260,6 +2263,7 @@ function enableProviderSources(groups, chainGroup) {
  */
 function main(config) {
   const providerMode = hasProxyProviders(config);
+  const providerNames = providerMode ? Object.keys(config['proxy-providers']) : [];
   const newConfig = {};
 
   // 普通订阅沿用原有节点标准化流程；provider 配置不下载、不展开、不改写节点。
@@ -2271,14 +2275,14 @@ function main(config) {
   const generatedRegionGroups = ruleOptionsEnable.极简模式
     ? []
     : providerMode
-      ? buildProviderRegionGroups(filteredProxies, customProxies)
+      ? buildProviderRegionGroups(filteredProxies, customProxies, providerNames)
       : buildRegionGroups(filteredProxies, customProxies);
 
   const { globalGroup, functionalGroups, functionalRules, finalRuleProviders, chainGroup, directGroup } =
     buildFunctionalGroups(filteredProxies, generatedRegionGroups, { customProxyNames, customGroup });
 
   if (providerMode) {
-    enableProviderSources(functionalGroups, chainGroup);
+    enableProviderSources(functionalGroups, chainGroup, providerNames);
   }
 
   const {
