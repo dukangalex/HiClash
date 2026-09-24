@@ -219,8 +219,9 @@ const customizeProxies = [
 
 > [!IMPORTANT]
 >
-> 1. 本脚本主要用于覆写机场提供的订阅配置。
-> 2. 覆写会重置 `mixed-port`（默认 7890）、`allow-lan`、`bind-address`、TUN、外部控制器等安全基线字段；请以覆写结果为准，并按需在客户端设置 `secret`。
+> 1. 本脚本直接覆写输入配置的控制面；原始 `proxies` 与 `proxy-providers` 节点信息保留，其余配置由 HiClash 接管。
+> 2. 包含 `proxy-providers` 的完整 Mihomo 配置也可直接使用 `Script.js` / `mihomoScript.js` 覆写，无需再切换到专用 provider 脚本。
+> 3. 覆写会重置 `mixed-port`（默认 7890）、`allow-lan`、`bind-address`、TUN、外部控制器等安全基线字段；请以覆写结果为准，并按需在客户端设置 `secret`。
 > 3. DNS、TUN、Sniffer、Hosts 等行为可能受到客户端自身设置影响。
 > 4. `tun.stack` 默认 `mips`，需要较新的 Mihomo 内核；旧内核请改为 `mixed` 或 `gvisor`。
 > 5. 如果出现节点解析异常，请检查客户端 DNS 覆写、Fake-IP、TUN / 严格路由等设置。
