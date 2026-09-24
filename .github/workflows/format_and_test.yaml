@@ -40,6 +40,8 @@ jobs:
 
       - name: check formatting
         run: |
+          prettier Test/suites/integration.js > /tmp/integration.formatted.js
+          diff -u Test/suites/integration.js /tmp/integration.formatted.js || true
           git ls-files -z '*.js' '*.yml' '*.yaml' | xargs -0 -r prettier --check
 
   test:
