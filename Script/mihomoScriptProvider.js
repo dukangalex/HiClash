@@ -1,5 +1,3 @@
-const Compatible_With_Bettbox = { ruleOptionsEnable: true };
-
 /**
  * HiClash Provider 兼容层
  *
