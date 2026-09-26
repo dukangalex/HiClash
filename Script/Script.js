@@ -1,5 +1,3 @@
-const Compatible_With_Bettbox = { ruleOptionsEnable: true };
-
 /**
  * HiClash Mihomo 配置覆写脚本（精简版 · 多地区自动识别 + 安全基线）
  * 原作者：AIsouler
@@ -2151,6 +2149,7 @@ function main(config) {
   newConfig['etag-support'] = true;
   newConfig['geodata-mode'] = false;
   newConfig['geodata-loader'] = 'memconservative';
+  newConfig['geosite-matcher'] = 'succinct';
 
   newConfig['external-controller'] = '127.0.0.1:19090';
   newConfig['external-ui'] = 'ui';
@@ -2171,6 +2170,7 @@ function main(config) {
 
   newConfig['tun'] = {
     enable: true,
+    // Mihomo v1.19.31 起正式支持 mips。
     stack: 'mips',
     'auto-route': true,
     'strict-route': true,
@@ -2183,11 +2183,12 @@ function main(config) {
     enable: true,
     'force-dns-mapping': true,
     'parse-pure-ip': true,
-    'override-destination': true,
+    // 仅用于域名识别；避免 fake-ip + override-destination 触发嗅探后的重解析/路由循环。
+    'override-destination': false,
     sniff: {
       HTTP: { ports: [80, '8080-8880'], enable: true, 'override-destination': true },
-      TLS: { ports: [443, 8443], enable: true, 'override-destination': true },
-      QUIC: { ports: [443, 8443], enable: true, 'override-destination': true },
+      TLS: { ports: [443, 8443], enable: true },
+      QUIC: { ports: [443, 8443], enable: true },
     },
   };
 
