@@ -10,6 +10,7 @@
     },
     "devDependencies": {
         "espree": "^9.6.1",
-        "quickjs-emscripten": "^0.32.0"
+        "quickjs-emscripten": "^0.32.0",
+        "js-yaml": "^4.1.0"
     }
 }
