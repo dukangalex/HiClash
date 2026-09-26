@@ -27,6 +27,7 @@ const ruleOptionsEnable = {
   YouTube: true, // YouTube视频平台
   Google: true, // Google服务
   AI: true, // 国外AI服务
+  Claude: true, // Claude / Anthropic 服务
   Microsoft: true, // Microsoft服务
   Apple: true, // Apple服务
   Telegram: true, // Telegram通讯软件
@@ -1124,6 +1125,16 @@ const serviceConfigs = [
     },
     icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Google.svg',
     rules: ['RULE-SET,google,Google', 'RULE-SET,google_ip,Google,no-resolve'],
+  },
+  {
+    name: 'Claude',
+    baseOption: selectBaseOption,
+    defaultSelected: '美国',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/ChatGPT.svg',
+    rules: [
+      'DOMAIN-SUFFIX,claude.ai,Claude',
+      'DOMAIN-SUFFIX,anthropic.com,Claude',
+    ],
   },
   {
     name: 'AI',
