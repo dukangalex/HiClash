@@ -188,6 +188,57 @@ for (const name of switchNames) {
   assertSwitchChangesConfig(name, !enabled, () => fx.typicalSubscription());
 }
 
+
+const serviceSwitchNames = [
+  'FCM',
+  'YouTube',
+  'Google',
+  'AI',
+  'Claude',
+  'Microsoft',
+  'Apple',
+  'Telegram',
+  'Steam',
+  'TikTok',
+  'Twitter',
+  'Meta',
+  'Line',
+  'Netflix',
+  'Emby',
+  'PikPak',
+  'Spotify',
+  'Crypto',
+  'EHentai',
+  'AdBlock',
+  '远控工具',
+];
+
+for (const name of serviceSwitchNames) {
+  const enabledConfig = api.main(fx.typicalSubscription());
+  const disabledConfig = loadWithSwitch(name, false).main(fx.typicalSubscription());
+  const enabledGroup = enabledConfig['proxy-groups']?.find((group) => group.name === name);
+  const disabledGroup = disabledConfig['proxy-groups']?.find((group) => group.name === name);
+  assert(enabledGroup, 'service switch baseline group missing: ' + name);
+  assert(!disabledGroup, 'service switch must remove its group: ' + name);
+
+  const enabledRules = enabledConfig.rules || [];
+  const disabledRules = disabledConfig.rules || [];
+  const serviceRules = enabledRules.filter((rule) => rule.endsWith(',' + name));
+  for (const rule of serviceRules) {
+    assert(!disabledRules.includes(rule), 'service switch must remove its routing rule: ' + name);
+  }
+
+  const enabledProviders = enabledConfig['rule-providers'] || {};
+  const disabledProviders = disabledConfig['rule-providers'] || {};
+  const groupProviders = Object.keys(enabledProviders).filter((providerName) => {
+    const provider = enabledProviders[providerName];
+    return serviceRules.some((rule) => rule.includes(',' + providerName + ','));
+  });
+  for (const providerName of groupProviders) {
+    assert(!disabledProviders[providerName], 'service switch must remove its rule-provider: ' + name + '/' + providerName);
+  }
+}
+
 validateGeneratedConfig(config, 'typical');
 
 const providerConfig = api.main(fx.providerSubscription());
