@@ -3,7 +3,7 @@
  * 原作者：AIsouler
  * 二次维护：dukangalex
  * 上游项目：https://github.com/AIsouler/MyClash
- * 项目仓库：https://github.com/dukangalex/HiClash
+ * 本项目仓库：https://github.com/dukangalex/HiClash
  * 脚本链接：https://raw.githubusercontent.com/dukangalex/HiClash/main/Script/mihomoScript.js
  */
 
