@@ -20,7 +20,13 @@ if (!fs.existsSync(MIHOMO_BIN)) {
 }
 
 const api = loadScript('Script/mihomoScript.js');
-const config = api.main(fx.typicalSubscription());
+const fixture = fx.typicalSubscription();
+// The shared fixture intentionally focuses on script behavior and contains a minimal VMess node.
+// For kernel-level validation, add the required mihomo cipher field without changing production code.
+fixture.proxies = fixture.proxies.map((proxy) =>
+  proxy.type === 'vmess' && !proxy.cipher ? { ...proxy, cipher: 'auto' } : proxy,
+);
+const config = api.main(fixture);
 
 const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'hiclash-mihomo-'));
 const configPath = path.join(tempDir, 'config.yaml');
@@ -46,3 +52,5 @@ try {
 } finally {
   fs.rmSync(tempDir, { recursive: true, force: true });
 }
+
+// Runtime validation is pinned to the official v1.19.31 release binary in CI.
