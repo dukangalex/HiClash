@@ -178,10 +178,7 @@ for (const name of switchNames) {
       }
       return customSource;
     }).main(fx.typicalSubscription());
-    assert(
-      JSON.stringify(baseConfig) !== JSON.stringify(toggleConfig),
-      'switch runtime effect missing: 链式代理=true',
-    );
+    assert(JSON.stringify(baseConfig) !== JSON.stringify(toggleConfig), 'switch runtime effect missing: 链式代理=true');
     assert(
       toggleConfig['proxy-groups']?.some((group) => group.name === '链式中转'),
       '链式代理=true must generate 链式中转 group',
