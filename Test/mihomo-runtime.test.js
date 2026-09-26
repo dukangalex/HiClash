@@ -86,7 +86,6 @@ function validateGeneratedConfig(config, label) {
   );
 }
 
-
 function loadWithSwitch(name, enabled) {
   return loadScript('Script/mihomoScript.js', (source) => {
     const token = name + ':';
@@ -124,13 +123,44 @@ function assertSwitchChangesConfig(name, enabled, fixtureFactory) {
 }
 
 const switchNames = [
-  '手动选择', '自动选择', '负载均衡', '故障转移', '远控工具',
-  'FCM', 'YouTube', 'Google', 'AI', 'Claude', 'Microsoft', 'Apple',
-  'Telegram', 'Steam', 'TikTok', 'Twitter', 'Meta', 'Line', 'Netflix',
-  'Emby', 'PikPak', 'Spotify', 'Crypto', 'EHentai', 'AdBlock',
-  '极简模式', '生成地区自动选择组', '隐藏地区手动选择组', '生成倍率组',
-  '分流组添加所有节点', '过滤低倍率节点', '过滤高倍率节点', '过滤非地区节点',
-  '屏蔽国外QUIC', '代理IPV4优先', '代理IPV6优先', '链式代理',
+  '手动选择',
+  '自动选择',
+  '负载均衡',
+  '故障转移',
+  '远控工具',
+  'FCM',
+  'YouTube',
+  'Google',
+  'AI',
+  'Claude',
+  'Microsoft',
+  'Apple',
+  'Telegram',
+  'Steam',
+  'TikTok',
+  'Twitter',
+  'Meta',
+  'Line',
+  'Netflix',
+  'Emby',
+  'PikPak',
+  'Spotify',
+  'Crypto',
+  'EHentai',
+  'AdBlock',
+  '极简模式',
+  '生成地区自动选择组',
+  '隐藏地区手动选择组',
+  '生成倍率组',
+  '分流组添加所有节点',
+  '过滤低倍率节点',
+  '过滤高倍率节点',
+  '过滤非地区节点',
+  '屏蔽国外QUIC',
+  '代理IPV4优先',
+  '代理IPV6优先',
+  '链式代理',
+
 ];
 
 for (const name of switchNames) {
