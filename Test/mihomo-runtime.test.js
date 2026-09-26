@@ -165,7 +165,29 @@ const switchNames = [
 for (const name of switchNames) {
   const enabled = api.ruleOptionsEnable[name];
   assert(typeof enabled === 'boolean', 'switch definition must be boolean: ' + name);
-  if (name === '链式代理') continue;
+  if (name === '链式代理') {
+    const baseConfig = loadScript('Script/mihomoScript.js').main(fx.typicalSubscription());
+    const toggleConfig = loadScript('Script/mihomoScript.js', (source) => {
+      const enabledSource = source.replace('链式代理: false', '链式代理: true');
+      const customSource = enabledSource.replace(
+        'const customizeProxies = [];',
+        "const customizeProxies = [{ name: '自建-日本-01', type: 'ss', server: '1.2.3.12', port: 443, cipher: 'aes-256-gcm', password: 'x' }];",
+      );
+      if (customSource === source) {
+        throw new Error('chain switch injection failed');
+      }
+      return customSource;
+    }).main(fx.typicalSubscription());
+    assert(
+      JSON.stringify(baseConfig) !== JSON.stringify(toggleConfig),
+      'switch runtime effect missing: 链式代理=true',
+    );
+    assert(
+      toggleConfig['proxy-groups']?.some((group) => group.name === '链式中转'),
+      '链式代理=true must generate 链式中转 group',
+    );
+    continue;
+  }
   assertSwitchChangesConfig(name, !enabled, () => fx.typicalSubscription());
 }
 
