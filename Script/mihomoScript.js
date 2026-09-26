@@ -1,5 +1,3 @@
-const Compatible_With_Bettbox = { ruleOptionsEnable: true };
-
 /**
  * HiClash Mihomo 配置覆写脚本（全量版 · 多地区自动识别 + 安全基线）
  * 原作者：AIsouler
@@ -2358,6 +2356,7 @@ const securityBaseline = {
   'external-ui-url': 'https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip',
   'geodata-mode': false,
   'geodata-loader': 'memconservative',
+  'geosite-matcher': 'succinct',
   'geo-auto-update': true,
   'geo-update-interval': 168,
   'geox-url': {
@@ -2396,11 +2395,13 @@ const securitySniffer = {
   enable: true,
   'force-dns-mapping': true,
   'parse-pure-ip': true,
-  'override-destination': true,
+  // 仅用于域名识别，不把嗅探结果强制替换为实际目标；避免 fake-ip + override-destination 形成重解析/路由循环。
+  'override-destination': false,
   sniff: {
+    // HTTP 保留显式覆盖：官方示例允许 HTTP 单独覆盖全局设置。
     HTTP: { ports: [80, '8080-8880'], enable: true, 'override-destination': true },
-    TLS: { ports: [443, 8443], enable: true, 'override-destination': true },
-    QUIC: { ports: [443, 8443], enable: true, 'override-destination': true },
+    TLS: { ports: [443, 8443], enable: true },
+    QUIC: { ports: [443, 8443], enable: true },
   },
   'force-domain': [
     '+.google.com',
@@ -2663,6 +2664,7 @@ function main(config) {
 
   newConfig['tun'] = {
     enable: true,
+    // Mihomo v1.19.31 起正式支持 mips；使用自研 IP 协议栈以避免依赖系统/防火墙对 system/mixed 栈的额外要求。
     stack: 'mips',
     'auto-route': true,
     'strict-route': true,
