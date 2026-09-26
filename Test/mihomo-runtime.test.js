@@ -86,6 +86,47 @@ function validateGeneratedConfig(config, label) {
   );
 }
 
+
+function loadWithSwitch(name, enabled) {
+  return loadScript('Script/mihomoScript.js', (source) => {
+    const escaped = name.replace(/[.*+?^$()|[\\]\\\\]/g, '\\\\
+validateGeneratedConfig(config, 'typical');
+');
+    const pattern = new RegExp('(^[ \\t]*' + escaped + ':\\\\s*)' + String(!enabled) + '(\\\\s*,)', 'm');
+    const updated = source.replace(pattern, '$1' + enabled + '$2');
+    if (updated === source) {
+      throw new Error('switch injection failed: ' + name + '=' + enabled);
+    }
+    return updated;
+  });
+}
+
+function assertSwitchChangesConfig(name, enabled, fixtureFactory) {
+  const baseConfig = loadScript('Script/mihomoScript.js').main(fixtureFactory());
+  const toggleConfig = loadWithSwitch(name, enabled).main(fixtureFactory());
+  assert(
+    JSON.stringify(baseConfig) !== JSON.stringify(toggleConfig),
+    'switch runtime effect missing: ' + name + '=' + enabled,
+  );
+}
+
+const switchNames = [
+  '手动选择', '自动选择', '负载均衡', '故障转移', '远控工具',
+  'FCM', 'YouTube', 'Google', 'AI', 'Claude', 'Microsoft', 'Apple',
+  'Telegram', 'Steam', 'TikTok', 'Twitter', 'Meta', 'Line', 'Netflix',
+  'Emby', 'PikPak', 'Spotify', 'Crypto', 'EHentai', 'AdBlock',
+  '极简模式', '生成地区自动选择组', '隐藏地区手动选择组', '生成倍率组',
+  '分流组添加所有节点', '过滤低倍率节点', '过滤高倍率节点', '过滤非地区节点',
+  '屏蔽国外QUIC', '代理IPV4优先', '代理IPV6优先', '链式代理',
+];
+
+for (const name of switchNames) {
+  const enabled = api.ruleOptionsEnable[name];
+  assert(typeof enabled === 'boolean', 'switch definition must be boolean: ' + name);
+  if (name === '链式代理') continue;
+  assertSwitchChangesConfig(name, !enabled, () => fx.typicalSubscription());
+}
+
 validateGeneratedConfig(config, 'typical');
 
 const providerConfig = api.main(fx.providerSubscription());
