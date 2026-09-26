@@ -160,7 +160,6 @@ const switchNames = [
   '代理IPV4优先',
   '代理IPV6优先',
   '链式代理',
-
 ];
 
 for (const name of switchNames) {
