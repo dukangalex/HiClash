@@ -14,6 +14,16 @@
  * true = 启用
  * false = 禁用
  */
+/**
+ * 旧版兼容入口（保留）
+ *
+ * 仅保留原有兼容标记，不绑定特定客户端，也不改变当前通用开关系统。
+ */
+const Compatible_With_Bettbox = {
+  ruleOptionsEnable: true,
+  customSwitches: true,
+};
+
 const ruleOptionsEnable = {
   // 基础策略组
   手动选择: true, // 是否启用手动选择策略组
