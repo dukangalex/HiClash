@@ -75,7 +75,7 @@ jobs:
           curl -fL --retry 3 --retry-all-errors \
             -o /tmp/mihomo-v1.19.31.gz \
             https://github.com/MetaCubeX/mihomo/releases/download/v1.19.31/mihomo-linux-amd64-v1.19.31.gz
-          echo "a4c7f1b0d7f4d6e2c5d6a5e2f6d5f1b6e8c8f0c1f2f0c7e6e6c5d0f7a2d1b9e  /tmp/mihomo-v1.19.31.gz" > /tmp/mihomo.sha256
+          echo "d5e74bbddbdfff49a1aef7775bf5911da59f0d7196ed509a0ac914b3653dd5f1  /tmp/mihomo-v1.19.31.gz" > /tmp/mihomo.sha256
           if ! sha256sum -c /tmp/mihomo.sha256; then
             echo "Pinned SHA256 verification failed; refresh the official release checksum before changing this test."
             exit 1
