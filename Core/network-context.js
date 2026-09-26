@@ -5,7 +5,12 @@
  * Android/Windows/macOS/iOS integrations feed observed events into this module.
  */
 
-const STATES = Object.freeze({ OFFLINE: 'offline', TRUSTED: 'trusted', PUBLIC: 'public', CAPTIVE: 'captive' });
+const STATES = Object.freeze({
+  OFFLINE: 'offline',
+  TRUSTED: 'trusted',
+  PUBLIC: 'public',
+  CAPTIVE: 'captive',
+});
 
 class NetworkContext {
   constructor() {
@@ -27,8 +32,16 @@ class NetworkContext {
 
   policy() {
     if (this.state === STATES.OFFLINE) return { tun: false, killSwitch: true, transport: 'none' };
-    if (this.state === STATES.CAPTIVE) return { tun: false, killSwitch: true, transport: 'tcp', captivePortal: true };
-    if (this.state === STATES.TRUSTED) return { tun: false, killSwitch: true, transport: this.udpLoss > 0.8 ? 'tcp' : 'auto' };
+    if (this.state === STATES.CAPTIVE) {
+      return { tun: false, killSwitch: true, transport: 'tcp', captivePortal: true };
+    }
+    if (this.state === STATES.TRUSTED) {
+      return {
+        tun: false,
+        killSwitch: true,
+        transport: this.udpLoss > 0.8 ? 'tcp' : 'auto',
+      };
+    }
     return { tun: true, killSwitch: true, transport: this.udpLoss > 0.8 ? 'tcp' : 'auto' };
   }
 }
