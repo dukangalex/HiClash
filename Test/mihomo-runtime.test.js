@@ -51,6 +51,29 @@ function validateGeneratedConfig(config, label) {
   );
   assert(config.sniffer?.['override-destination'] === false, label + ': global sniff override must remain disabled');
 
+  assert(config['allow-lan'] === false, label + ': LAN access must remain disabled');
+  assert(config['bind-address'] === '127.0.0.1', label + ': inbound bind address must remain loopback-only');
+  assert(config['external-controller'] === '127.0.0.1:19090', label + ': external controller must stay loopback-only');
+
+  const fallback = config['proxy-groups']?.find((group) => group.name === '故障转移');
+  assert(fallback?.type === 'fallback', label + ': 故障转移 must use fallback strategy type');
+
+  const remote = config['proxy-groups']?.find((group) => group.name === '远控工具');
+  assert(remote, label + ': 远控工具 group missing');
+  assert(
+    Array.isArray(remote.proxies) &&
+      remote.proxies.includes('REJECT-DROP') &&
+      remote.proxies.includes('默认代理') &&
+      remote.proxies.includes('直连'),
+    label + ': 远控工具 must retain its fixed proxy choices',
+  );
+  assert(
+    config.rules?.includes('PROCESS-NAME-WILDCARD,*AnyDesk*,远控工具') &&
+      config.rules?.includes('PROCESS-NAME-WILDCARD,*RustDesk*,远控工具') &&
+      config.rules?.includes('PROCESS-NAME-WILDCARD,*tailscale*,远控工具'),
+    label + ': remote-control process rules missing',
+  );
+
   const claude = config['proxy-groups']?.find((group) => group.name === 'Claude');
   const aiIndex = config['proxy-groups']?.findIndex((group) => group.name === 'AI');
   const claudeIndex = config['proxy-groups']?.findIndex((group) => group.name === 'Claude');
