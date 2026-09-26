@@ -51,15 +51,9 @@ function validateGeneratedConfig(config, label) {
   );
   assert(config.sniffer?.['override-destination'] === false, label + ': global sniff override must remain disabled');
 
-  assert(config['external-controller'] === '127.0.0.1:9090', label + ': external controller must stay loopback-only');
-  assert(Array.isArray(config['lan-allowed-ips']), label + ': lan-allowed-ips must be explicitly constrained');
-  assert(
-    config['lan-allowed-ips'].includes('10.0.0.0/8') &&
-      config['lan-allowed-ips'].includes('172.16.0.0/12') &&
-      config['lan-allowed-ips'].includes('192.168.0.0/16') &&
-      config['lan-allowed-ips'].includes('fc00::/7'),
-    label + ': LAN allowlist must include private IPv4 and IPv6 ranges',
-  );
+  assert(config['allow-lan'] === false, label + ': LAN access must remain disabled');
+  assert(config['bind-address'] === '127.0.0.1', label + ': inbound bind address must remain loopback-only');
+  assert(config['external-controller'] === '127.0.0.1:19090', label + ': external controller must stay loopback-only');
 
   const fallback = config['proxy-groups']?.find((group) => group.name === '故障转移');
   assert(fallback?.type === 'fallback', label + ': 故障转移 must use fallback strategy type');
