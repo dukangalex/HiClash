@@ -91,20 +91,20 @@ function loadWithSwitch(name, enabled) {
     const token = name + ':';
     let changed = false;
     const updated = source
-      .split('\\n')
+      .split(String.fromCharCode(10))
       .map((line) => {
         const trimmed = line.trimStart();
         if (!trimmed.startsWith(token)) return line;
 
         const valueStart = line.indexOf(token) + token.length;
         const suffix = line.slice(valueStart);
-        const match = suffix.match(/^(\\s*)(true|false)(\\s*,)/);
+        const match = suffix.match(/^([ \t]*)(true|false)([ \t]*,)/);
         if (!match) return line;
 
         changed = true;
         return line.slice(0, valueStart) + match[1] + String(enabled) + match[3] + suffix.slice(match[0].length);
       })
-      .join('\\n');
+      .join(String.fromCharCode(10));
 
     if (!changed) {
       throw new Error('switch injection failed: ' + name + '=' + enabled);
