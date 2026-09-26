@@ -1130,7 +1130,7 @@ const serviceConfigs = [
     name: 'Claude',
     baseOption: selectBaseOption,
     defaultSelected: '美国',
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/ChatGPT.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Proxy.svg',
     rules: [
       'DOMAIN-SUFFIX,claude.ai,Claude',
       'DOMAIN-SUFFIX,anthropic.com,Claude',
