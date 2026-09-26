@@ -33,15 +33,21 @@ class ProxyCoreAdapter {
 }
 
 class MihomoAdapter extends ProxyCoreAdapter {
-  constructor() { super('mihomo'); }
+  constructor() {
+    super('mihomo');
+  }
 }
 
 class SingBoxAdapter extends ProxyCoreAdapter {
-  constructor() { super('sing-box'); }
+  constructor() {
+    super('sing-box');
+  }
 }
 
 class XrayAdapter extends ProxyCoreAdapter {
-  constructor() { super('xray'); }
+  constructor() {
+    super('xray');
+  }
 }
 
 function createAdapter(kernel) {
