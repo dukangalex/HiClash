@@ -20,7 +20,9 @@ class ChinaBypassEngine {
   }
 
   matchesSni(hostname) {
-    const value = String(hostname || '').toLowerCase().replace(/\.$/, '');
+    const value = String(hostname || '')
+      .toLowerCase()
+      .replace(/\.$/, '');
     return this.sniSuffixes.some((suffix) => value === suffix || value.endsWith(`.${suffix}`));
   }
 
