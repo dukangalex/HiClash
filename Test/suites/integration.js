@@ -399,6 +399,21 @@ function runIntegrationTests(h, api, meta, fx, loadScript, scriptFile) {
     h.assertDeep(out.hosts['services.googleapis.cn'], 'services.googleapis.com');
   });
 
+  // ---------------- Mihomo v1.19.31 基线 ----------------
+  h.section('集成测试 · Mihomo v1.19.31 基线');
+  h.test('mips TUN、succinct GeoSite 与安全 Sniffer 基线', () => {
+    const out = api.main(fx.minimalSubscription());
+    h.assertEqual(out.tun.stack, 'mips', 'v1.19.31 基线使用 mips TUN 协议栈');
+    h.assertEqual(out['geosite-matcher'], 'succinct', '显式固定 succinct GeoSite matcher');
+    h.assertEqual(out.sniffer['override-destination'], false, '全局 Sniffer 不覆盖实际目标');
+    h.assertEqual(out.sniffer.sniff.HTTP['override-destination'], true, 'HTTP 保留显式目标覆盖');
+    h.assert(!('override-destination' in out.sniffer.sniff.TLS), 'TLS 不应强制覆盖实际目标');
+    h.assert(!('override-destination' in out.sniffer.sniff.QUIC), 'QUIC 不应强制覆盖实际目标');
+    h.assertEqual(out['allow-lan'], false, '默认禁止局域网暴露代理端口');
+    h.assertEqual(out['bind-address'], '127.0.0.1', '代理监听绑定本机回环地址');
+    h.assertEqual(out['external-controller'], '127.0.0.1:19090', '控制面仅监听本机回环地址');
+  });
+
   // ---------------- 配置选项切换 ----------------
   h.section('集成测试 · 配置选项切换');
   h.test('极简模式仅保留基础策略组且 MATCH 走默认代理', () =>
