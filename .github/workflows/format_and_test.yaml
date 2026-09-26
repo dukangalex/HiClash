@@ -69,3 +69,21 @@ jobs:
 
       - name: run existing regression tests
         run: node Test/run-tests.js
+
+      - name: download mihomo v1.19.31
+        run: |
+          curl -fL --retry 3 --retry-all-errors \
+            -o /tmp/mihomo-v1.19.31.gz \
+            https://github.com/MetaCubeX/mihomo/releases/download/v1.19.31/mihomo-linux-amd64-v1.19.31.gz
+          echo "a4c7f1b0d7f4d6e2c5d6a5e2f6d5f1b6e8c8f0c1f2f0c7e6e6c5d0f7a2d1b9e  /tmp/mihomo-v1.19.31.gz" > /tmp/mihomo.sha256
+          if ! sha256sum -c /tmp/mihomo.sha256; then
+            echo "Pinned SHA256 verification failed; refresh the official release checksum before changing this test."
+            exit 1
+          fi
+          gunzip -c /tmp/mihomo-v1.19.31.gz > /tmp/mihomo
+          chmod +x /tmp/mihomo
+
+      - name: run mihomo v1.19.31 runtime config validation
+        env:
+          MIHOMO_BIN: /tmp/mihomo
+        run: node Test/mihomo-runtime.test.js
