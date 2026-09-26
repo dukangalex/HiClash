@@ -11,7 +11,11 @@ function readJson(req) {
       if (body.length > 1024 * 1024) req.destroy(new Error('request too large'));
     });
     req.on('end', () => {
-      try { resolve(body ? JSON.parse(body) : {}); } catch (err) { reject(err); }
+      try {
+        resolve(body ? JSON.parse(body) : {});
+      } catch (err) {
+        reject(err);
+      }
     });
     req.on('error', reject);
   });
@@ -27,7 +31,9 @@ function createServer(options) {
   const opts = options || {};
   const server = http.createServer(async (req, res) => {
     try {
-      if (req.method === 'GET' && req.url === '/api/health') return send(res, 200, { ok: true, service: 'HiClash Universal Core' });
+      if (req.method === 'GET' && req.url === '/api/health') {
+        return send(res, 200, { ok: true, service: 'HiClash Universal Core' });
+      }
       if (req.method === 'POST' && req.url === '/api/sniff') {
         const body = await readJson(req);
         return send(res, 200, sniff(body.input));
