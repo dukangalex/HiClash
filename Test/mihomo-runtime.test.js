@@ -46,3 +46,5 @@ try {
 } finally {
   fs.rmSync(tempDir, { recursive: true, force: true });
 }
+
+// Runtime validation is pinned to the official v1.19.31 release binary in CI.
