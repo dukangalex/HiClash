@@ -342,6 +342,7 @@ assert(!landingChainGroup?.proxies?.includes('SOCKS5'), 'chain front group must 
 assert(!landingChainGroup?.proxies?.includes('HTTP'), 'chain front group must not contain HTTP');
 const landingProvider = landingSubscriptionConfig['proxy-providers']?.hiclash_landing_subscription;
 assert(landingProvider?.override?.['dialer-proxy'] === '链式中转', 'landing subscription must use current config chain front');
+assert(landingProvider?.proxy === '链式中转', 'landing subscription download must use current config chain front');
 const landingExitGroup = landingSubscriptionConfig['proxy-groups']?.find((group) => group.name === '链式落地');
 assert(landingExitGroup?.proxies?.includes('落地订阅'), 'landing exit group must expose landing subscription');
 assert(landingExitGroup?.proxies?.includes('SOCKS5'), 'landing exit group must expose SOCKS5');
