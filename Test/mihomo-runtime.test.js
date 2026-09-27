@@ -296,15 +296,15 @@ const allNodeNames = new Set((allNodesInServices.proxies || []).map((proxy) => p
 const youtubeAll = allNodesInServices['proxy-groups']?.find((group) => group.name === 'YouTube');
 assert(youtubeAll, 'all-node service switch: YouTube group missing');
 for (const proxyName of allNodeNames) {
-  assert(
-    youtubeAll.proxies?.includes(proxyName),
-    'all-node service switch: YouTube must include node ' + proxyName,
-  );
+  assert(youtubeAll.proxies?.includes(proxyName), 'all-node service switch: YouTube must include node ' + proxyName);
 }
 
 const lowFiltered = loadWithSwitches({ 过滤低倍率节点: true }).main(fx.typicalSubscription());
 const lowFilteredNames = new Set((lowFiltered.proxies || []).map((proxy) => proxy.name));
-assert(![...lowFilteredNames].some((name) => /0\\.3x|0\\.5倍/i.test(name)), 'low-rate filter must remove low-rate nodes');
+assert(
+  ![...lowFilteredNames].some((name) => /0\\.3x|0\\.5倍/i.test(name)),
+  'low-rate filter must remove low-rate nodes',
+);
 assert(lowFilteredNames.has('香港 2x 速率'), 'low-rate filter must retain a high-rate node');
 
 const highFiltered = loadWithSwitches({ 过滤高倍率节点: true }).main(fx.typicalSubscription());
