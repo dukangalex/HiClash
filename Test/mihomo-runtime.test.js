@@ -349,8 +349,11 @@ for (const rule of [
   'AND,((NETWORK,TCP),(DST-PORT,5349)),REJECT',
 ]) {
   assert(quicBlocked.rules.includes(rule), 'QUIC protection baseline missing: ' + rule);
-  assert(!quicAllowed.rules.includes(rule), 'QUIC protection disabled must remove: ' + rule);
+  assert(quicAllowed.rules.includes(rule), 'STUN protection must remain independent of foreign QUIC switch: ' + rule);
 }
+const foreignQuicRule = quicBlocked.rules.find((rule) => rule.includes('(DST-PORT,443)') && rule.endsWith(',REJECT'));
+assert(foreignQuicRule, 'foreign QUIC protection baseline missing');
+assert(!quicAllowed.rules.includes(foreignQuicRule), 'foreign QUIC protection disabled must remove its rule');
 assert(quicBlocked['rule-providers']?.cn_additional, 'QUIC protection baseline must retain cn_additional provider');
 assert(!quicAllowed['rule-providers']?.cn_additional, 'QUIC protection disabled must remove cn_additional provider');
 
