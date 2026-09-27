@@ -38,10 +38,10 @@ async function run() {
     const port = server.address().port;
 
     const disabled = await request(port, {
-      config: { proxies: [] },
+      config: { proxies: [{ name: '前置节点', type: 'http', server: '127.0.0.1', port: 8080 }] },
       options: { AI: false },
     });
-    assert.equal(disabled.status, 200, JSON.stringify(disabled));
+    assert.equal(disabled.status, 200);
     assert.equal(disabled.body.options.AI, false);
     assert.ok(!disabled.body.config['proxy-groups'].some((group) => group.name === 'AI'));
 
