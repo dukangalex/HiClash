@@ -56,4 +56,8 @@ function validateCustomOptions(value) {
   return true;
 }
 
-module.exports = { customOptionsSchema, getDefaultCustomOptions, validateCustomOptions };
+module.exports = {
+  customOptionsSchema,
+  getDefaultCustomOptions,
+  validateCustomOptions,
+};
