@@ -92,6 +92,7 @@ function resolveRuleOptions(context) {
 }
 
 let activeRuleOptions = ruleOptionsEnable;
+let activeChainLanding = false;
 
 // 定义前置规则
 const prefixRules = [
@@ -1789,7 +1790,7 @@ function buildCustomizeGroups(filteredProxies, customizeList = customizeProxies)
   const chainEnabled = activeRuleOptions.链式代理;
 
   if (!customizeList.length) {
-    if (chainEnabled) {
+    if (chainEnabled && !activeChainLanding) {
       throw new Error('启用失败，请在脚本中添加自定义节点后尝试');
     }
     return { customProxies: [], customProxyNames: [], customGroup: null };
@@ -2671,6 +2672,7 @@ function enableProviderSources(groups, chainGroup, providerNames) {
  */
 function main(config, context) {
   activeRuleOptions = resolveRuleOptions(context);
+  activeChainLanding = Boolean(context && context.customLanding);
   const providerMode = hasProxyProviders(config);
   const providerNames = providerMode ? Object.keys(config['proxy-providers']) : [];
   const newConfig = {};
