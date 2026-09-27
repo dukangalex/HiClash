@@ -112,6 +112,13 @@ function run() {
     /http\(s\)/,
   );
 
+  const reservedNameConfig = core.compileMihomoScript(
+    { proxies: [{ name: '默认代理', type: 'http', server: '127.0.0.1', port: 8080 }] },
+    {},
+  );
+  assert.ok(reservedNameConfig.config.proxies.some((proxy) => proxy.name === '节点-默认代理'));
+  assert.ok(reservedNameConfig.config['proxy-groups'].some((group) => group.name === '默认代理'));
+
   const scriptDefault = core.compileMihomoScript(
     { proxies: [{ name: 'US-前置节点', type: 'http', server: '127.0.0.1', port: 8080 }] },
     {},
