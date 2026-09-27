@@ -155,9 +155,11 @@ function run() {
       }
     }
 
+    assert.ok((config.rules || []).length > 0);
+    assert.match(config.rules.at(-1), /^MATCH,/);
     assert.ok(
       (config.rules || []).some((rule) => /^MATCH,/.test(rule)),
-      'configuration must end with a MATCH fallback',
+      'configuration must contain a MATCH fallback',
     );
   };
 
