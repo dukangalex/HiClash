@@ -46,7 +46,7 @@ async function run() {
     assert.ok(!disabled.body.config['proxy-groups'].some((group) => group.name === 'AI'));
 
     const integrated = await request(port, {
-      config: { proxies: [] },
+      config: { proxies: [{ name: 'US-前置节点', type: 'http', server: '127.0.0.1', port: 8080 }] },
       options: { 链式代理: true },
       frontName: 'US-前置节点',
       landing: {
