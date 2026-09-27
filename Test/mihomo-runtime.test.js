@@ -290,7 +290,9 @@ assert(hkManual?.type === 'select', 'region baseline: 香港 must be select');
 assert(!namesOfGroups(regionNoAuto).includes('香港-自动选择'), 'region auto disabled: auto group must be removed');
 assert(namesOfGroups(regionNoAuto).includes('香港'), 'region auto disabled: manual region group must remain');
 assert(
-  regionFixtureConfig['proxy-groups']?.find((group) => group.name === '香港')?.proxies.some((name) => name.includes('香港-测试')),
+  regionFixtureConfig['proxy-groups']
+    ?.find((group) => group.name === '香港')
+    ?.proxies.some((name) => name.includes('香港-测试')),
   'region fixture: 香港 group must contain only its Hong Kong node',
 );
 assert(
@@ -300,7 +302,9 @@ assert(
   'region fixture: 香港 group must not contain other regions',
 );
 assert(
-  regionFixtureConfig['proxy-groups']?.find((group) => group.name === '美国')?.proxies.some((name) => name.includes('美国-测试')),
+  regionFixtureConfig['proxy-groups']
+    ?.find((group) => group.name === '美国')
+    ?.proxies.some((name) => name.includes('美国-测试')),
   'region fixture: 美国 group must contain its US node',
 );
 
