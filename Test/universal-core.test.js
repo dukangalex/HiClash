@@ -4,22 +4,10 @@ const assert = require('node:assert/strict');
 const core = require('../Core');
 
 function run() {
-  assert.equal(
-    core.sniff('vless://uuid@example.com:443?security=tls#US').kernel,
-    'sing-box',
-  );
-  assert.equal(
-    core.sniff('proxies:\n  - name: US\n    type: vmess').kernel,
-    'mihomo',
-  );
-  assert.equal(
-    core.sniff(JSON.stringify({ inbounds: [], outbounds: [], route: {} })).kernel,
-    'sing-box',
-  );
-  assert.equal(
-    core.sniff(JSON.stringify({ inbounds: [], outbounds: [], routing: {} })).kernel,
-    'xray',
-  );
+  assert.equal(core.sniff('vless://uuid@example.com:443?security=tls#US').kernel, 'sing-box');
+  assert.equal(core.sniff('proxies:\n  - name: US\n    type: vmess').kernel, 'mihomo');
+  assert.equal(core.sniff(JSON.stringify({ inbounds: [], outbounds: [], route: {} })).kernel, 'sing-box');
+  assert.equal(core.sniff(JSON.stringify({ inbounds: [], outbounds: [], routing: {} })).kernel, 'xray');
 
   const mihomo = core.compile('mihomo', [
     { name: 'entry', proxy: { name: 'entry', type: 'vmess' } },
@@ -43,10 +31,7 @@ function run() {
     kind: 'subscription',
     url: 'https://example.com/subscription',
   });
-  assert.equal(
-    subscriptionLanding['proxy-providers']['链式落地-订阅'].override['dialer-proxy'],
-    '链式中转',
-  );
+  assert.equal(subscriptionLanding['proxy-providers']['链式落地-订阅'].override['dialer-proxy'], '链式中转');
   assert.deepEqual(subscriptionLanding['proxy-groups'][0].use, ['链式落地-订阅']);
 
   const socksLanding = core.compileMihomoLanding('链式中转', {
@@ -78,10 +63,7 @@ function run() {
   );
 
   const network = new core.NetworkContext();
-  assert.equal(
-    network.update({ connected: true, trusted: false, udpLoss: 0.9 }).transport,
-    'tcp',
-  );
+  assert.equal(network.update({ connected: true, trusted: false, udpLoss: 0.9 }).transport, 'tcp');
   assert.equal(network.policy().killSwitch, true);
 
   const bypass = new core.ChinaBypassEngine({
@@ -93,10 +75,7 @@ function run() {
 
   const controller = core.createController();
   assert.equal(controller.routeDecision({ coreState: 'stopped' }), 'BLOCK');
-  assert.equal(
-    controller.routeDecision({ coreState: 'running', fallback: 'DIRECT' }),
-    'BLOCK',
-  );
+  assert.equal(controller.routeDecision({ coreState: 'running', fallback: 'DIRECT' }), 'BLOCK');
 
   console.log('Universal Core tests passed');
 }

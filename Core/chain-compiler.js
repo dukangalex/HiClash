@@ -88,7 +88,7 @@ function compileMihomoLanding(frontName, landing) {
   const kind = validateLanding(landing);
   const name = String(landing.name || '链式落地').trim() || '链式落地';
   if (kind === 'subscription') {
-    const providerName = String(landing.providerName || (name + '-订阅')).trim();
+    const providerName = String(landing.providerName || name + '-订阅').trim();
     return {
       proxies: [],
       'proxy-providers': {
