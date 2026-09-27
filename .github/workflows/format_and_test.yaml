@@ -45,7 +45,7 @@ jobs:
           node - <<'NODE'
           const fs = require('node:fs');
           const html = fs.readFileSync('Dashboard/index.html', 'utf8');
-          const scripts = [...html.matchAll(/<script>([\\s\\S]*?)<\\/script>/gi)];
+          const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/gi)];
           if (!scripts.length) throw new Error('Dashboard/index.html contains no inline script');
           for (const [index, match] of scripts.entries()) {
             new Function(match[1]);
