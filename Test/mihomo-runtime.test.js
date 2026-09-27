@@ -305,8 +305,8 @@ for (const proxyName of allNodeNames) {
 
 const rateFixture = () => ({
   proxies: [
-    { name: '日本 0.3x 测试', type: 'ss', server: '1.2.3.20', port: 443, cipher: 'aes-256-gcm', password: 'x' },
-    { name: '美国 2x 测试', type: 'ss', server: '1.2.3.21', port: 443, cipher: 'aes-256-gcm', password: 'x' },
+    { name: '[0.5x] 节点', type: 'ss', server: '1.2.3.20', port: 443, cipher: 'aes-256-gcm', password: 'x' },
+    { name: '[2x] 节点', type: 'ss', server: '1.2.3.21', port: 443, cipher: 'aes-256-gcm', password: 'x' },
     { name: '香港 普通测试', type: 'ss', server: '1.2.3.22', port: 443, cipher: 'aes-256-gcm', password: 'x' },
   ],
 });
