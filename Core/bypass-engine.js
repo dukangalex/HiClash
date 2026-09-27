@@ -38,7 +38,7 @@ class ChinaBypassEngine {
       asn: this.matchesAsn(f.asn),
       lowLatency: Number.isFinite(f.latencyMs) && f.latencyMs < this.latencyThresholdMs,
     };
-    const direct = signals.process || signals.sni || signals.asn || signals.lowLatency;
+    // Low latency is an observation, not proof that direct routing is safe.\n    // Keep it visible for diagnostics but never let it alone bypass the proxy.\n    const direct = signals.process || signals.sni || signals.asn;
     if (direct && f.cacheKey) this.cache.set(f.cacheKey, Date.now());
     return { action: direct ? 'DIRECT' : 'PROXY', signals };
   }
