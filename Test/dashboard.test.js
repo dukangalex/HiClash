@@ -20,7 +20,7 @@ assert.match(html, /handleCustomOptionChange/);
 assert.match(html, /openLanding\(\)/);
 assert.match(html, /chainLanding/);
 assert.match(html, /frontName/);
-assert.match(html, /landing:/);
+assert.match(html, /body\.landing/);
 assert.match(html, /subscription/);
 assert.match(html, /socks5/);
 assert.match(html, /http/);
