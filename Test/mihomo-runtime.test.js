@@ -308,7 +308,6 @@ assert(
   'region fixture: 美国 group must contain its US node',
 );
 
-
 const hiddenRegions = loadWithSwitches({ 隐藏地区手动选择组: true }).main(fx.typicalSubscription());
 const hiddenHongKong = hiddenRegions['proxy-groups']?.find((group) => group.name === '香港');
 assert(hiddenHongKong?.hidden === true, 'hidden region switch: 香港 group must be hidden');
