@@ -60,6 +60,36 @@ const ruleOptionsEnable = {
   链式代理: false, // 是否启用链式代理（自定义节点作为落地节点，经“链式中转”策略组中转）
 };
 
+/**
+ * 解析外部适配器传入的自定义开关。
+ *
+ * Mihomo 核心不会调用此接口；能够传递第二参数的脚本宿主可使用：
+ *   main(config, { customOptions: { AI: false, 链式代理: true } })
+ * 未提供参数时保持脚本内置默认值，保证现有客户端行为不变。
+ */
+function resolveRuleOptions(context) {
+  const supplied = context && typeof context === 'object' ? context.customOptions : undefined;
+  if (supplied === undefined) return { ...ruleOptionsEnable };
+  if (!supplied || typeof supplied !== 'object' || Array.isArray(supplied)) {
+    throw new Error('HiClash customOptions must be an object');
+  }
+
+  const resolved = { ...ruleOptionsEnable };
+  for (const [key, value] of Object.entries(supplied)) {
+    if (!Object.prototype.hasOwnProperty.call(ruleOptionsEnable, key)) {
+      throw new Error('HiClash unknown custom option: ' + key);
+    }
+    if (typeof value !== 'boolean') {
+      throw new Error('HiClash custom option ' + key + ' must be boolean');
+    }
+    resolved[key] = value;
+  }
+  return resolved;
+}
+
+let activeRuleOptions = ruleOptionsEnable;
+
+
 // 定义前置规则
 const prefixRules = [
   // 私有网络直连
@@ -2636,7 +2666,8 @@ function enableProviderSources(groups, chainGroup, providerNames) {
 /**
  * 主入口：覆写机场订阅配置，生成完整 mihomo 配置
  */
-function main(config) {
+function main(config, context) {
+  activeRuleOptions = resolveRuleOptions(context);
   const providerMode = hasProxyProviders(config);
   const providerNames = providerMode ? Object.keys(config['proxy-providers']) : [];
   const newConfig = {};
