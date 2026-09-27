@@ -425,18 +425,9 @@ const assertGroupMembersAreNodes = (name) => {
 for (const name of ['默认代理', '手动选择', '自动选择', '负载均衡', '故障转移']) {
   assertGroupMembersAreNodes(name);
 }
-assert(
-  baseGroups['手动选择'].proxies.includes('自动选择'),
-  '手动选择 must expose 自动选择 as a selectable member',
-);
-assert(
-  baseGroups['默认代理'].proxies.includes('手动选择'),
-  '默认代理 must expose 手动选择 as a selectable member',
-);
-assert(
-  baseGroups['默认代理'].proxies.includes('故障转移'),
-  '默认代理 must expose 故障转移 as a selectable member',
-);
+assert(baseGroups['手动选择'].proxies.includes('自动选择'), '手动选择 must expose 自动选择 as a selectable member');
+assert(baseGroups['默认代理'].proxies.includes('手动选择'), '默认代理 must expose 手动选择 as a selectable member');
+assert(baseGroups['默认代理'].proxies.includes('故障转移'), '默认代理 must expose 故障转移 as a selectable member');
 
 const autoGroup = baseGroups['自动选择'];
 assert(autoGroup.url && Number(autoGroup.interval) > 0, '自动选择 must define a positive health-check interval');
