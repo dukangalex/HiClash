@@ -6,6 +6,7 @@ on:
     paths:
       - 'Script/*'
       - 'Core/**'
+      - 'Dashboard/**'
       - 'Test/**'
       - '**/*.yaml'
       - '**/*.yml'
