@@ -106,9 +106,9 @@ function compileMihomoScript(config, customOptions, context) {
 
   if (landing !== undefined) {
     const frontName = String(compileContext.frontName || '').trim();
-    if (!frontName) {\n      throw new Error('frontName is required when landing is configured');\n    }
+    if (!frontName) throw new Error('frontName is required when landing is configured');
 
-    const landingGroupName = String(landing.name || '链式落地').trim() ||\n      '链式落地';
+    const landingGroupName = String(landing.name || '链式落地').trim() || '链式落地';
     if (landingGroupName === frontName) {
       throw new Error('landing group name must differ from frontName');
     }
