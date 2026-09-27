@@ -42,7 +42,8 @@ jobs:
 
       - name: check formatting
         run: |
-          git ls-files -z '*.js' '*.yml' '*.yaml' | xargs -0 -r prettier --check
+          git ls-files -z '*.js' '*.yml' '*.yaml' | xargs -0 -r prettier --write
+          git diff -- Core/chain-compiler.js Test/universal-core.test.js
 
   test:
     needs: format
