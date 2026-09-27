@@ -492,14 +492,11 @@ try {
 
 // Runtime validation is pinned to the official v1.19.31 release binary in CI.
 
-
 for (const name of baseNames) {
   const members = baseGroups[name].proxies || [];
   for (const member of members) {
     assert(
-      proxyNames.has(member) ||
-        groupNames.has(member) ||
-        ['DIRECT', 'REJECT', 'REJECT-DROP'].includes(member),
+      proxyNames.has(member) || groupNames.has(member) || ['DIRECT', 'REJECT', 'REJECT-DROP'].includes(member),
       name + ' member must be a node or group: ' + member,
     );
   }
