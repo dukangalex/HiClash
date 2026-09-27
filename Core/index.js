@@ -1,7 +1,7 @@
 'use strict';
 
 const { sniff } = require('./config-sniffer');
-const { compile, validateChain } = require('./chain-compiler');
+const { compile, validateChain, compileMihomoLanding } = require('./chain-compiler');
 const { createAdapter } = require('./adapters');
 const { NetworkContext, STATES } = require('./network-context');
 const { ChinaBypassEngine } = require('./bypass-engine');
@@ -36,6 +36,7 @@ module.exports = {
   createController,
   sniff,
   compile,
+  compileMihomoLanding,
   createAdapter,
   NetworkContext,
   STATES,
