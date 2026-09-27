@@ -54,13 +54,6 @@ jobs:
           }
           NODE
 
-      - name: diagnose prettier diff
-        run: |
-          for file in Core/mihomo-script-runner.js Test/universal-core.test.js; do
-            prettier "$file" > /tmp/formatted.js
-            diff -u "$file" /tmp/formatted.js || true
-          done
-
       - name: check formatting
         run: |
           git ls-files -z '*.js' '*.yml' '*.yaml' | xargs -0 -r prettier --check
