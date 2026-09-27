@@ -38,7 +38,7 @@ async function run() {
     const port = server.address().port;
 
     const disabled = await request(port, {
-      config: { proxies: [{ name: '前置节点', type: 'http', server: '127.0.0.1', port: 8080 }] },
+      config: { proxies: [{ name: 'US-前置节点', type: 'http', server: '127.0.0.1', port: 8080 }] },
       options: { AI: false },
     });
     assert.equal(disabled.status, 200);
@@ -48,15 +48,15 @@ async function run() {
     const integrated = await request(port, {
       config: { proxies: [] },
       options: { 链式代理: true },
-      frontName: '前置节点',
+      frontName: 'US-前置节点',
       landing: {
         kind: 'subscription',
         name: '链式落地',
         url: 'https://example.com/subscription',
       },
     });
-    assert.equal(integrated.status, 200, JSON.stringify(integrated));
-    assert.equal(integrated.body.config['proxy-providers']['链式落地-订阅'].override['dialer-proxy'], '前置节点');
+    assert.equal(integrated.status, 200);
+    assert.equal(integrated.body.config['proxy-providers']['链式落地-订阅'].override['dialer-proxy'], 'US-前置节点');
     assert.ok(
       integrated.body.config['proxy-groups'].find((group) => group.name === '默认代理').proxies.includes('链式落地'),
     );
@@ -64,7 +64,7 @@ async function run() {
     const invalid = await request(port, {
       config: { proxies: [] },
       options: { 链式代理: false },
-      frontName: '前置节点',
+      frontName: 'US-前置节点',
       landing: {
         kind: 'http',
         server: '127.0.0.1',
