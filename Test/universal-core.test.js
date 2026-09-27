@@ -187,6 +187,23 @@ function run() {
   assert.ok(providerMode.config['proxy-groups'].some((group) => group.name === '美国-自动选择'));
   assertConfigReferences(providerMode.config);
 
+  const providerWithoutRateGroups = core.compileMihomoScript(
+    {
+      proxies: [],
+      'proxy-providers': {
+        Airport: {
+          type: 'http',
+          url: 'https://example.com/subscription',
+          path: './providers/airport.yaml',
+        },
+      },
+    },
+    { 生成倍率组: false },
+  );
+  assert.ok(providerWithoutRateGroups.config['proxy-groups'].some((group) => group.name === '美国'));
+  assert.ok(!providerWithoutRateGroups.config['proxy-groups'].some((group) => group.name === '低倍率节点'));
+  assertConfigReferences(providerWithoutRateGroups.config);
+
   const scriptDisabled = core.compileMihomoScript(
     { proxies: [{ name: 'US-前置节点', type: 'http', server: '127.0.0.1', port: 8080 }] },
     { AI: false, 链式代理: false },
