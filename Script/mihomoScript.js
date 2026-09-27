@@ -1,9 +1,6 @@
 /**
  * HiClash Mihomo 配置覆写脚本（全量版 · 多地区自动识别 + 安全基线）
- * 原作者：AIsouler
- * 二次维护：dukangalex
- * 上游项目：https://github.com/AIsouler/MyClash
- * 本项目仓库：https://github.com/dukangalex/HiClash
+ * 项目仓库：https://github.com/dukangalex/HiClash
  * 脚本链接：https://raw.githubusercontent.com/dukangalex/HiClash/main/Script/mihomoScript.js
  */
 
@@ -14,16 +11,6 @@
  * true = 启用
  * false = 禁用
  */
-/**
- * 旧版兼容入口（保留）
- *
- * 仅保留原有兼容标记，不绑定特定客户端，也不改变当前通用开关系统。
- */
-const Compatible_With_Bettbox = {
-  ruleOptionsEnable: true,
-  customSwitches: true,
-};
-
 const ruleOptionsEnable = {
   // 基础策略组
   手动选择: true, // 是否启用手动选择策略组
