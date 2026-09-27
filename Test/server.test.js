@@ -58,14 +58,9 @@ async function run() {
       },
     });
     assert.equal(integrated.status, 200);
-    assert.equal(
-      integrated.body.config['proxy-providers']['链式落地-订阅'].override['dialer-proxy'],
-      '前置节点',
-    );
+    assert.equal(integrated.body.config['proxy-providers']['链式落地-订阅'].override['dialer-proxy'], '前置节点');
     assert.ok(
-      integrated.body.config['proxy-groups']
-        .find((group) => group.name === '默认代理')
-        .proxies.includes('链式落地'),
+      integrated.body.config['proxy-groups'].find((group) => group.name === '默认代理').proxies.includes('链式落地'),
     );
 
     const invalid = await request(port, {
