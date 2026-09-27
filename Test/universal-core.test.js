@@ -9,7 +9,7 @@ function run() {
   assert.equal(customOptionsSchema.type, 'toggle-map');
   assert.equal(getDefaultCustomOptions()['链式代理'], false);
   assert.equal(getDefaultCustomOptions()['故障转移'], true);
-  assert.equal(validateCustomOptions({ '链式代理': true, AI: false }), true);
+  assert.equal(validateCustomOptions({ 链式代理: true, AI: false }), true);
   assert.throws(() => validateCustomOptions({ 不存在的开关: true }), /unknown custom option/);
   assert.throws(() => validateCustomOptions({ AI: 'true' }), /must be boolean/);
   assert.equal(core.sniff('vless://uuid@example.com:443?security=tls#US').kernel, 'sing-box');

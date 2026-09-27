@@ -55,8 +55,7 @@ jobs:
 
       - name: check formatting
         run: |
-          git ls-files -z '*.js' '*.yml' '*.yaml' | xargs -0 -r prettier --write
-          git diff -- Core/custom-options.js Test/universal-core.test.js
+          git ls-files -z '*.js' '*.yml' '*.yaml' | xargs -0 -r prettier --check
 
   test:
     needs: format

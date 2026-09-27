@@ -30,9 +30,7 @@ const customOptionsSchema = Object.freeze({
 });
 
 function getDefaultCustomOptions() {
-  return Object.fromEntries(
-    Object.entries(customOptionsSchema.options).map(([key, value]) => [key, value.default]),
-  );
+  return Object.fromEntries(Object.entries(customOptionsSchema.options).map(([key, value]) => [key, value.default]));
 }
 
 function validateCustomOptions(value) {
