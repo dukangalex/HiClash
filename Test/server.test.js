@@ -46,9 +46,7 @@ async function run() {
     assert.ok(!disabled.body.config['proxy-groups'].some((group) => group.name === 'AI'));
 
     const integrated = await request(port, {
-      config: {
-        proxies: [{ name: '前置节点', type: 'socks', server: 'front.example', port: 443 }],
-      },
+      config: { proxies: [] },
       options: { 链式代理: true },
       frontName: '前置节点',
       landing: {
@@ -58,7 +56,10 @@ async function run() {
       },
     });
     assert.equal(integrated.status, 200);
-    assert.equal(integrated.body.config['proxy-providers']['链式落地-订阅'].override['dialer-proxy'], '前置节点');
+    assert.equal(
+      integrated.body.config['proxy-providers']['链式落地-订阅'].override['dialer-proxy'],
+      '前置节点',
+    );
     assert.ok(
       integrated.body.config['proxy-groups'].find((group) => group.name === '默认代理').proxies.includes('链式落地'),
     );
