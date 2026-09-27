@@ -176,28 +176,26 @@ function run() {
     /landing group name must differ from frontName/,
   );
 
-  assert.throws(
-    () =>
-      core.compileMihomoScript(
-        {
-          proxies: [
-            { name: '前置节点', type: 'socks', server: 'front.example', port: 443 },
-            { name: '链式落地', type: 'http', server: 'existing.example', port: 8081 },
-          ],
-        },
-        { 链式代理: true },
-        {
-          frontName: '前置节点',
-          landing: {
-            kind: 'http',
-            name: '链式落地',
-            server: '127.0.0.1',
-            port: 8080,
-          },
-        },
-      ),
-    /landing group name conflicts with existing proxy/,
+  const collisionSafeLanding = core.compileMihomoScript(
+    {
+      proxies: [
+        { name: '前置节点', type: 'socks', server: 'front.example', port: 443 },
+        { name: '链式落地', type: 'http', server: 'existing.example', port: 8081 },
+      ],
+    },
+    { 链式代理: true },
+    {
+      frontName: '前置节点',
+      landing: {
+        kind: 'http',
+        name: '链式落地',
+        server: '127.0.0.1',
+        port: 8080,
+      },
+    },
   );
+  assert.ok(collisionSafeLanding.config.proxies.some((proxy) => proxy.name === '节点-链式落地'));
+  assert.ok(collisionSafeLanding.config.proxies.some((proxy) => proxy.name === '链式落地'));
 
   assert.throws(
     () =>
