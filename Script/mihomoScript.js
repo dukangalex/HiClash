@@ -1598,8 +1598,17 @@ function getIpVersionPreference() {
  */
 function getReservedProxyNames() {
   const names = new Set([
-    '默认代理', 'GLOBAL', '漏网之鱼', '直连', '其他节点', '自建节点', '链式落地',
-    dialerProxyName, 'REJECT', 'REJECT-DROP', 'PASS',
+    '默认代理',
+    'GLOBAL',
+    '漏网之鱼',
+    '直连',
+    '其他节点',
+    '自建节点',
+    '链式落地',
+    dialerProxyName,
+    'REJECT',
+    'REJECT-DROP',
+    'PASS',
     ...directProxies.map((proxy) => proxy.name),
     ...baseGroups.map((group) => group.name),
     ...serviceConfigs.map((group) => group.name),
@@ -1614,7 +1623,9 @@ function reserveProxyName(name, reservedNames, usedNames) {
   if (!reservedNames.has(name)) return name;
   let candidate = '节点-' + name;
   let index = 2;
-  while (usedNames.has(candidate) || reservedNames.has(candidate)) candidate = '节点-' + name + '-' + index++;
+  while (usedNames.has(candidate) || reservedNames.has(candidate)) {
+    candidate = '节点-' + name + '-' + index++;
+  }
   return candidate;
 }
 
