@@ -55,6 +55,7 @@ async function run() {
         url: 'https://example.com/subscription',
       },
     });
+    console.error('integrated response', JSON.stringify(integrated));
     assert.equal(integrated.status, 200);
     assert.equal(integrated.body.config['proxy-providers']['链式落地-订阅'].override['dialer-proxy'], '前置节点');
     assert.ok(
