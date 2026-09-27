@@ -1,6 +1,5 @@
 'use strict';
 
-// Integrated chain landing coverage.
 
 
 const assert = require('node:assert/strict');
