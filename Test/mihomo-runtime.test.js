@@ -308,6 +308,8 @@ assert(
   'region fixture: 美国 group must contain its US node',
 );
 
+const serviceBaseline = api.main(fx.typicalSubscription());
+
 const hiddenRegions = loadWithSwitches({ 隐藏地区手动选择组: true }).main(fx.typicalSubscription());
 const hiddenHongKong = hiddenRegions['proxy-groups']?.find((group) => group.name === '香港');
 assert(hiddenHongKong?.hidden === true, 'hidden region switch: 香港 group must be hidden');
@@ -591,4 +593,4 @@ assert(ruleList.includes('AND,((NETWORK,UDP),(DST-PORT,3478-3497)),REJECT'), 'ST
 assert(ruleList.includes('AND,((NETWORK,UDP),(DST-PORT,5349)),REJECT'), 'STUN/TURN UDP protection rule missing');
 assert(ruleList.includes('AND,((NETWORK,TCP),(DST-PORT,3478-3497)),REJECT'), 'STUN TCP protection rule missing');
 
-const serviceBaseline = api.main(fx.typicalSubscription());
+
