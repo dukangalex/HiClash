@@ -481,10 +481,7 @@ try {
 
 // Runtime validation is pinned to the official v1.19.31 release binary in CI.for (const name of ['手动选择', '自动选择', '负载均衡', '故障转移']) {
   for (const proxyName of proxyNames) {
-    assert(
-      baseGroups[name].proxies.includes(proxyName),
-      name + ' must include node ' + proxyName,
-    );
+    assert(baseGroups[name].proxies.includes(proxyName), name + ' must include node ' + proxyName);
   }
 }
 for (const name of ['手动选择', '自动选择', '负载均衡', '故障转移']) {
