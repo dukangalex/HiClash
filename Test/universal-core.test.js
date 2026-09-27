@@ -2,11 +2,7 @@
 
 const assert = require('node:assert/strict');
 const core = require('../Core');
-const {
-  customOptionsSchema,
-  getDefaultCustomOptions,
-  validateCustomOptions,
-} = require('../Core/custom-options');
+const { customOptionsSchema, getDefaultCustomOptions, validateCustomOptions } = require('../Core/custom-options');
 
 function run() {
   assert.equal(customOptionsSchema.version, 1);
@@ -50,10 +46,7 @@ function run() {
     链式代理: false,
   };
   assert.deepEqual(getDefaultCustomOptions(), expectedCustomOptions);
-  assert.deepEqual(
-    Object.keys(customOptionsSchema.options),
-    Object.keys(expectedCustomOptions),
-  );
+  assert.deepEqual(Object.keys(customOptionsSchema.options), Object.keys(expectedCustomOptions));
 
   assert.equal(customOptionsSchema.type, 'toggle-map');
   assert.equal(getDefaultCustomOptions()['链式代理'], false);
@@ -88,10 +81,7 @@ function run() {
     kind: 'subscription',
     url: 'https://example.com/subscription',
   });
-  assert.equal(
-    subscriptionLanding['proxy-providers']['链式落地-订阅'].override['dialer-proxy'],
-    '链式中转',
-  );
+  assert.equal(subscriptionLanding['proxy-providers']['链式落地-订阅'].override['dialer-proxy'], '链式中转');
   assert.deepEqual(subscriptionLanding['proxy-groups'][0].use, ['链式落地-订阅']);
 
   const socksLanding = core.compileMihomoLanding('链式中转', {
@@ -126,10 +116,7 @@ function run() {
   assert.ok(scriptDefault.config['proxy-groups'].some((group) => group.name === 'AI'));
   assert.equal(scriptDefault.options.AI, true);
 
-  const scriptDisabled = core.compileMihomoScript(
-    { proxies: [] },
-    { AI: false, 链式代理: false },
-  );
+  const scriptDisabled = core.compileMihomoScript({ proxies: [] }, { AI: false, 链式代理: false });
   assert.ok(!scriptDisabled.config['proxy-groups'].some((group) => group.name === 'AI'));
   assert.equal(scriptDisabled.options.AI, false);
   assert.equal(scriptDisabled.options['链式代理'], false);
@@ -149,24 +136,18 @@ function run() {
       },
     },
   );
-  const integratedProxy = integratedLanding.config.proxies.find(
-    (proxy) => proxy.name === '链式落地',
-  );
+  const integratedProxy = integratedLanding.config.proxies.find((proxy) => proxy.name === '链式落地');
   assert.equal(integratedProxy['dialer-proxy'], '前置节点');
   assert.equal(integratedProxy.type, 'socks');
   assert.ok(
-    integratedLanding.config['proxy-groups']
-      .find((group) => group.name === '默认代理')
-      .proxies.includes('链式落地'),
+    integratedLanding.config['proxy-groups'].find((group) => group.name === '默认代理').proxies.includes('链式落地'),
   );
 
   assert.throws(
     () =>
       core.compileMihomoScript(
         {
-          proxies: [
-            { name: '前置节点', type: 'socks', server: 'front.example', port: 443 },
-          ],
+          proxies: [{ name: '前置节点', type: 'socks', server: 'front.example', port: 443 }],
         },
         { 链式代理: false },
         {
@@ -181,14 +162,8 @@ function run() {
     /requires 链式代理/,
   );
 
-  assert.throws(
-    () => core.compileMihomoScript({ proxies: [] }, { AI: 'false' }),
-    /must be boolean/,
-  );
-  assert.throws(
-    () => core.compileMihomoScript({ proxies: [] }, { 不存在的开关: true }),
-    /unknown custom option/,
-  );
+  assert.throws(() => core.compileMihomoScript({ proxies: [] }, { AI: 'false' }), /must be boolean/);
+  assert.throws(() => core.compileMihomoScript({ proxies: [] }, { 不存在的开关: true }), /unknown custom option/);
 
   const network = new core.NetworkContext();
   assert.equal(network.update({ connected: true, trusted: false, udpLoss: 0.9 }).transport, 'tcp');
