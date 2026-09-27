@@ -1781,7 +1781,7 @@ function buildRegionGroups(filteredProxies, customProxies) {
  * 自定义节点不参与订阅节点过滤，也不参与 hosts 改写及 DNS 域名处理。
  */
 function buildLandingSubscriptionConfig(existingProviderNames = []) {
-  if (!landingSubscriptions.enabled) {
+  if (!landingSubscriptions.enabled || !ruleOptionsEnable.链式代理) {
     return { providers: {}, groups: [], providerNames: [] };
   }
 
