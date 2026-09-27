@@ -32,12 +32,15 @@ jobs:
     steps:
       - name: checkout code
         uses: actions/checkout@v6
+
       - name: setup Node.js
         uses: actions/setup-node@v6
         with:
           node-version: '24'
+
       - name: install tools
         run: npm install -g prettier
+
       - name: check dashboard script syntax
         run: |
           node - <<'NODE'
@@ -50,14 +53,15 @@ jobs:
             console.log(`Dashboard script ${index + 1}: syntax OK`);
           }
           NODE
+
       - name: check formatting
         run: |
-          prettier --write Test/server.test.js
-          git diff -- Test/server.test.js
-          git diff --exit-code -- Test/server.test.js
+          git ls-files -z '*.js' '*.yml' '*.yaml' | xargs -0 -r prettier --check
+
   test:
     needs: format
     runs-on: ubuntu-latest
+
     steps:
       - name: checkout code
         uses: actions/checkout@v6
@@ -65,11 +69,41 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref || github.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
           fetch-depth: 0
+
       - name: setup Node.js
         uses: actions/setup-node@v6
         with:
           node-version: '24'
+
       - name: install dependencies
         run: npm --prefix Test install
+
       - name: run dashboard integration tests
         run: node Test/dashboard.test.js
+
+      - name: run server integration tests
+        run: node Test/server.test.js
+
+      - name: run universal core tests
+        run: node Test/universal-core.test.js
+
+      - name: run existing regression tests
+        run: node Test/run-tests.js
+
+      - name: download mihomo v1.19.31
+        run: |
+          curl -fL --retry 3 --retry-all-errors \
+            -o /tmp/mihomo-v1.19.31.gz \
+            https://github.com/MetaCubeX/mihomo/releases/download/v1.19.31/mihomo-linux-amd64-v1.19.31.gz
+          echo "d5e74bbddbdfff49a1aef7775bf5911da59f0d7196ed509a0ac914b3653dd5f1  /tmp/mihomo-v1.19.31.gz" > /tmp/mihomo.sha256
+          if ! sha256sum -c /tmp/mihomo.sha256; then
+            echo "Pinned SHA256 verification failed; refresh the official release checksum before changing this test."
+            exit 1
+          fi
+          gunzip -c /tmp/mihomo-v1.19.31.gz > /tmp/mihomo
+          chmod +x /tmp/mihomo
+
+      - name: run mihomo v1.19.31 runtime config validation
+        env:
+          MIHOMO_BIN: /tmp/mihomo
+        run: node Test/mihomo-runtime.test.js
