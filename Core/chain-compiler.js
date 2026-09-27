@@ -12,7 +12,9 @@ function validateChain(chain) {
   }
   const seen = new Set();
   for (const hop of chain) {
-    if (!hop || typeof hop !== 'object' || !hop.name) throw new Error('invalid chain hop');
+    if (!hop || typeof hop !== 'object' || !hop.name) {
+      throw new Error('invalid chain hop');
+    }
     if (seen.has(hop.name)) throw new Error(`chain cycle detected at ${hop.name}`);
     seen.add(hop.name);
   }
@@ -55,19 +57,30 @@ function compileXray(chain) {
 }
 
 function validateLanding(landing) {
-  if (!landing || typeof landing !== 'object') throw new Error('landing configuration is required');
+  if (!landing || typeof landing !== 'object') {
+    throw new Error('landing configuration is required');
+  }
   const kind = String(landing.kind || '').toLowerCase();
-  if (!['subscription', 'socks5', 'http'].includes(kind)) throw new Error('unsupported landing kind');
+  if (!['subscription', 'socks5', 'http'].includes(kind)) {
+    throw new Error('unsupported landing kind');
+  }
   if (kind === 'subscription') {
     if (!/^https?:\/\//i.test(String(landing.url || ''))) throw new Error('subscription landing requires an http(s) URL');
-  } else if (!landing.server || !Number.isInteger(Number(landing.port)) || Number(landing.port) < 1 || Number(landing.port) > 65535) {
+  } else if (
+    !landing.server ||
+    !Number.isInteger(Number(landing.port)) ||
+    Number(landing.port) < 1 ||
+    Number(landing.port) > 65535
+  ) {
     throw new Error(kind + ' landing requires a valid server and port');
   }
   return kind;
 }
 
 function compileMihomoLanding(frontName, landing) {
-  if (!frontName || typeof frontName !== 'string') throw new Error('frontName is required');
+  if (!frontName || typeof frontName !== 'string') {
+    throw new Error('frontName is required');
+  }
   const kind = validateLanding(landing);
   const name = String(landing.name || '链式落地').trim() || '链式落地';
   if (kind === 'subscription') {
@@ -80,10 +93,20 @@ function compileMihomoLanding(frontName, landing) {
       'proxy-groups': [{ name, type: 'select', use: [providerName] }],
     };
   }
-  const proxy = { name, type: kind === 'socks5' ? 'socks' : 'http', server: String(landing.server), port: Number(landing.port), 'dialer-proxy': frontName };
+  const proxy = {
+    name,
+    type: kind === 'socks5' ? 'socks' : 'http',
+    server: String(landing.server),
+    port: Number(landing.port),
+    'dialer-proxy': frontName,
+  };
   if (landing.username) proxy.username = String(landing.username);
   if (landing.password) proxy.password = String(landing.password);
-  return { proxies: [proxy], 'proxy-providers': {}, 'proxy-groups': [{ name, type: 'select', proxies: [name] }] };
+  return {
+    proxies: [proxy],
+    'proxy-providers': {},
+    'proxy-groups': [{ name, type: 'select', proxies: [name] }],
+  };
 }
 
 function compile(kernel, chain) {
