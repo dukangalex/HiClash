@@ -316,6 +316,24 @@ assert(
   'hidden region switch: auto group must remain when region auto selection is enabled',
 );
 
+const serviceBaseline = api.main(fx.typicalSubscription());
+const serviceDefaultGroups = new Set(
+  (serviceBaseline['proxy-groups'] || [])
+    .filter((group) => group.type === 'select')
+    .map((group) => group.name),
+);
+const youtubeBaseline = serviceBaseline['proxy-groups']?.find((group) => group.name === 'YouTube');
+const appleBaseline = serviceBaseline['proxy-groups']?.find((group) => group.name === 'Apple');
+assert(youtubeBaseline?.proxies.includes('默认代理'), 'YouTube must use 默认代理 by default');
+assert(youtubeBaseline?.proxies.some((name) => serviceDefaultGroups.has(name)), 'YouTube must expose strategy groups');
+assert(!youtubeBaseline?.proxies.some((name) => allNodeNames.has(name)), 'YouTube must not include all nodes by default');
+assert(appleBaseline?.proxies.includes('直连'), 'Apple direct service must expose 直连');
+const serviceAll = loadWithSwitches({ 分流组添加所有节点: true }).main(fx.typicalSubscription());
+const serviceAllYoutube = serviceAll['proxy-groups']?.find((group) => group.name === 'YouTube');
+for (const proxyName of allNodeNames) {
+  assert(serviceAllYoutube?.proxies.includes(proxyName), 'YouTube all-node mode must include node ' + proxyName);
+}
+
 const noRateGroups = loadWithSwitches({ 生成倍率组: false }).main(fx.typicalSubscription());
 assert(!namesOfGroups(noRateGroups).includes('低倍率节点'), 'rate groups disabled: low-rate group must be removed');
 assert(!namesOfGroups(noRateGroups).includes('高倍率节点'), 'rate groups disabled: high-rate group must be removed');
