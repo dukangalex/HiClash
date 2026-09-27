@@ -3,6 +3,7 @@
 const http = require('node:http');
 const { sniff, compile, compileMihomoLanding, createAdapter } = require('./index');
 const { customOptionsSchema, getDefaultCustomOptions, validateCustomOptions } = require('./custom-options');
+const { compileMihomoScript } = require('./mihomo-script-runner');
 
 function readJson(req) {
   return new Promise((resolve, reject) => {
@@ -33,6 +34,12 @@ function createServer(options) {
   const server = http.createServer(async (req, res) => {
     try {
       if (req.method === 'GET' && req.url === '/api/custom-options') return send(res, 200, customOptionsSchema);
+      if (req.method === 'POST' && req.url === '/api/script/mihomo/compile') {
+        const body = await readJson(req);
+        const supplied = body.options === undefined ? {} : body.options;
+        validateCustomOptions(supplied);
+        return send(res, 200, compileMihomoScript(body.config || {}, supplied));
+      }
       if (req.method === 'POST' && req.url === '/api/custom-options/resolve') {
         const body = await readJson(req);
         validateCustomOptions(body.options || {});
