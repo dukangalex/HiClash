@@ -316,18 +316,6 @@ assert(
   'hidden region switch: auto group must remain when region auto selection is enabled',
 );
 
-const globalBaseline = serviceBaseline;
-const globalGroup = globalBaseline['proxy-groups']?.find((group) => group.name === 'GLOBAL');
-const remoteGroup = globalBaseline['proxy-groups']?.find((group) => group.name === '远控工具');
-const fallbackGroup = globalBaseline['proxy-groups']?.find((group) => group.name === '故障转移');
-assert(globalGroup?.proxies.includes('默认代理'), 'GLOBAL must expose 默认代理');
-assert(globalGroup?.proxies.includes('直连'), 'GLOBAL must expose 直连');
-assert(
-  remoteGroup?.proxies?.join(',') === 'REJECT-DROP,默认代理,直连',
-  '远控工具 must use its fixed proxy set',
-);
-assert(fallbackGroup?.type === 'fallback', '故障转移 must remain fallback');
-assert(fallbackGroup?.['exclude-type'] === 'DIRECT', '故障转移 must exclude DIRECT');
 const serviceBaseline = api.main(fx.typicalSubscription());
 const serviceNodeNames = new Set(
   (serviceBaseline.proxies || [])
@@ -575,3 +563,15 @@ try {
 } finally {
   fs.rmSync(tempDir, { recursive: true, force: true });
 }
+const globalBaseline = serviceBaseline;
+const globalGroup = globalBaseline['proxy-groups']?.find((group) => group.name === 'GLOBAL');
+const remoteGroup = globalBaseline['proxy-groups']?.find((group) => group.name === '远控工具');
+const fallbackGroup = globalBaseline['proxy-groups']?.find((group) => group.name === '故障转移');
+assert(globalGroup?.proxies.includes('默认代理'), 'GLOBAL must expose 默认代理');
+assert(globalGroup?.proxies.includes('直连'), 'GLOBAL must expose 直连');
+assert(
+  remoteGroup?.proxies?.join(',') === 'REJECT-DROP,默认代理,直连',
+  '远控工具 must use its fixed proxy set',
+);
+assert(fallbackGroup?.type === 'fallback', '故障转移 must remain fallback');
+assert(fallbackGroup?.['exclude-type'] === 'DIRECT', '故障转移 must exclude DIRECT');
