@@ -55,7 +55,7 @@
       <div class="field"><label for="frontName">前置名称</label><input id="frontName" placeholder="填写当前配置中的前置节点或策略组名称"></div>
       <div class="field"><label for="landingKind">落地格式</label><select id="landingKind" onchange="renderLandingFields()"><option value="subscription">落地订阅</option><option value="socks5">SOCKS5</option><option value="http">HTTP</option></select></div>
       <div id="landingFields"></div>
-      <div class="field"><button onclick="compileLanding()">校验并保存落地参数</button> <button onclick="closeLanding()">取消</button></div>
+      <div class="field"><button onclick="compileLanding()">校验并保存落地参数</button> <button onclick="cancelLanding()">取消</button></div>
       <pre id="landingResult"></pre>
     </section>
   </div>
@@ -89,10 +89,35 @@ async function health() {
     document.getElementById('kernel').textContent = '未连接 Core';
   }
 }
-function openLanding(){const m=document.getElementById('landingModal');m.classList.add('open');renderLandingFields();setTimeout(()=>document.getElementById('landingKind').focus(),0);}
+function openLanding(){
+  const m=document.getElementById('landingModal');
+  m.classList.add('open');
+  const saved=chainLanding?.landing;
+  document.getElementById('frontName').value=chainLanding?.frontName||'';
+  document.getElementById('landingKind').value=saved?.kind||'subscription';
+  renderLandingFields();
+  if(saved){
+    if(saved.kind==='subscription') document.getElementById('landingUrl').value=saved.url||'';
+    else {
+      document.getElementById('landingServer').value=saved.server||'';
+      document.getElementById('landingPort').value=saved.port||'';
+      document.getElementById('landingUsername').value=saved.username||'';
+      document.getElementById('landingPassword').value=saved.password||'';
+    }
+  }
+  setTimeout(()=>document.getElementById('landingKind').focus(),0);
+}
 function closeLanding(){document.getElementById('landingModal').classList.remove('open');}
-function backdropClose(e){if(e.target===e.currentTarget) closeLanding();}
-document.addEventListener('keydown',e=>{if(e.key==='Escape') closeLanding();});
+function cancelLanding(){
+  closeLanding();
+  if(!chainLanding && customOptionState.链式代理){
+    customOptionState.链式代理=false;
+    const checkbox=document.getElementById('opt-'+encodeURIComponent('链式代理'));
+    if(checkbox) checkbox.checked=false;
+  }
+}
+function backdropClose(e){if(e.target===e.currentTarget) cancelLanding();}
+document.addEventListener('keydown',e=>{if(e.key==='Escape') cancelLanding();});
 function renderLandingFields(){
   const kind=document.getElementById('landingKind').value;
   document.getElementById('landingFields').innerHTML=kind==='subscription' ? '<div class="field"><label for="landingUrl">订阅 URL</label><input id="landingUrl" placeholder="https://example.com/subscription"></div>' : '<div class="field"><label for="landingServer">服务器</label><input id="landingServer"></div><div class="field"><label for="landingPort">端口</label><input id="landingPort" type="number" min="1" max="65535"></div><div class="field"><label for="landingUsername">用户名（可选）</label><input id="landingUsername"></div><div class="field"><label for="landingPassword">密码（可选）</label><input id="landingPassword" type="password"></div>';
@@ -120,7 +145,17 @@ health();
 
 async function loadCustomOptions(){const host=document.getElementById('customOptions');try{const r=await fetch('/api/custom-options');const data=await r.json();if(!r.ok)throw new Error(data.error||'读取失败');customOptionSchema=data;customOptionState={};for(const [name,meta] of Object.entries(data.options||{}))customOptionState[name]=meta.default===true;renderCustomOptions();document.getElementById('customOptionsResult').textContent='schema v'+data.version+'，共 '+Object.keys(data.options||{}).length+' 个开关';}catch(e){host.textContent='读取失败：'+e.message;}}
 function renderCustomOptions(){const host=document.getElementById('customOptions');const groups={};for(const [name,meta] of Object.entries(customOptionSchema.options||{}))(groups[meta.category] ||= []).push([name,meta]);host.innerHTML=Object.entries(groups).map(([category,items])=>'<div class="option-category"><h3>'+escapeHtml(category)+'</h3><div class="option-list">'+items.map(([name])=>'<div class="option-row"><label for="opt-'+encodeURIComponent(name)+'">'+escapeHtml(name)+'</label><input id="opt-'+encodeURIComponent(name)+'" type="checkbox" '+(customOptionState[name]?'checked':'')+' onchange="handleCustomOptionChange('+JSON.stringify(name)+',this.checked)"></div>').join('')+'</div></div>').join('');}
-function handleCustomOptionChange(name,enabled){customOptionState[name]=enabled;if(name==='链式代理'&&enabled) openLanding();}
+function handleCustomOptionChange(name,enabled){
+  customOptionState[name]=enabled;
+  if(name==='链式代理'){
+    if(enabled) openLanding();
+    else {
+      chainLanding=null;
+      document.getElementById('landingStatus').textContent='未配置';
+      document.getElementById('landingResult').textContent='';
+    }
+  }
+}
 function escapeHtml(value){return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 async function resolveCustomOptions(){if(!customOptionSchema)await loadCustomOptions();try{const r=await fetch('/api/custom-options/resolve',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({options:customOptionState})});const data=await r.json();if(!r.ok)throw new Error(data.error||'校验失败');document.getElementById('customOptionsResult').textContent=JSON.stringify(data,null,2);}catch(e){document.getElementById('customOptionsResult').textContent=e.message;}}
 async function compileMihomoConfig(){
@@ -128,7 +163,7 @@ async function compileMihomoConfig(){
   try{
     const config=JSON.parse(document.getElementById('mihomoConfigInput').value||'{}');
     const body={config,options:customOptionState};
-    if(chainLanding){body.frontName=chainLanding.frontName;body.landing=chainLanding.landing;}
+    if(customOptionState.链式代理 && chainLanding){body.frontName=chainLanding.frontName;body.landing=chainLanding.landing;}
     const r=await fetch('/api/script/mihomo/compile',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});
     const data=await r.json();
     if(!r.ok)throw new Error(data.error||'生成失败');
