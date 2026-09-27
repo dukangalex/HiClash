@@ -429,7 +429,10 @@ for (const name of baseNames) {
     assert(members.includes(proxyName), name + ' must include node ' + proxyName);
   }
   for (const groupName of baseNames) {
-    assert(!members.includes(groupName), name + ' must not include base group ' + groupName);
+    assert(
+      !members.includes(groupName),
+      name + ' must not include base group ' + groupName,
+    );
   }
 }
 assert(
