@@ -11,6 +11,10 @@
  * true = 启用
  * false = 禁用
  */
+/** HiClash 通用自定义开关协议；客户端适配器不属于核心逻辑。 */
+const HiClash_CustomOptions = Object.freeze({ version: 1, type: 'toggle-map', source: 'ruleOptionsEnable' });
+const Compatible_With_Bettbox = { ruleOptionsEnable: true };
+
 const ruleOptionsEnable = {
   // 基础策略组
   手动选择: true, // 是否启用手动选择策略组
