@@ -17,7 +17,7 @@
     },
     "chain": {
       "type": "array",
-      "minItems": 0,
+      "minItems": 2,
       "items": {
         "type": "object",
         "required": ["name"],
