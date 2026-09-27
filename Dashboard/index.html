@@ -24,9 +24,17 @@
     <div class="card"><strong>Security</strong><p>Kill Switch：启用</p><p>Direct fallback：禁止</p><p>WebRTC STUN：阻断</p></div>
     <div class="card"><strong>Network</strong><p id="network">等待平台事件</p></div>
     <div class="card"><strong>Self-Healing</strong><p>连续失败达到阈值后交由 Adapter 切换备用节点。</p></div>
+    <div class="card"><strong>链式代理 · 自定义落地</strong><p class="muted">当前配置作为前置；这里只填写最终落地出口。</p><button onclick="openLanding()">配置落地出口</button><p id="landingStatus" class="muted">未配置</p></div>
+  </section>
+  <section id="landingPanel" class="card" style="display:none;margin-top:14px">
+    <strong>自定义落地出口</strong><p class="muted">落地订阅、SOCKS5、HTTP 三种格式彼此独立。</p>
+    <label>前置名称<br><input id="frontName" value="链式中转"></label><br><br>
+    <label>落地格式<br><select id="landingKind" onchange="renderLandingFields()"><option value="subscription">落地订阅</option><option value="socks5">SOCKS5</option><option value="http">HTTP</option></select></label>
+    <div id="landingFields"></div><br><button onclick="compileLanding()">生成</button> <button onclick="closeLanding()">取消</button><pre id="landingResult"></pre>
   </section>
   <section class="card" style="margin-top:14px"><strong>API</strong><pre>POST /api/sniff
 POST /api/chain/compile
+POST /api/chain/landing
 POST /api/adapter/status</pre></section>
 </main>
 <script>
@@ -38,6 +46,19 @@ async function health() {
   } catch (_) {
     document.getElementById('kernel').textContent = '未连接 Core';
   }
+}
+function openLanding(){document.getElementById('landingPanel').style.display='block';renderLandingFields();}
+function closeLanding(){document.getElementById('landingPanel').style.display='none';}
+function renderLandingFields(){
+  const kind=document.getElementById('landingKind').value;
+  document.getElementById('landingFields').innerHTML=kind==='subscription' ? '<br><label>订阅 URL<br><input id="landingUrl" style="width:100%" placeholder="https://example.com/subscription"></label>' : '<br><label>服务器<br><input id="landingServer"></label><br><label>端口<br><input id="landingPort" type="number" min="1" max="65535"></label><br><label>用户名（可选）<br><input id="landingUsername"></label><br><label>密码（可选）<br><input id="landingPassword" type="password"></label>';
+}
+async function compileLanding(){
+  const kind=document.getElementById('landingKind').value, landing={kind,name:'链式落地'};
+  if(kind==='subscription') landing.url=document.getElementById('landingUrl').value.trim();
+  else { landing.server=document.getElementById('landingServer').value.trim(); landing.port=Number(document.getElementById('landingPort').value); landing.username=document.getElementById('landingUsername').value; landing.password=document.getElementById('landingPassword').value; }
+  try{ const r=await fetch('/api/chain/landing',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({frontName:document.getElementById('frontName').value.trim(),landing})}); const data=await r.json(); if(!r.ok) throw new Error(data.error||'配置失败'); document.getElementById('landingStatus').textContent='已生成链式落地配置（尚未写入当前 Mihomo 配置）'; document.getElementById('landingResult').textContent=JSON.stringify(data,null,2); }
+  catch(e){document.getElementById('landingResult').textContent=e.message;}
 }
 health();
 </script>
