@@ -211,6 +211,26 @@ function run() {
     /requires 链式代理/,
   );
 
+  assert.throws(
+    () =>
+      core.compileMihomoScript(
+        {
+          proxies: [{ name: '实际节点', type: 'socks', server: 'front.example', port: 443 }],
+        },
+        { 链式代理: true },
+        {
+          frontName: '不存在的前置',
+          landing: {
+            kind: 'http',
+            name: '链式落地',
+            server: '127.0.0.1',
+            port: 8080,
+          },
+        },
+      ),
+    /frontName does not reference an existing proxy or proxy group/,
+  );
+
   assert.throws(() => core.compileMihomoScript({ proxies: [] }, { AI: 'false' }), /must be boolean/);
   assert.throws(() => core.compileMihomoScript({ proxies: [] }, { 不存在的开关: true }), /unknown custom option/);
 
