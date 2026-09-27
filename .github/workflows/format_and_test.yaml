@@ -40,6 +40,19 @@ jobs:
       - name: install tools
         run: npm install -g prettier
 
+      - name: check dashboard script syntax
+        run: |
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const html = fs.readFileSync('Dashboard/index.html', 'utf8');
+          const scripts = [...html.matchAll(/<script>([\\s\\S]*?)<\\/script>/gi)];
+          if (!scripts.length) throw new Error('Dashboard/index.html contains no inline script');
+          for (const [index, match] of scripts.entries()) {
+            new Function(match[1]);
+            console.log(`Dashboard script ${index + 1}: syntax OK`);
+          }
+          NODE
+
       - name: check formatting
         run: |
           git ls-files -z '*.js' '*.yml' '*.yaml' | xargs -0 -r prettier --check
