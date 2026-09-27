@@ -56,9 +56,7 @@ jobs:
 
       - name: check formatting
         run: |
-          prettier --write Test/server.test.js Test/universal-core.test.js
-          git diff -- Test/server.test.js Test/universal-core.test.js
-          git diff --exit-code -- Test/server.test.js Test/universal-core.test.js
+          git ls-files -z '*.js' '*.yml' '*.yaml' | xargs -0 -r prettier --check
 
   test:
     needs: format
