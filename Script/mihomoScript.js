@@ -2661,9 +2661,10 @@ function buildProviderRegionGroups(filteredProxies, customProxies, providerNames
   // Provider 远程节点在脚本执行阶段不可见，因此不能用当前可见节点决定地区组是否存在。
   // 对 provider 模式，按已知地区定义建立过滤组；实际节点由 Mihomo 运行时从 provider
   // 加载。这样服务组的默认选择（例如“美国”）不会在 provider 模式下变成悬空引用。
-  const groups = allRegionDefinitions.flatMap((region) =>
-    createRegionGroup(region.name, region.icon, []),
-  );
+  const generateRateGroupEnabled = activeRuleOptions.生成倍率组;
+  const groups = allRegionDefinitions
+    .filter((region) => generateRateGroupEnabled || !rateRegionDefinitions.includes(region))
+    .flatMap((region) => createRegionGroup(region.name, region.icon, []));
   const regionByName = new Map(allRegionDefinitions.map((region) => [region.name, region]));
 
   for (const group of groups) {
