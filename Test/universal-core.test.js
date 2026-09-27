@@ -27,6 +27,21 @@ function run() {
   ]);
   assert.equal(xray.outbounds[0].streamSettings.sockopt.dialerProxy, 'exit');
 
+  const subscriptionLanding = core.compileMihomoLanding('链式中转', { kind: 'subscription', url: 'https://example.com/subscription' });
+  assert.equal(subscriptionLanding['proxy-providers']['链式落地-订阅'].override['dialer-proxy'], '链式中转');
+  assert.deepEqual(subscriptionLanding['proxy-groups'][0].use, ['链式落地-订阅']);
+
+  const socksLanding = core.compileMihomoLanding('链式中转', { kind: 'socks5', server: '127.0.0.1', port: 1080, username: 'u', password: 'p' });
+  assert.equal(socksLanding.proxies[0].type, 'socks');
+  assert.equal(socksLanding.proxies[0]['dialer-proxy'], '链式中转');
+  assert.equal(socksLanding.proxies[0].port, 1080);
+
+  const httpLanding = core.compileMihomoLanding('链式中转', { kind: 'http', server: '127.0.0.1', port: 8080 });
+  assert.equal(httpLanding.proxies[0].type, 'http');
+  assert.equal(httpLanding.proxies[0]['dialer-proxy'], '链式中转');
+
+  assert.throws(() => core.compileMihomoLanding('链式中转', { kind: 'subscription', url: 'not-a-url' }), /http\\(s\\)/);
+
   const network = new core.NetworkContext();
   assert.equal(network.update({ connected: true, trusted: false, udpLoss: 0.9 }).transport, 'tcp');
   assert.equal(network.policy().killSwitch, true);
