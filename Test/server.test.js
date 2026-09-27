@@ -61,6 +61,44 @@ async function run() {
       integrated.body.config['proxy-groups'].find((group) => group.name === '默认代理').proxies.includes('链式落地'),
     );
 
+    const integratedSocks = await request(port, {
+      config: { proxies: [{ name: 'US-前置节点', type: 'http', server: '127.0.0.1', port: 8080 }] },
+      options: { 链式代理: true },
+      frontName: 'US-前置节点',
+      landing: {
+        kind: 'socks5',
+        name: '链式落地-SOCKS5',
+        server: '127.0.0.1',
+        port: 1080,
+        username: 'user',
+        password: 'pass',
+      },
+    });
+    assert.equal(integratedSocks.status, 200);
+    const socksProxy = integratedSocks.body.config.proxies.find((proxy) => proxy.name === '链式落地-SOCKS5');
+    assert.equal(socksProxy.type, 'socks');
+    assert.equal(socksProxy.port, 1080);
+    assert.equal(socksProxy.username, 'user');
+    assert.equal(socksProxy.password, 'pass');
+    assert.equal(socksProxy['dialer-proxy'], 'US-前置节点');
+
+    const integratedHttp = await request(port, {
+      config: { proxies: [{ name: 'US-前置节点', type: 'http', server: '127.0.0.1', port: 8080 }] },
+      options: { 链式代理: true },
+      frontName: 'US-前置节点',
+      landing: {
+        kind: 'http',
+        name: '链式落地-HTTP',
+        server: '127.0.0.1',
+        port: 8081,
+      },
+    });
+    assert.equal(integratedHttp.status, 200);
+    const httpProxy = integratedHttp.body.config.proxies.find((proxy) => proxy.name === '链式落地-HTTP');
+    assert.equal(httpProxy.type, 'http');
+    assert.equal(httpProxy.port, 8081);
+    assert.equal(httpProxy['dialer-proxy'], 'US-前置节点');
+
     const invalid = await request(port, {
       config: { proxies: [] },
       options: { 链式代理: false },
