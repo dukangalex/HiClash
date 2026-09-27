@@ -106,8 +106,29 @@ const prefixRules = [
 // ];
 const customizeProxies = [];
 
+// --- 链式代理落地订阅 ---
+//
+// 落地订阅通过 mihomo 的 proxy-providers 加载；订阅内容应提供可直接作为
+// outbound 的节点。SOCKS / HTTP 分开配置，避免把未确认的节点类型混入对应模块。
+// 留空 URL 时不会生成对应 provider，不改变现有配置行为。
+const landingSubscriptions = {
+  enabled: true,
+  socks: {
+    url: '',
+    path: './proxy_providers/hiclash-landing-socks.yaml',
+    interval: 3600,
+  },
+  http: {
+    url: '',
+    path: './proxy_providers/hiclash-landing-http.yaml',
+    interval: 3600,
+  },
+};
+
 // 链式代理启用时，自定义节点的 dialer-proxy 引用目标
 const dialerProxyName = '链式中转';
+const landingSocksGroupName = '落地 SOCKS';
+const landingHttpGroupName = '落地 HTTP';
 
 // 定义全局排除节点的正则表达式，用于排除非地区节点
 const excludeFilter =
@@ -1759,6 +1780,63 @@ function buildRegionGroups(filteredProxies, customProxies) {
  * 并构建“自建节点”策略组。
  * 自定义节点不参与订阅节点过滤，也不参与 hosts 改写及 DNS 域名处理。
  */
+function buildLandingSubscriptionConfig(existingProviderNames = []) {
+  if (!landingSubscriptions.enabled) {
+    return { providers: {}, groups: [], providerNames: [] };
+  }
+
+  const modules = [
+    {
+      key: 'socks',
+      groupName: landingSocksGroupName,
+      providerBaseName: 'hiclash_landing_socks',
+      ...landingSubscriptions.socks,
+    },
+    {
+      key: 'http',
+      groupName: landingHttpGroupName,
+      providerBaseName: 'hiclash_landing_http',
+      ...landingSubscriptions.http,
+    },
+  ];
+
+  const providers = {};
+  const groups = [];
+  const providerNames = [];
+  const usedNames = new Set(existingProviderNames);
+
+  for (const module of modules) {
+    if (!module.url) continue;
+
+    let providerName = module.providerBaseName;
+    let suffix = 2;
+    while (usedNames.has(providerName)) {
+      providerName = module.providerBaseName + '_' + suffix++;
+    }
+    usedNames.add(providerName);
+
+    providers[providerName] = {
+      type: 'http',
+      url: module.url,
+      path: module.path,
+      interval: module.interval,
+    };
+    providerNames.push(providerName);
+
+    groups.push({
+      ...selectBaseOption,
+      name: module.groupName,
+      use: [providerName],
+      'exclude-type': 'DIRECT|REJECT|REJECT-DROP|PASS',
+      icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Server.svg',
+    });
+  }
+
+  return { providers, groups, providerNames };
+}
+
+// ---构建自定义节点组---
+
 function buildCustomizeGroups(filteredProxies, customizeList = customizeProxies) {
   const chainEnabled = ruleOptionsEnable.链式代理;
 
@@ -1809,6 +1887,8 @@ function buildCustomizeGroups(filteredProxies, customizeList = customizeProxies)
 /**
  * 构建基础/分流策略组/部分节点组、GLOBAL 组与规则集，并汇总分流规则
  */
+let landingSubscriptionGroups = [];
+
 function buildFunctionalGroups(filteredProxies, generatedRegionGroups, customizeInfo) {
   const minimalModeEnabled = ruleOptionsEnable.极简模式;
   const blockForeignQuicEnabled = ruleOptionsEnable.屏蔽国外QUIC;
@@ -1836,7 +1916,10 @@ function buildFunctionalGroups(filteredProxies, generatedRegionGroups, customize
       ? {
           ...selectBaseOption,
           name: dialerProxyName,
-          proxies: filteredProxyNames,
+          proxies: [
+            ...filteredProxyNames,
+            ...(landingSubscriptionGroups || []).map((group) => group.name),
+          ],
           icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Bypass.svg',
         }
       : null;
@@ -2646,6 +2729,8 @@ function enableProviderSources(groups, chainGroup, providerNames) {
 function main(config) {
   const providerMode = hasProxyProviders(config);
   const providerNames = providerMode ? Object.keys(config['proxy-providers']) : [];
+  const landingSubscriptionConfig = buildLandingSubscriptionConfig(providerNames);
+  landingSubscriptionGroups = landingSubscriptionConfig.groups;
   const newConfig = {};
 
   // 普通订阅沿用原有节点标准化流程；provider 配置不下载、不展开、不改写节点。
@@ -2695,12 +2780,16 @@ function main(config) {
   // - 原始 proxy-providers 原样保留；
   // 脚本只接管其余配置结构。
   newConfig['proxies'] = [...(providerMode ? originalProxies : mappedProxies), ...customProxies, ...directProxies];
-  if (providerMode) {
-    newConfig['proxy-providers'] = config['proxy-providers'];
+  if (providerMode || Object.keys(landingSubscriptionConfig.providers).length > 0) {
+    newConfig['proxy-providers'] = {
+      ...(providerMode ? config['proxy-providers'] : {}),
+      ...landingSubscriptionConfig.providers,
+    };
   }
   newConfig['proxy-groups'] = [
     globalGroup,
     ...functionalGroups,
+    ...landingSubscriptionGroups,
     ...(customGroup ? [customGroup] : []),
     ...(chainGroup ? [chainGroup] : []),
     directGroup,
