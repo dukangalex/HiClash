@@ -2797,9 +2797,11 @@ function main(config) {
   // - 原始 proxy-providers 原样保留；
   // 脚本只接管其余配置结构。
   newConfig['proxies'] = [...(providerMode ? originalProxies : mappedProxies), ...customProxies, ...directProxies];
-  if (providerMode || Object.keys(landingSubscriptionConfig.providers).length > 0) {
+  if (providerMode || Object.keys(landingSubscriptionConfig.providers).length > 0 || landingSubscriptionConfig.proxies.length > 0) {
     newConfig.proxies = [...(newConfig.proxies || []), ...(landingSubscriptionConfig.proxies || [])];
-  newConfig['proxy-providers'] = {
+  }
+  if (providerMode || Object.keys(landingSubscriptionConfig.providers).length > 0) {
+    newConfig['proxy-providers'] = {
       ...(providerMode ? config['proxy-providers'] : {}),
       ...landingSubscriptionConfig.providers,
     };
