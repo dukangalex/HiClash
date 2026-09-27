@@ -9,6 +9,10 @@ const html = fs.readFileSync(path.join(__dirname, '..', 'Dashboard', 'index.html
 assert.match(html, /fetch\('\/api\/custom-options'\)/);
 assert.match(html, /fetch\('\/api\/custom-options\/resolve'/);
 assert.match(html, /customOptionSchema\.options/);
+assert.match(html, /<details class="card option-panel" id="customOptionsPanel">/);
+assert.match(html, /<summary>自定义开关<\/summary>/);
+assert.match(html, /option-panel\[open\] summary::after/);
+assert.match(html, /let customOptionSchema = null;[\s\S]*?loadCustomOptions\(\);/);
 assert.match(html, /链式代理/);
 assert.match(html, /subscription/);
 assert.match(html, /socks5/);
