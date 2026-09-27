@@ -1,7 +1,7 @@
 'use strict';
 
 const http = require('node:http');
-const { sniff, compile, createAdapter } = require('./index');
+const { sniff, compile, compileMihomoLanding, createAdapter } = require('./index');
 
 function readJson(req) {
   return new Promise((resolve, reject) => {
@@ -41,6 +41,10 @@ function createServer(options) {
       if (req.method === 'POST' && req.url === '/api/chain/compile') {
         const body = await readJson(req);
         return send(res, 200, compile(body.kernel, body.chain));
+      }
+      if (req.method === 'POST' && req.url === '/api/chain/landing') {
+        const body = await readJson(req);
+        return send(res, 200, compileMihomoLanding(body.frontName, body.landing));
       }
       if (req.method === 'POST' && req.url === '/api/adapter/status') {
         const adapter = createAdapter(req.headers['x-proxy-kernel'] || opts.kernel || 'mihomo');
