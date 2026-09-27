@@ -8,6 +8,8 @@ const html = fs.readFileSync(path.join(__dirname, '..', 'Dashboard', 'index.html
 
 assert.match(html, /fetch\('\/api\/custom-options'\)/);
 assert.match(html, /fetch\('\/api\/custom-options\/resolve'/);
+assert.match(html, /fetch\('\/api\/script\/mihomo\/compile'/);
+assert.match(html, /compileMihomoConfig\(\)/);
 assert.match(html, /customOptionSchema\.options/);
 assert.match(html, /<details class="card option-panel" id="customOptionsPanel">/);
 assert.match(html, /<summary>自定义开关<\/summary>/);
