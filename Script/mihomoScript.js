@@ -2662,8 +2662,9 @@ function buildProviderRegionGroups(filteredProxies, customProxies, providerNames
   // 对 provider 模式，按已知地区定义建立过滤组；实际节点由 Mihomo 运行时从 provider
   // 加载。这样服务组的默认选择（例如“美国”）不会在 provider 模式下变成悬空引用。
   const generateRateGroupEnabled = activeRuleOptions.生成倍率组;
+  const rateRegionNames = new Set(rateRegionDefinitions.map((region) => region.name));
   const groups = allRegionDefinitions
-    .filter((region) => generateRateGroupEnabled || !rateRegionDefinitions.includes(region))
+    .filter((region) => generateRateGroupEnabled || !rateRegionNames.has(region.name))
     .flatMap((region) => createRegionGroup(region.name, region.icon, []));
   const regionByName = new Map(allRegionDefinitions.map((region) => [region.name, region]));
 
