@@ -445,6 +445,27 @@ assert(
 const fallback = baseGroups['故障转移'];
 assert(fallback['exclude-type'] === 'DIRECT', '故障转移 must exclude DIRECT');
 
+for (const name of baseNames) {
+  const members = baseGroups[name].proxies || [];
+  for (const member of members) {
+    assert(
+      proxyNames.has(member) || groupNames.has(member) || ['DIRECT', 'REJECT', 'REJECT-DROP'].includes(member),
+      name + ' member must be a node or group: ' + member,
+    );
+  }
+  for (const proxyName of proxyNames) {
+    assert(members.includes(proxyName), name + ' must include node ' + proxyName);
+  }
+  for (const groupName of baseNames) {
+    assert(!members.includes(groupName), name + ' must not include base group ' + groupName);
+  }
+}
+assert(
+  baseGroups['默认代理'].proxies.some((member) => groupNames.has(member)),
+  '默认代理 must expose a strategy group',
+);
+
+
 validateGeneratedConfig(config, 'typical');
 
 const providerConfig = api.main(fx.providerSubscription());
@@ -484,29 +505,20 @@ try {
   fs.rmSync(tempDir, { recursive: true, force: true });
 }
 
-// Runtime validation is pinned to the official v1.19.31 release binary in CI.
-
-for (const name of baseNames) {
-  const members = baseGroups[name].proxies || [];
-  for (const member of members) {
-    assert(
-      proxyNames.has(member) || groupNames.has(member) || ['DIRECT', 'REJECT', 'REJECT-DROP'].includes(member),
-      name + ' member must be a node or group: ' + member,
-    );
-  }
-  for (const proxyName of proxyNames) {
-    assert(members.includes(proxyName), name + ' must include node ' + proxyName);
-  }
-  for (const groupName of baseNames) {
-    assert(!members.includes(groupName), name + ' must not include base group ' + groupName);
-  }
-}
-assert(
-  baseGroups['默认代理'].proxies.some((member) => groupNames.has(member)),
-  '默认代理 must expose a strategy group',
-);
 
 validateGeneratedConfig(config, 'typical');
+
+const providerConfig = api.main(fx.providerSubscription());
+validateGeneratedConfig(providerConfig, 'provider');
+assert(providerConfig['proxy-providers']?.provider1, 'provider: provider1 must be retained');
+for (const groupName of ['默认代理', '手动选择', '自动选择', '负载均衡', '故障转移']) {
+  const group = providerConfig['proxy-groups']?.find((item) => item.name === groupName);
+  assert(group, 'provider: ' + groupName + ' group missing');
+  assert(
+    Array.isArray(group.use) && group.use.includes('provider1'),
+    'provider: ' + groupName + ' must consume provider1',
+  );
+}
 
 const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'hiclash-mihomo-'));
 const configPath = path.join(tempDir, 'config.yaml');
@@ -533,4 +545,3 @@ try {
   fs.rmSync(tempDir, { recursive: true, force: true });
 }
 
-// Runtime validation is pinned to the official v1.19.31 release binary in CI.
