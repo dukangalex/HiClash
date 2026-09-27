@@ -270,6 +270,17 @@ function namesOfGroups(config) {
   return (config['proxy-groups'] || []).map((group) => group.name);
 }
 
+function regionFixture() {
+  return {
+    proxies: [
+      { name: '香港-测试', type: 'ss', server: '1.2.3.30', port: 443, cipher: 'aes-256-gcm', password: 'x' },
+      { name: '美国-测试', type: 'ss', server: '1.2.3.31', port: 443, cipher: 'aes-256-gcm', password: 'x' },
+      { name: '日本-测试', type: 'ss', server: '1.2.3.32', port: 443, cipher: 'aes-256-gcm', password: 'x' },
+    ],
+  };
+}
+
+const regionFixtureConfig = api.main(regionFixture());
 const regionBaseline = api.main(fx.typicalSubscription());
 const regionNoAuto = loadWithSwitches({ 生成地区自动选择组: false }).main(fx.typicalSubscription());
 const hkAuto = regionBaseline['proxy-groups']?.find((group) => group.name === '香港-自动选择');
@@ -278,6 +289,21 @@ assert(hkAuto?.type === 'url-test', 'region auto baseline: 香港-自动选择 m
 assert(hkManual?.type === 'select', 'region baseline: 香港 must be select');
 assert(!namesOfGroups(regionNoAuto).includes('香港-自动选择'), 'region auto disabled: auto group must be removed');
 assert(namesOfGroups(regionNoAuto).includes('香港'), 'region auto disabled: manual region group must remain');
+assert(
+  regionFixtureConfig['proxy-groups']?.find((group) => group.name === '香港')?.proxies.some((name) => name.includes('香港-测试')),
+  'region fixture: 香港 group must contain only its Hong Kong node',
+);
+assert(
+  !regionFixtureConfig['proxy-groups']
+    ?.find((group) => group.name === '香港')
+    ?.proxies.some((name) => name.includes('美国-测试') || name.includes('日本-测试')),
+  'region fixture: 香港 group must not contain other regions',
+);
+assert(
+  regionFixtureConfig['proxy-groups']?.find((group) => group.name === '美国')?.proxies.some((name) => name.includes('美国-测试')),
+  'region fixture: 美国 group must contain its US node',
+);
+
 
 const hiddenRegions = loadWithSwitches({ 隐藏地区手动选择组: true }).main(fx.typicalSubscription());
 const hiddenHongKong = hiddenRegions['proxy-groups']?.find((group) => group.name === '香港');
