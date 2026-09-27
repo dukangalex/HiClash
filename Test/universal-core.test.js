@@ -59,7 +59,7 @@ function run() {
         kind: 'subscription',
         url: 'not-a-url',
       }),
-    /http\\(s\\)/,
+    /http\(s\)/,
   );
 
   const network = new core.NetworkContext();
