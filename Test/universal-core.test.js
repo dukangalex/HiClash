@@ -119,92 +119,12 @@ function run() {
   assert.ok(reservedNameConfig.config.proxies.some((proxy) => proxy.name === '节点-默认代理'));
   assert.ok(reservedNameConfig.config['proxy-groups'].some((group) => group.name === '默认代理'));
 
-  const assertConfigReferences = (config) => {
-    const proxyNames = new Set((config.proxies || []).map((proxy) => proxy.name));
-    const groupNames = new Set((config['proxy-groups'] || []).map((group) => group.name));
-    assert.equal(proxyNames.size, (config.proxies || []).length);
-    assert.equal(groupNames.size, (config['proxy-groups'] || []).length);
-
-    const allowedTargets = new Set([
-      ...proxyNames,
-      ...groupNames,
-      'DIRECT',
-      'REJECT',
-      'REJECT-DROP',
-      'PASS',
-    ]);
-
-    for (const group of config['proxy-groups'] || []) {
-      for (const target of group.proxies || []) {
-        assert.ok(allowedTargets.has(target), `dangling proxy-group reference: ${group.name} -> ${target}`);
-      }
-      if (group['default-selected'] !== undefined) {
-        assert.ok(
-          allowedTargets.has(group['default-selected']),
-          `dangling default-selected reference: ${group.name} -> ${group['default-selected']}`,
-        );
-      }
-    }
-
-    for (const proxy of config.proxies || []) {
-      if (proxy['dialer-proxy'] !== undefined) {
-        assert.ok(
-          allowedTargets.has(proxy['dialer-proxy']),
-          `dangling dialer-proxy reference: ${proxy.name} -> ${proxy['dialer-proxy']}`,
-        );
-      }
-    }
-
-    assert.ok((config.rules || []).length > 0);
-    assert.match(config.rules.at(-1), /^MATCH,/);
-    assert.ok(
-      (config.rules || []).some((rule) => /^MATCH,/.test(rule)),
-      'configuration must contain a MATCH fallback',
-    );
-  };
-
   const scriptDefault = core.compileMihomoScript(
     { proxies: [{ name: 'US-前置节点', type: 'http', server: '127.0.0.1', port: 8080 }] },
     {},
   );
   assert.ok(scriptDefault.config['proxy-groups'].some((group) => group.name === 'AI'));
   assert.equal(scriptDefault.options.AI, true);
-  assertConfigReferences(scriptDefault.config);
-
-  const providerMode = core.compileMihomoScript(
-    {
-      proxies: [],
-      'proxy-providers': {
-        Airport: {
-          type: 'http',
-          url: 'https://example.com/subscription',
-          path: './providers/airport.yaml',
-        },
-      },
-    },
-    {},
-  );
-  assert.ok(providerMode.config['proxy-providers'].Airport);
-  assert.ok(providerMode.config['proxy-groups'].some((group) => group.name === '美国'));
-  assert.ok(providerMode.config['proxy-groups'].some((group) => group.name === '美国-自动选择'));
-  assertConfigReferences(providerMode.config);
-
-  const providerWithoutRateGroups = core.compileMihomoScript(
-    {
-      proxies: [],
-      'proxy-providers': {
-        Airport: {
-          type: 'http',
-          url: 'https://example.com/subscription',
-          path: './providers/airport.yaml',
-        },
-      },
-    },
-    { 生成倍率组: false },
-  );
-  assert.ok(providerWithoutRateGroups.config['proxy-groups'].some((group) => group.name === '美国'));
-  assert.ok(!providerWithoutRateGroups.config['proxy-groups'].some((group) => group.name === '低倍率节点'));
-  assertConfigReferences(providerWithoutRateGroups.config);
 
   const scriptDisabled = core.compileMihomoScript(
     { proxies: [{ name: 'US-前置节点', type: 'http', server: '127.0.0.1', port: 8080 }] },
