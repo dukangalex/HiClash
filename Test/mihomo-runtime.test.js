@@ -412,7 +412,11 @@ for (const name of ['默认代理', '手动选择', '自动选择', '负载均�
   );
 }
 
-const proxyNames = new Set((config.proxies || []).map((proxy) => proxy.name));
+const proxyNames = new Set(
+  (config.proxies || [])
+    .filter((proxy) => !['direct', 'reject', 'rematch'].includes(String(proxy.type).toLowerCase()))
+    .map((proxy) => proxy.name),
+);
 const groupNames = new Set((config['proxy-groups'] || []).map((group) => group.name));
 const baseNames = ['手动选择', '自动选择', '负载均衡', '故障转移'];
 for (const name of baseNames) {
