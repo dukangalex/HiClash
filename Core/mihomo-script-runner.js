@@ -95,7 +95,10 @@ function compileMihomoScript(config, customOptions, context) {
   }
 
   const main = loadMihomoScript();
-  const output = main(config, { customOptions: options });
+  const output = main(config, {
+    customOptions: options,
+    customLanding: landing !== undefined,
+  });
 
   if (!output || typeof output !== 'object' || Array.isArray(output)) {
     throw new Error('HiClash Mihomo script returned an invalid config');
