@@ -361,15 +361,21 @@ const ipv4Config = loadWithSwitches({ 代理IPV4优先: true }).main(fx.typicalS
 const ipv6Config = loadWithSwitches({ 代理IPV6优先: true }).main(fx.typicalSubscription());
 const dualIpConfig = loadWithSwitches({ 代理IPV4优先: true, 代理IPV6优先: true }).main(fx.typicalSubscription());
 assert(
-  ipv4Config.proxies.filter((proxy) => !['direct', 'reject', 'rematch'].includes(String(proxy.type).toLowerCase())).every((proxy) => proxy['ip-version'] === 'ipv4-prefer'),
+  ipv4Config.proxies
+    .filter((proxy) => !['direct', 'reject', 'rematch'].includes(String(proxy.type).toLowerCase()))
+    .every((proxy) => proxy['ip-version'] === 'ipv4-prefer'),
   'IPv4 preference must set ip-version=ipv4-prefer on every proxy',
 );
 assert(
-  ipv6Config.proxies.filter((proxy) => !['direct', 'reject', 'rematch'].includes(String(proxy.type).toLowerCase())).every((proxy) => proxy['ip-version'] === 'ipv6-prefer'),
+  ipv6Config.proxies
+    .filter((proxy) => !['direct', 'reject', 'rematch'].includes(String(proxy.type).toLowerCase()))
+    .every((proxy) => proxy['ip-version'] === 'ipv6-prefer'),
   'IPv6 preference must set ip-version=ipv6-prefer on every proxy',
 );
 assert(
-  dualIpConfig.proxies.filter((proxy) => !['direct', 'reject', 'rematch'].includes(String(proxy.type).toLowerCase())).every((proxy) => !proxy['ip-version']),
+  dualIpConfig.proxies
+    .filter((proxy) => !['direct', 'reject', 'rematch'].includes(String(proxy.type).toLowerCase()))
+    .every((proxy) => !proxy['ip-version']),
   'IPv4 and IPv6 preferences together must leave ip-version unchanged',
 );
 
