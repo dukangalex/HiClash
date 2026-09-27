@@ -16,8 +16,14 @@ assert.match(html, /<summary>自定义开关<\/summary>/);
 assert.match(html, /option-panel\[open\] summary::after/);
 assert.match(html, /let customOptionSchema = null;[\s\S]*?loadCustomOptions\(\);/);
 assert.match(html, /链式代理/);
+assert.match(html, /handleCustomOptionChange/);
+assert.match(html, /openLanding\(\)/);
+assert.match(html, /chainLanding/);
+assert.match(html, /frontName/);
+assert.match(html, /landing:/);
 assert.match(html, /subscription/);
 assert.match(html, /socks5/);
 assert.match(html, /http/);
+assert.match(html, /mihomoConfigInput/);
 
 console.log('Dashboard integration assertions passed');
