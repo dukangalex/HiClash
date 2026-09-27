@@ -384,7 +384,13 @@ const minimalGroupNames = namesOfGroups(minimalConfig);
 assert(minimalGroupNames.includes('默认代理'), 'minimal mode must retain 默认代理');
 assert(!minimalGroupNames.includes('YouTube'), 'minimal mode must remove service groups');
 assert(!minimalGroupNames.includes('香港'), 'minimal mode must remove generated region groups');
-assert(minimalConfig.rules.length === 0, 'minimal mode must emit no functional routing rules');
+for (const serviceName of serviceSwitchNames) {
+  assert(
+    !minimalConfig.rules.some((rule) => rule.endsWith(',' + serviceName)),
+    'minimal mode must remove functional service rule: ' + serviceName,
+  );
+}
+assert(minimalConfig.rules.length > 0, 'minimal mode must retain base/security rules');
 
 validateGeneratedConfig(config, 'typical');
 
