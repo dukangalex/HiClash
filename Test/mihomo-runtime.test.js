@@ -492,7 +492,6 @@ try {
 
 // Runtime validation is pinned to the official v1.19.31 release binary in CI.
 
-const proxyNames = new Set((config.proxies || []).map((proxy) => proxy.name));
 const groupNames = new Set(
   (config['proxy-groups'] || []).map((group) => group.name),
 );
