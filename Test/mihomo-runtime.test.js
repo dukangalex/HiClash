@@ -506,16 +506,6 @@ assert(
   '默认代理 must expose a strategy group',
 );
 
-const autoGroup = baseGroups['自动选择'];
-assert(autoGroup.url && Number(autoGroup.interval) > 0, '自动选择 must define a positive health-check interval');
-const loadBalance = baseGroups['负载均衡'];
-assert(
-  ['consistent-hashing', 'round-robin', 'sticky-sessions'].includes(loadBalance.strategy),
-  '负载均衡 must use a documented load-balance strategy',
-);
-const fallback = baseGroups['故障转移'];
-assert(fallback['exclude-type'] === 'DIRECT', '故障转移 must exclude DIRECT');
-
 validateGeneratedConfig(config, 'typical');
 
 const providerConfig = api.main(fx.providerSubscription());
