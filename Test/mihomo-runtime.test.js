@@ -413,7 +413,9 @@ for (const name of ['默认代理', '手动选择', '自动选择', '负载均�
 }
 
 const proxyNames = new Set((config.proxies || []).map((proxy) => proxy.name));
-const groupNames = new Set((config['proxy-groups'] || []).map((group) => group.name));
+const groupNames = new Set(
+  (config['proxy-groups'] || []).map((group) => group.name),
+);
 const baseNames = ['手动选择', '自动选择', '负载均衡', '故障转移'];
 for (const name of baseNames) {
   const members = baseGroups[name].proxies || [];
@@ -430,7 +432,10 @@ for (const name of baseNames) {
     assert(!members.includes(groupName), name + ' must not include base group ' + groupName);
   }
 }
-assert(baseGroups['默认代理'].proxies.some((member) => groupNames.has(member)), '默认代理 must expose a strategy group');
+assert(
+  baseGroups['默认代理'].proxies.some((member) => groupNames.has(member)),
+  '默认代理 must expose a strategy group',
+);
 
 
 const autoGroup = baseGroups['自动选择'];
