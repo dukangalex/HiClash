@@ -12,7 +12,11 @@
  * false = 禁用
  */
 /** HiClash 通用自定义开关协议；客户端适配器不属于核心逻辑。 */
-const HiClash_CustomOptions = Object.freeze({ version: 1, type: 'toggle-map', source: 'ruleOptionsEnable' });
+const HiClash_CustomOptions = Object.freeze({
+  version: 1,
+  type: 'toggle-map',
+  source: 'ruleOptionsEnable',
+});
 const Compatible_With_Bettbox = { ruleOptionsEnable: true };
 
 const ruleOptionsEnable = {
@@ -88,7 +92,6 @@ function resolveRuleOptions(context) {
 }
 
 let activeRuleOptions = ruleOptionsEnable;
-
 
 // 定义前置规则
 const prefixRules = [
@@ -1581,8 +1584,8 @@ function fixDialerProxy(proxy, renameMap, normalizedProxyNames) {
  * 同时开启或同时关闭时返回 null（不应用任何偏好，节点保持原样）
  */
 function getIpVersionPreference() {
-  const ipv4PreferEnabled = ruleOptionsEnable.代理IPV4优先;
-  const ipv6PreferEnabled = ruleOptionsEnable.代理IPV6优先;
+  const ipv4PreferEnabled = activeRuleOptions.代理IPV4优先;
+  const ipv6PreferEnabled = activeRuleOptions.代理IPV6优先;
 
   if (ipv4PreferEnabled && !ipv6PreferEnabled) return 'ipv4-prefer';
   if (ipv6PreferEnabled && !ipv4PreferEnabled) return 'ipv6-prefer';
@@ -1595,9 +1598,9 @@ function getIpVersionPreference() {
 function filterAndNormalizeProxies(config) {
   regionMatchCache.clear();
 
-  const filterLowRateProxiesEnabled = ruleOptionsEnable.过滤低倍率节点;
-  const filterHighRateProxiesEnabled = ruleOptionsEnable.过滤高倍率节点;
-  const filterNonRegionProxiesEnabled = ruleOptionsEnable.过滤非地区节点;
+  const filterLowRateProxiesEnabled = activeRuleOptions.过滤低倍率节点;
+  const filterHighRateProxiesEnabled = activeRuleOptions.过滤高倍率节点;
+  const filterNonRegionProxiesEnabled = activeRuleOptions.过滤非地区节点;
 
   const lowRateRegex = filterLowRateProxiesEnabled
     ? rateRegionDefinitions.find((r) => r.name === lowRateRegionName)?.regex
@@ -1660,9 +1663,9 @@ function filterProviderVisibleProxies(config) {
   // 因为 provider 模式要求原始节点信息原样保留。
   regionMatchCache.clear();
 
-  const filterLowRateProxiesEnabled = ruleOptionsEnable.过滤低倍率节点;
-  const filterHighRateProxiesEnabled = ruleOptionsEnable.过滤高倍率节点;
-  const filterNonRegionProxiesEnabled = ruleOptionsEnable.过滤非地区节点;
+  const filterLowRateProxiesEnabled = activeRuleOptions.过滤低倍率节点;
+  const filterHighRateProxiesEnabled = activeRuleOptions.过滤高倍率节点;
+  const filterNonRegionProxiesEnabled = activeRuleOptions.过滤非地区节点;
 
   const lowRateRegex = filterLowRateProxiesEnabled
     ? rateRegionDefinitions.find((r) => r.name === lowRateRegionName)?.regex
@@ -1706,8 +1709,8 @@ function filterProviderVisibleProxies(config) {
  * 构建地区策略组，可附带自动选择组
  */
 function createRegionGroup(name, icon, proxies) {
-  const generateRegionAutoSelectEnabled = ruleOptionsEnable.生成地区自动选择组;
-  const hideManualSelectGroupEnabled = ruleOptionsEnable.隐藏地区手动选择组;
+  const generateRegionAutoSelectEnabled = activeRuleOptions.生成地区自动选择组;
+  const hideManualSelectGroupEnabled = activeRuleOptions.隐藏地区手动选择组;
 
   if (generateRegionAutoSelectEnabled) {
     const urlTestName = `${name}-自动选择`;
@@ -1741,7 +1744,7 @@ function createRegionGroup(name, icon, proxies) {
  * 将节点按地区/倍率归类，构建地区策略组、倍率策略组与“其他节点”组
  */
 function buildRegionGroups(filteredProxies, customProxies) {
-  const generateRateGroupEnabled = ruleOptionsEnable.生成倍率组;
+  const generateRateGroupEnabled = activeRuleOptions.生成倍率组;
 
   const regionGroups = Object.fromEntries(allRegionDefinitions.map(({ name }) => [name, []]));
   const otherProxies = [];
@@ -1783,7 +1786,7 @@ function buildRegionGroups(filteredProxies, customProxies) {
  * 自定义节点不参与订阅节点过滤，也不参与 hosts 改写及 DNS 域名处理。
  */
 function buildCustomizeGroups(filteredProxies, customizeList = customizeProxies) {
-  const chainEnabled = ruleOptionsEnable.链式代理;
+  const chainEnabled = activeRuleOptions.链式代理;
 
   if (!customizeList.length) {
     if (chainEnabled) {
@@ -1833,11 +1836,11 @@ function buildCustomizeGroups(filteredProxies, customizeList = customizeProxies)
  * 构建基础/分流策略组/部分节点组、GLOBAL 组与规则集，并汇总分流规则
  */
 function buildFunctionalGroups(filteredProxies, generatedRegionGroups, customizeInfo) {
-  const minimalModeEnabled = ruleOptionsEnable.极简模式;
-  const blockForeignQuicEnabled = ruleOptionsEnable.屏蔽国外QUIC;
-  const addAllNodesToServiceGroupsEnabled = ruleOptionsEnable.分流组添加所有节点;
-  const chainEnabled = ruleOptionsEnable.链式代理;
-  const hideManualSelectGroupEnabled = ruleOptionsEnable.隐藏地区手动选择组;
+  const minimalModeEnabled = activeRuleOptions.极简模式;
+  const blockForeignQuicEnabled = activeRuleOptions.屏蔽国外QUIC;
+  const addAllNodesToServiceGroupsEnabled = activeRuleOptions.分流组添加所有节点;
+  const chainEnabled = activeRuleOptions.链式代理;
+  const hideManualSelectGroupEnabled = activeRuleOptions.隐藏地区手动选择组;
 
   const functionalGroups = [];
   const functionalRules = [];
@@ -1851,7 +1854,7 @@ function buildFunctionalGroups(filteredProxies, generatedRegionGroups, customize
   const filteredProxyNames = filteredProxies.map((p) => p.name);
   const allProxiesNames = [...customProxyNames, ...filteredProxyNames];
   const groupNamesOfSelect = generatedRegionGroups.filter((g) => g.type === 'select').map((g) => g.name);
-  const baseGroupNames = baseGroups.filter((g) => ruleOptionsEnable[g.name]).map((g) => g.name);
+  const baseGroupNames = baseGroups.filter((g) => activeRuleOptions[g.name]).map((g) => g.name);
   const customGroupNames = customGroup ? [customGroup.name] : [];
 
   const chainGroup =
@@ -1908,14 +1911,14 @@ function buildFunctionalGroups(filteredProxies, generatedRegionGroups, customize
     ...serviceConfigs.filter((svc) => svc.name !== 'AdBlock'),
   ];
   for (const svc of orderedServiceConfigs) {
-    if (!ruleOptionsEnable[svc.name]) continue;
+    if (!activeRuleOptions[svc.name]) continue;
 
     functionalRules.push(...(svc.rules || []));
     Object.assign(finalRuleProviders, svc.providers || {});
   }
 
   for (const svc of serviceConfigs) {
-    if (!ruleOptionsEnable[svc.name]) continue;
+    if (!activeRuleOptions[svc.name]) continue;
 
     let groupProxies = [];
     if (svc.fixedProxies) {
@@ -2255,7 +2258,7 @@ function simplifyDomainPolicy(policy) {
  * 2. proxy-server-nameserver 有且仅有一个 DNS 并且该 DNS 包含 127.0.0.1 并且 listen 包含 0.0.0.0
  */
 function buildDnsAndHostsConfig(config, filteredProxies) {
-  const minimalModeEnabled = ruleOptionsEnable.极简模式;
+  const minimalModeEnabled = activeRuleOptions.极简模式;
 
   const originalDnsConfig = config.dns || {};
 
@@ -2342,7 +2345,7 @@ function buildDnsAndHostsConfig(config, filteredProxies) {
       'rule-set:private',
       'rule-set:fakeip_filter',
       'rule-set:geolocation-cn',
-      ...(minimalModeEnabled ? [] : ruleOptionsEnable['FCM'] ? ['rule-set:googlefcm'] : []),
+      ...(minimalModeEnabled ? [] : activeRuleOptions['FCM'] ? ['rule-set:googlefcm'] : []),
       ...proxyFakeIpFilter,
     ],
     'default-nameserver': defaultDNS,
@@ -2678,7 +2681,7 @@ function main(config, context) {
 
   const { customProxies, customProxyNames, customGroup } = buildCustomizeGroups(filteredProxies);
 
-  const generatedRegionGroups = ruleOptionsEnable.极简模式
+  const generatedRegionGroups = activeRuleOptions.极简模式
     ? []
     : providerMode
       ? buildProviderRegionGroups(filteredProxies, customProxies, providerNames)
@@ -2735,14 +2738,14 @@ function main(config, context) {
   newConfig['rules'] = [
     ...prefixRules,
     ...blockWebRtcStun,
-    ...(ruleOptionsEnable.屏蔽国外QUIC ? blockForeignQuic : []),
+    ...(activeRuleOptions.屏蔽国外QUIC ? blockForeignQuic : []),
     ...functionalRules,
 
     // 兜底规则
     'RULE-SET,geolocation-!cn,默认代理',
     'RULE-SET,cn_ip,直连',
     'RULE-SET,private_ip,直连',
-    `MATCH,${ruleOptionsEnable.极简模式 ? '默认代理' : '漏网之鱼'}`,
+    `MATCH,${activeRuleOptions.极简模式 ? '默认代理' : '漏网之鱼'}`,
   ];
 
   return newConfig;
