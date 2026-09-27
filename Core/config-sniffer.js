@@ -15,8 +15,6 @@ const LINK_SCHEMES = [
   'hy2:',
   'ss:',
   'socks:',
-  'http:',
-  'https:',
 ];
 
 function safeJson(text) {
