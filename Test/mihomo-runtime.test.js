@@ -592,4 +592,3 @@ assert(ruleList.includes('AND,((NETWORK,UDP),(DST-PORT,5349)),REJECT'), 'STUN/TU
 assert(ruleList.includes('AND,((NETWORK,TCP),(DST-PORT,3478-3497)),REJECT'), 'STUN TCP protection rule missing');
 
 const serviceBaseline = api.main(fx.typicalSubscription());
-
