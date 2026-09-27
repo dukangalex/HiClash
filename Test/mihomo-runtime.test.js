@@ -321,10 +321,7 @@ const claudeRuleIndex = ruleList.indexOf('DOMAIN-SUFFIX,claude.ai,Claude');
 const anthropicRuleIndex = ruleList.indexOf('DOMAIN-SUFFIX,anthropic.com,Claude');
 const aiRuleIndex = ruleList.findIndex((rule) => rule.endsWith(',AI'));
 assert(claudeRuleIndex >= 0 && anthropicRuleIndex >= 0, 'Claude rules must be present');
-assert(
-  claudeRuleIndex < aiRuleIndex && anthropicRuleIndex < aiRuleIndex,
-  'Claude rules must precede AI routing rules',
-);
+assert(claudeRuleIndex < aiRuleIndex && anthropicRuleIndex < aiRuleIndex, 'Claude rules must precede AI routing rules');
 for (const rule of [
   'PROCESS-NAME-WILDCARD,*AnyDesk*,远控工具',
   'PROCESS-NAME-WILDCARD,*ToDesk*,远控工具',
