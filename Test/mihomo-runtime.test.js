@@ -316,27 +316,6 @@ assert(
   'hidden region switch: auto group must remain when region auto selection is enabled',
 );
 
-const ruleList = serviceBaseline.rules || [];
-const claudeRuleIndex = ruleList.indexOf('DOMAIN-SUFFIX,claude.ai,Claude');
-const anthropicRuleIndex = ruleList.indexOf('DOMAIN-SUFFIX,anthropic.com,Claude');
-const aiRuleIndex = ruleList.findIndex((rule) => rule.endsWith(',AI'));
-assert(claudeRuleIndex >= 0 && anthropicRuleIndex >= 0, 'Claude rules must be present');
-assert(claudeRuleIndex < aiRuleIndex && anthropicRuleIndex < aiRuleIndex, 'Claude rules must precede AI routing rules');
-for (const rule of [
-  'PROCESS-NAME-WILDCARD,*AnyDesk*,远控工具',
-  'PROCESS-NAME-WILDCARD,*ToDesk*,远控工具',
-  'PROCESS-NAME-WILDCARD,*TeamViewer*,远控工具',
-  'PROCESS-NAME-WILDCARD,*RustDesk*,远控工具',
-  'PROCESS-NAME-WILDCARD,*tailscale*,远控工具',
-  'PROCESS-NAME-WILDCARD,*zerotier*,远控工具',
-]) {
-  assert(ruleList.includes(rule), 'remote-control process rule missing: ' + rule);
-}
-assert(ruleList.includes('AND,((NETWORK,UDP),(DST-PORT,3478-3497)),REJECT'), 'STUN UDP protection rule missing');
-assert(ruleList.includes('AND,((NETWORK,UDP),(DST-PORT,5349)),REJECT'), 'STUN/TURN UDP protection rule missing');
-assert(ruleList.includes('AND,((NETWORK,TCP),(DST-PORT,3478-3497)),REJECT'), 'STUN TCP protection rule missing');
-
-const serviceBaseline = api.main(fx.typicalSubscription());
 const serviceNodeNames = new Set(
   (serviceBaseline.proxies || [])
     .filter((proxy) => !['direct', 'reject', 'rematch'].includes(String(proxy.type).toLowerCase()))
@@ -592,3 +571,25 @@ assert(globalGroup?.proxies.includes('直连'), 'GLOBAL must expose 直连');
 assert(remoteGroup?.proxies?.join(',') === 'REJECT-DROP,默认代理,直连', '远控工具 must use its fixed proxy set');
 assert(fallbackGroup?.type === 'fallback', '故障转移 must remain fallback');
 assert(fallbackGroup?.['exclude-type'] === 'DIRECT', '故障转移 must exclude DIRECT');
+const ruleList = serviceBaseline.rules || [];
+const claudeRuleIndex = ruleList.indexOf('DOMAIN-SUFFIX,claude.ai,Claude');
+const anthropicRuleIndex = ruleList.indexOf('DOMAIN-SUFFIX,anthropic.com,Claude');
+const aiRuleIndex = ruleList.findIndex((rule) => rule.endsWith(',AI'));
+assert(claudeRuleIndex >= 0 && anthropicRuleIndex >= 0, 'Claude rules must be present');
+assert(claudeRuleIndex < aiRuleIndex && anthropicRuleIndex < aiRuleIndex, 'Claude rules must precede AI routing rules');
+for (const rule of [
+  'PROCESS-NAME-WILDCARD,*AnyDesk*,远控工具',
+  'PROCESS-NAME-WILDCARD,*ToDesk*,远控工具',
+  'PROCESS-NAME-WILDCARD,*TeamViewer*,远控工具',
+  'PROCESS-NAME-WILDCARD,*RustDesk*,远控工具',
+  'PROCESS-NAME-WILDCARD,*tailscale*,远控工具',
+  'PROCESS-NAME-WILDCARD,*zerotier*,远控工具',
+]) {
+  assert(ruleList.includes(rule), 'remote-control process rule missing: ' + rule);
+}
+assert(ruleList.includes('AND,((NETWORK,UDP),(DST-PORT,3478-3497)),REJECT'), 'STUN UDP protection rule missing');
+assert(ruleList.includes('AND,((NETWORK,UDP),(DST-PORT,5349)),REJECT'), 'STUN/TURN UDP protection rule missing');
+assert(ruleList.includes('AND,((NETWORK,TCP),(DST-PORT,3478-3497)),REJECT'), 'STUN TCP protection rule missing');
+
+const serviceBaseline = api.main(fx.typicalSubscription());
+
