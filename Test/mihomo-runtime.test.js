@@ -241,6 +241,136 @@ for (const name of serviceSwitchNames) {
   }
 }
 
+
+function loadWithSwitches(overrides) {
+  return loadScript('Script/mihomoScript.js', (source) => {
+    let updated = source;
+    for (const [name, enabled] of Object.entries(overrides)) {
+      const token = name + ':';
+      let changed = false;
+      updated = updated
+        .split(String.fromCharCode(10))
+        .map((line) => {
+          const trimmed = line.trimStart();
+          if (!trimmed.startsWith(token)) return line;
+          const valueStart = line.indexOf(token) + token.length;
+          const suffix = line.slice(valueStart);
+          const match = suffix.match(/^([ \t]*)(true|false)([ \t]*,)/);
+          if (!match) return line;
+          changed = true;
+          return (
+            line.slice(0, valueStart) +
+            match[1] +
+            String(enabled) +
+            match[3] +
+            suffix.slice(match[0].length)
+          );
+        })
+        .join(String.fromCharCode(10));
+      if (!changed) throw new Error('switch injection failed: ' + name);
+    }
+    return updated;
+  });
+}
+
+function namesOfGroups(config) {
+  return (config['proxy-groups'] || []).map((group) => group.name);
+}
+
+const regionBaseline = api.main(fx.typicalSubscription());
+const regionNoAuto = loadWithSwitches({ 生成地区自动选择组: false }).main(fx.typicalSubscription());
+const hkAuto = regionBaseline['proxy-groups']?.find((group) => group.name === '香港-自动选择');
+const hkManual = regionBaseline['proxy-groups']?.find((group) => group.name === '香港');
+assert(hkAuto?.type === 'url-test', 'region auto baseline: 香港-自动选择 must be url-test');
+assert(hkManual?.type === 'select', 'region baseline: 香港 must be select');
+assert(!namesOfGroups(regionNoAuto).includes('香港-自动选择'), 'region auto disabled: auto group must be removed');
+assert(namesOfGroups(regionNoAuto).includes('香港'), 'region auto disabled: manual region group must remain');
+
+const hiddenRegions = loadWithSwitches({ 隐藏地区手动选择组: true }).main(fx.typicalSubscription());
+const hiddenHongKong = hiddenRegions['proxy-groups']?.find((group) => group.name === '香港');
+assert(hiddenHongKong?.hidden === true, 'hidden region switch: 香港 group must be hidden');
+assert(
+  hiddenRegions['proxy-groups']?.some((group) => group.name === '香港-自动选择'),
+  'hidden region switch: auto group must remain when region auto selection is enabled',
+);
+
+const noRateGroups = loadWithSwitches({ 生成倍率组: false }).main(fx.typicalSubscription());
+assert(!namesOfGroups(noRateGroups).includes('低倍率节点'), 'rate groups disabled: low-rate group must be removed');
+assert(!namesOfGroups(noRateGroups).includes('高倍率节点'), 'rate groups disabled: high-rate group must be removed');
+
+const allNodesInServices = loadWithSwitches({ 分流组添加所有节点: true }).main(fx.typicalSubscription());
+const allNodeNames = new Set(
+  (allNodesInServices.proxies || []).map((proxy) => proxy.name),
+);
+const youtubeAll = allNodesInServices['proxy-groups']?.find((group) => group.name === 'YouTube');
+assert(youtubeAll, 'all-node service switch: YouTube group missing');
+for (const proxyName of allNodeNames) {
+  assert(
+    youtubeAll.proxies?.includes(proxyName),
+    'all-node service switch: YouTube must include node ' + proxyName,
+  );
+}
+
+const lowFiltered = loadWithSwitches({ 过滤低倍率节点: true }).main(fx.typicalSubscription());
+const lowFilteredNames = new Set((lowFiltered.proxies || []).map((proxy) => proxy.name));
+assert(![...lowFilteredNames].some((name) => /0\\.3x|0\\.5倍/i.test(name)), 'low-rate filter must remove low-rate nodes');
+assert(lowFilteredNames.has('香港 2x 速率'), 'low-rate filter must retain a high-rate node');
+
+const highFiltered = loadWithSwitches({ 过滤高倍率节点: true }).main(fx.typicalSubscription());
+const highFilteredNames = new Set((highFiltered.proxies || []).map((proxy) => proxy.name));
+assert(![...highFilteredNames].some((name) => /2x|\\*3/i.test(name)), 'high-rate filter must remove high-rate nodes');
+assert(highFilteredNames.has('日本 0.3x 流量'), 'high-rate filter must retain a low-rate node');
+
+const nonRegionFiltered = api.main(fx.typicalSubscription());
+const nonRegionNames = new Set((nonRegionFiltered.proxies || []).map((proxy) => proxy.name));
+assert(!nonRegionNames.has('官方网站'), 'non-region filter baseline must remove information node');
+assert(!nonRegionNames.has('剩余流量'), 'non-region filter baseline must remove traffic node');
+const nonRegionRetained = loadWithSwitches({ 过滤非地区节点: false }).main(fx.typicalSubscription());
+const retainedNames = new Set((nonRegionRetained.proxies || []).map((proxy) => proxy.name));
+assert(retainedNames.has('官方网站'), 'non-region filter disabled must retain information node');
+assert(retainedNames.has('剩余流量'), 'non-region filter disabled must retain traffic node');
+
+const quicBlocked = api.main(fx.typicalSubscription());
+const quicAllowed = loadWithSwitches({ 屏蔽国外QUIC: false }).main(fx.typicalSubscription());
+for (const rule of [
+  'AND,((NETWORK,UDP),(DST-PORT,3478-3497)),REJECT',
+  'AND,((NETWORK,UDP),(DST-PORT,5349)),REJECT',
+  'AND,((NETWORK,UDP),(DST-PORT,19302-19309)),REJECT',
+  'AND,((NETWORK,TCP),(DST-PORT,3478-3497)),REJECT',
+  'AND,((NETWORK,TCP),(DST-PORT,5349)),REJECT',
+]) {
+  assert(quicBlocked.rules.includes(rule), 'QUIC protection baseline missing: ' + rule);
+  assert(!quicAllowed.rules.includes(rule), 'QUIC protection disabled must remove: ' + rule);
+}
+assert(quicBlocked['rule-providers']?.cn_additional, 'QUIC protection baseline must retain cn_additional provider');
+assert(!quicAllowed['rule-providers']?.cn_additional, 'QUIC protection disabled must remove cn_additional provider');
+
+const ipv4Config = loadWithSwitches({ 代理IPV4优先: true }).main(fx.typicalSubscription());
+const ipv6Config = loadWithSwitches({ 代理IPV6优先: true }).main(fx.typicalSubscription());
+const dualIpConfig = loadWithSwitches({ 代理IPV4优先: true, 代理IPV6优先: true }).main(fx.typicalSubscription());
+assert(
+  ipv4Config.proxies.every((proxy) => proxy['ip-version'] === 'ipv4-prefer'),
+  'IPv4 preference must set ip-version=ipv4-prefer on every proxy',
+);
+assert(
+  ipv6Config.proxies.every((proxy) => proxy['ip-version'] === 'ipv6-prefer'),
+  'IPv6 preference must set ip-version=ipv6-prefer on every proxy',
+);
+assert(
+  dualIpConfig.proxies.every((proxy) => !proxy['ip-version']),
+  'IPv4 and IPv6 preferences together must leave ip-version unchanged',
+);
+
+const minimalConfig = loadWithSwitches({ 极简模式: true }).main(fx.typicalSubscription());
+const minimalGroupNames = namesOfGroups(minimalConfig);
+assert(minimalGroupNames.includes('默认代理'), 'minimal mode must retain 默认代理');
+assert(!minimalGroupNames.includes('YouTube'), 'minimal mode must remove service groups');
+assert(!minimalGroupNames.includes('香港'), 'minimal mode must remove generated region groups');
+assert(
+  minimalConfig.rules.length === 0,
+  'minimal mode must emit no functional routing rules',
+);
+
 validateGeneratedConfig(config, 'typical');
 
 const providerConfig = api.main(fx.providerSubscription());
