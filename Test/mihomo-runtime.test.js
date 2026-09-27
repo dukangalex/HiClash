@@ -280,6 +280,27 @@ function regionFixture() {
   };
 }
 
+const ipFixture = {
+  proxies: [
+    { name: 'IPv4-测试', type: 'ss', server: '1.2.3.40', port: 443, cipher: 'aes-256-gcm', password: 'x' },
+  ],
+};
+const ipv4Preferred = loadWithSwitches({ 代理IPV4优先: true, 代理IPV6优先: false }).main(ipFixture);
+const ipv6Preferred = loadWithSwitches({ 代理IPV4优先: false, 代理IPV6优先: true }).main(ipFixture);
+const bothPreferred = loadWithSwitches({ 代理IPV4优先: true, 代理IPV6优先: true }).main(ipFixture);
+assert(
+  ipv4Preferred.proxies.find((proxy) => proxy.name.includes('IPv4-测试'))?.['ip-version'] === 'ipv4-prefer',
+  'IPv4 preference switch must set ipv4-prefer',
+);
+assert(
+  ipv6Preferred.proxies.find((proxy) => proxy.name.includes('IPv4-测试'))?.['ip-version'] === 'ipv6-prefer',
+  'IPv6 preference switch must set ipv6-prefer',
+);
+assert(
+  bothPreferred.proxies.find((proxy) => proxy.name.includes('IPv4-测试'))?.['ip-version'] === undefined,
+  'enabling both IP preference switches must leave proxy ip-version unchanged',
+);
+
 const regionFixtureConfig = api.main(regionFixture());
 const regionBaseline = api.main(fx.typicalSubscription());
 const regionNoAuto = loadWithSwitches({ 生成地区自动选择组: false }).main(fx.typicalSubscription());
