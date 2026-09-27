@@ -38,7 +38,14 @@ function createServer(options) {
         const body = await readJson(req);
         const supplied = body.options === undefined ? {} : body.options;
         validateCustomOptions(supplied);
-        return send(res, 200, compileMihomoScript(body.config || {}, supplied));
+        return send(
+          res,
+          200,
+          compileMihomoScript(body.config || {}, supplied, {
+            frontName: body.frontName,
+            landing: body.landing,
+          }),
+        );
       }
       if (req.method === 'POST' && req.url === '/api/custom-options/resolve') {
         const body = await readJson(req);
