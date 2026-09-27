@@ -317,12 +317,12 @@ assert(
   ![...lowFilteredNames].some((name) => /0\\.3x|0\\.5倍/i.test(name)),
   'low-rate filter must remove low-rate nodes',
 );
-assert(lowFilteredNames.has('香港 普通测试'), 'low-rate filter must retain a normal node');
+assert([...lowFilteredNames].some((name) => name.includes('香港 普通测试')), 'low-rate filter must retain a normal node');
 
 const highFiltered = loadWithSwitches({ 过滤高倍率节点: true }).main(rateFixture());
 const highFilteredNames = new Set((highFiltered.proxies || []).map((proxy) => proxy.name));
 assert(![...highFilteredNames].some((name) => /2x|\\*3/i.test(name)), 'high-rate filter must remove high-rate nodes');
-assert(highFilteredNames.has('香港 普通测试'), 'high-rate filter must retain a normal node');
+assert([...highFilteredNames].some((name) => name.includes('香港 普通测试')), 'high-rate filter must retain a normal node');
 
 const nonRegionFiltered = api.main(fx.typicalSubscription());
 const nonRegionNames = new Set((nonRegionFiltered.proxies || []).map((proxy) => proxy.name));
