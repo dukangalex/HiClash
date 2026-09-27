@@ -108,9 +108,22 @@ function compileMihomoScript(config, customOptions, context) {
     const frontName = String(compileContext.frontName || '').trim();
     if (!frontName) throw new Error('frontName is required when landing is configured');
 
+    const landingGroupName = String(landing.name || '链式落地').trim() || '链式落地';
+    if (landingGroupName === frontName) {
+      throw new Error('landing group name must differ from frontName');
+    }
+
+    const existingProxyNames = new Set(
+      (Array.isArray(output.proxies) ? output.proxies : [])
+        .map((proxy) => proxy && proxy.name)
+        .filter(Boolean),
+    );
+    if (existingProxyNames.has(landingGroupName)) {
+      throw new Error('landing group name conflicts with existing proxy: ' + landingGroupName);
+    }
+
     const landingConfig = compileMihomoLanding(frontName, landing);
     mergeLandingConfig(output, landingConfig);
-    const landingGroupName = String(landing.name || '链式落地').trim() || '链式落地';
     exposeLandingInGeneratedGroups(output, landingGroupName);
   }
 
