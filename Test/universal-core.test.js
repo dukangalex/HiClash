@@ -153,9 +153,7 @@ function run() {
     () =>
       core.compileMihomoScript(
         {
-          proxies: [
-            { name: '前置节点', type: 'socks', server: 'front.example', port: 443 },
-          ],
+          proxies: [{ name: '前置节点', type: 'socks', server: 'front.example', port: 443 }],
         },
         { 链式代理: true },
         {
