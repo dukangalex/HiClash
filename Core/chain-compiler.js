@@ -15,7 +15,9 @@ function validateChain(chain) {
     if (!hop || typeof hop !== 'object' || !hop.name) {
       throw new Error('invalid chain hop');
     }
-    if (seen.has(hop.name)) throw new Error(`chain cycle detected at ${hop.name}`);
+    if (seen.has(hop.name)) {
+      throw new Error(`chain cycle detected at ${hop.name}`);
+    }
     seen.add(hop.name);
   }
   return chain;
@@ -123,4 +125,9 @@ function compile(kernel, chain) {
   throw new Error(`unsupported kernel: ${kernel}`);
 }
 
-module.exports = { compile, validateChain, validateLanding, compileMihomoLanding };
+module.exports = {
+  compile,
+  validateChain,
+  validateLanding,
+  compileMihomoLanding,
+};
