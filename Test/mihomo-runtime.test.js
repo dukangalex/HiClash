@@ -487,22 +487,34 @@ try {
   fs.rmSync(tempDir, { recursive: true, force: true });
 }
 
-// Runtime validation is pinned to the official v1.19.31 release binary in CI.for (const name of ['手动选择', '自动选择', '负载均衡', '故障转移']) {
-  for (const proxyName of proxyNames) {
-    assert(baseGroups[name].proxies.includes(proxyName), name + ' must include node ' + proxyName);
-  }
-}
-for (const name of ['手动选择', '自动选择', '负载均衡', '故障转移']) {
-  for (const groupName of ['手动选择', '自动选择', '负载均衡', '故障转移']) {
+// Runtime validation is pinned to the official v1.19.31 release binary in CI.
+
+const proxyNames = new Set((config.proxies || []).map((proxy) => proxy.name));
+const groupNames = new Set(
+  (config['proxy-groups'] || []).map((group) => group.name),
+);
+const baseNames = ['手动选择', '自动选择', '负载均衡', '故障转移'];
+
+for (const name of baseNames) {
+  const members = baseGroups[name].proxies || [];
+  for (const member of members) {
     assert(
-      !baseGroups[name].proxies.includes(groupName),
-      name + ' must not recursively include base group ' + groupName,
+      proxyNames.has(member) ||
+        groupNames.has(member) ||
+        ['DIRECT', 'REJECT', 'REJECT-DROP'].includes(member),
+      name + ' member must be a node or group: ' + member,
     );
+  }
+  for (const proxyName of proxyNames) {
+    assert(members.includes(proxyName), name + ' must include node ' + proxyName);
+  }
+  for (const groupName of baseNames) {
+    assert(!members.includes(groupName), name + ' must not include base group ' + groupName);
   }
 }
 assert(
   baseGroups['默认代理'].proxies.some((member) => groupNames.has(member)),
-  '默认代理 must expose at least one generated or base strategy group',
+  '默认代理 must expose a strategy group',
 );
 
 const autoGroup = baseGroups['自动选择'];
