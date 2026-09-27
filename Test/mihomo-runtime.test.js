@@ -241,7 +241,6 @@ for (const name of serviceSwitchNames) {
   }
 }
 
-
 function loadWithSwitches(overrides) {
   return loadScript('Script/mihomoScript.js', (source) => {
     let updated = source;
@@ -258,13 +257,7 @@ function loadWithSwitches(overrides) {
           const match = suffix.match(/^([ \t]*)(true|false)([ \t]*,)/);
           if (!match) return line;
           changed = true;
-          return (
-            line.slice(0, valueStart) +
-            match[1] +
-            String(enabled) +
-            match[3] +
-            suffix.slice(match[0].length)
-          );
+          return line.slice(0, valueStart) + match[1] + String(enabled) + match[3] + suffix.slice(match[0].length);
         })
         .join(String.fromCharCode(10));
       if (!changed) throw new Error('switch injection failed: ' + name);
@@ -299,9 +292,7 @@ assert(!namesOfGroups(noRateGroups).includes('低倍率节点'), 'rate groups di
 assert(!namesOfGroups(noRateGroups).includes('高倍率节点'), 'rate groups disabled: high-rate group must be removed');
 
 const allNodesInServices = loadWithSwitches({ 分流组添加所有节点: true }).main(fx.typicalSubscription());
-const allNodeNames = new Set(
-  (allNodesInServices.proxies || []).map((proxy) => proxy.name),
-);
+const allNodeNames = new Set((allNodesInServices.proxies || []).map((proxy) => proxy.name));
 const youtubeAll = allNodesInServices['proxy-groups']?.find((group) => group.name === 'YouTube');
 assert(youtubeAll, 'all-node service switch: YouTube group missing');
 for (const proxyName of allNodeNames) {
@@ -366,10 +357,7 @@ const minimalGroupNames = namesOfGroups(minimalConfig);
 assert(minimalGroupNames.includes('默认代理'), 'minimal mode must retain 默认代理');
 assert(!minimalGroupNames.includes('YouTube'), 'minimal mode must remove service groups');
 assert(!minimalGroupNames.includes('香港'), 'minimal mode must remove generated region groups');
-assert(
-  minimalConfig.rules.length === 0,
-  'minimal mode must emit no functional routing rules',
-);
+assert(minimalConfig.rules.length === 0, 'minimal mode must emit no functional routing rules');
 
 validateGeneratedConfig(config, 'typical');
 
