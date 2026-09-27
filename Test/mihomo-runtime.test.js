@@ -392,7 +392,6 @@ for (const serviceName of serviceSwitchNames) {
 }
 assert(minimalConfig.rules.length > 0, 'minimal mode must retain base/security rules');
 
-
 const baseGroups = Object.fromEntries(
   ['默认代理', '手动选择', '自动选择', '负载均衡', '故障转移'].map((name) => [
     name,
@@ -407,14 +406,14 @@ assert(baseGroups['故障转移']?.type === 'fallback', '故障转移 must be a 
 
 for (const name of ['默认代理', '手动选择', '自动选择', '负载均衡', '故障转移']) {
   assert(Array.isArray(baseGroups[name]?.proxies), name + ' must have explicit proxy members in node mode');
-  assert(baseGroups[name].proxies.includes('REJECT-DROP') || baseGroups[name].proxies.length > 0, name + ' must not be empty');
+  assert(
+    baseGroups[name].proxies.includes('REJECT-DROP') || baseGroups[name].proxies.length > 0,
+    name + ' must not be empty',
+  );
 }
 
 const autoGroup = baseGroups['自动选择'];
-assert(
-  autoGroup.url && Number(autoGroup.interval) > 0,
-  '自动选择 must define a positive health-check interval',
-);
+assert(autoGroup.url && Number(autoGroup.interval) > 0, '自动选择 must define a positive health-check interval');
 const loadBalance = baseGroups['负载均衡'];
 assert(
   ['consistent-hashing', 'round-robin', 'sticky-sessions'].includes(loadBalance.strategy),
