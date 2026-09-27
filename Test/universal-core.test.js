@@ -249,6 +249,7 @@ function run() {
   });
   assert.equal(bypass.evaluate({ process: 'com.example.cn' }).action, 'DIRECT');
   assert.equal(bypass.evaluate({ asn: 45090 }).action, 'DIRECT');
+  assert.equal(bypass.evaluate({ latencyMs: 1 }).action, 'PROXY');
 
   const controller = core.createController();
   assert.equal(controller.routeDecision({ coreState: 'stopped' }), 'BLOCK');
