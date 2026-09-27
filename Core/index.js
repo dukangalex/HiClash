@@ -3,6 +3,7 @@
 const { sniff } = require('./config-sniffer');
 const { compile, validateChain, compileMihomoLanding } = require('./chain-compiler');
 const { createAdapter } = require('./adapters');
+const { compileMihomoScript } = require('./mihomo-script-runner');
 const { NetworkContext, STATES } = require('./network-context');
 const { ChinaBypassEngine } = require('./bypass-engine');
 const { SelfHealing } = require('./self-healing');
@@ -37,6 +38,7 @@ module.exports = {
   sniff,
   compile,
   compileMihomoLanding,
+  compileMihomoScript,
   createAdapter,
   NetworkContext,
   STATES,
