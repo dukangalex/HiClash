@@ -41,8 +41,7 @@ jobs:
         run: npm install -g prettier
 
       - name: check formatting
-        run: |
-          git ls-files -z '*.js' '*.yml' '*.yaml' | xargs -0 -r prettier --check
+        run: git ls-files -z '*.js' '*.yml' '*.yaml' | xargs -0 -r prettier --check
 
   test:
     needs: format
