@@ -308,12 +308,12 @@ const landingSubscriptionConfig = loadScript('Script/mihomoScript.js', (source) 
       "url: 'https://example.com/landing-subscription',\n    path: './proxy_providers/hiclash-landing-subscription.yaml',",
     )
     .replace(
-      "url: '',\n    path: './proxy_providers/hiclash-cocks.yaml',",
-      "url: 'https://example.com/cocks',\n    path: './proxy_providers/hiclash-cocks.yaml',",
+      "server: '',\n    port: 0,\n    username: '',\n    password: '',",
+      "server: 'socks5.example.com',\n    port: 1080,\n    username: 'user',\n    password: 'pass',",
     )
     .replace(
-      "url: '',\n    path: './proxy_providers/hiclash-http.yaml',",
-      "url: 'https://example.com/http',\n    path: './proxy_providers/hiclash-http.yaml',",
+      "server: '',\n    port: 0,\n    username: '',\n    password: '',",
+      "server: 'http.example.com',\n    port: 8080,\n    username: 'http-user',\n    password: 'http-pass',",
     )
     .replace('const customizeProxies = [];', "const customizeProxies = [{ name: '自建-日本-落地测试', type: 'ss', server: '1.2.3.50', port: 443, cipher: 'aes-256-gcm', password: 'x' }];"),
 ).main({
@@ -322,21 +322,29 @@ const landingSubscriptionConfig = loadScript('Script/mihomoScript.js', (source) 
   ],
 });
 assert(landingSubscriptionConfig['proxy-providers']?.hiclash_landing_subscription?.url === 'https://example.com/landing-subscription', 'landing subscription URL must be preserved');
-assert(landingSubscriptionConfig['proxy-providers']?.hiclash_cocks?.url === 'https://example.com/cocks', 'COCKS URL must be preserved');
-assert(landingSubscriptionConfig['proxy-providers']?.hiclash_http?.url === 'https://example.com/http', 'HTTP URL must be preserved');
+const socks5Exit = landingSubscriptionConfig.proxies.find((proxy) => proxy.name === 'SOCKS5');
+assert(socks5Exit?.type === 'socks', 'SOCKS5 landing exit must use socks outbound type');
+assert(socks5Exit?.server === 'socks5.example.com' && socks5Exit?.port === 1080, 'SOCKS5 endpoint must be preserved');
+assert(socks5Exit?.username === 'user' && socks5Exit?.password === 'pass', 'SOCKS5 credentials must be preserved');
+assert(socks5Exit?.['dialer-proxy'] === '链式中转', 'SOCKS5 landing exit must use current config chain front');
+const httpExit = landingSubscriptionConfig.proxies.find((proxy) => proxy.name === 'HTTP');
+assert(httpExit?.type === 'http', 'HTTP landing exit must use http outbound type');
+assert(httpExit?.server === 'http.example.com' && httpExit?.port === 8080, 'HTTP endpoint must be preserved');
+assert(httpExit?.username === 'http-user' && httpExit?.password === 'http-pass', 'HTTP credentials must be preserved');
+assert(httpExit?.['dialer-proxy'] === '链式中转', 'HTTP landing exit must use current config chain front');
 const landingGroupNames = namesOfGroups(landingSubscriptionConfig);
 assert(landingGroupNames.includes('落地订阅'), 'landing subscription group must be generated');
-assert(landingGroupNames.includes('COCKS'), 'COCKS group must be generated');
+assert(landingGroupNames.includes('SOCKS5'), 'SOCKS5 group must be generated');
 assert(landingGroupNames.includes('HTTP'), 'HTTP group must be generated');
 const landingChainGroup = landingSubscriptionConfig['proxy-groups']?.find((group) => group.name === '链式中转');
 assert(!landingChainGroup?.proxies?.includes('落地订阅'), 'chain front group must not contain landing subscription');
-assert(!landingChainGroup?.proxies?.includes('COCKS'), 'chain front group must not contain COCKS');
+assert(!landingChainGroup?.proxies?.includes('SOCKS5'), 'chain front group must not contain SOCKS5');
 assert(!landingChainGroup?.proxies?.includes('HTTP'), 'chain front group must not contain HTTP');
 const landingProvider = landingSubscriptionConfig['proxy-providers']?.hiclash_landing_subscription;
 assert(landingProvider?.override?.['dialer-proxy'] === '链式中转', 'landing subscription must use current config chain front');
 const landingExitGroup = landingSubscriptionConfig['proxy-groups']?.find((group) => group.name === '链式落地');
 assert(landingExitGroup?.proxies?.includes('落地订阅'), 'landing exit group must expose landing subscription');
-assert(landingExitGroup?.proxies?.includes('COCKS'), 'landing exit group must expose COCKS');
+assert(landingExitGroup?.proxies?.includes('SOCKS5'), 'landing exit group must expose SOCKS5');
 assert(landingExitGroup?.proxies?.includes('HTTP'), 'landing exit group must expose HTTP');
 const landingNode = landingSubscriptionConfig.proxies.find((proxy) => proxy.name === '自建-日本-落地测试');
 assert(landingNode?.['dialer-proxy'] === '链式中转', 'custom landing node must use the chain group as dialer-proxy');
