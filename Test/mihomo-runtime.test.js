@@ -392,6 +392,37 @@ for (const serviceName of serviceSwitchNames) {
 }
 assert(minimalConfig.rules.length > 0, 'minimal mode must retain base/security rules');
 
+
+const baseGroups = Object.fromEntries(
+  ['默认代理', '手动选择', '自动选择', '负载均衡', '故障转移'].map((name) => [
+    name,
+    config['proxy-groups']?.find((group) => group.name === name),
+  ]),
+);
+assert(baseGroups['默认代理']?.type === 'select', '默认代理 must be a select group');
+assert(baseGroups['手动选择']?.type === 'select', '手动选择 must be a select group');
+assert(baseGroups['自动选择']?.type === 'url-test', '自动选择 must be a url-test group');
+assert(baseGroups['负载均衡']?.type === 'load-balance', '负载均衡 must be a load-balance group');
+assert(baseGroups['故障转移']?.type === 'fallback', '故障转移 must be a fallback group');
+
+for (const name of ['默认代理', '手动选择', '自动选择', '负载均衡', '故障转移']) {
+  assert(Array.isArray(baseGroups[name]?.proxies), name + ' must have explicit proxy members in node mode');
+  assert(baseGroups[name].proxies.includes('REJECT-DROP') || baseGroups[name].proxies.length > 0, name + ' must not be empty');
+}
+
+const autoGroup = baseGroups['自动选择'];
+assert(
+  autoGroup.url && Number(autoGroup.interval) > 0,
+  '自动选择 must define a positive health-check interval',
+);
+const loadBalance = baseGroups['负载均衡'];
+assert(
+  ['consistent-hashing', 'round-robin', 'sticky-sessions'].includes(loadBalance.strategy),
+  '负载均衡 must use a documented load-balance strategy',
+);
+const fallback = baseGroups['故障转移'];
+assert(fallback['exclude-type'] === 'DIRECT', '故障转移 must exclude DIRECT');
+
 validateGeneratedConfig(config, 'typical');
 
 const providerConfig = api.main(fx.providerSubscription());
