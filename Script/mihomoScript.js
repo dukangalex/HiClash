@@ -1829,6 +1829,9 @@ function buildLandingSubscriptionConfig(existingProviderNames = []) {
       url: module.url,
       path: module.path,
       interval: module.interval,
+      override: {
+        'dialer-proxy': dialerProxyName,
+      },
     };
     providerNames.push(providerName);
 
@@ -1846,12 +1849,12 @@ function buildLandingSubscriptionConfig(existingProviderNames = []) {
 
 // ---构建自定义节点组---
 
-function buildCustomizeGroups(filteredProxies, customizeList = customizeProxies) {
+function buildCustomizeGroups(filteredProxies, customizeList = customizeProxies, landingGroups = []) {
   const chainEnabled = ruleOptionsEnable.链式代理;
 
-  if (!customizeList.length) {
+  if (!customizeList.length && !landingGroups.length) {
     if (chainEnabled) {
-      throw new Error('启用失败，请在脚本中添加自定义节点后尝试');
+      return { customProxies: [], customProxyNames: [], customGroup: null };
     }
     return { customProxies: [], customProxyNames: [], customGroup: null };
   }
@@ -1880,7 +1883,7 @@ function buildCustomizeGroups(filteredProxies, customizeList = customizeProxies)
   const customGroup = {
     ...selectBaseOption,
     name: chainEnabled ? '链式落地' : '自建节点',
-    proxies: customProxyNames,
+    proxies: [...customProxyNames, ...landingGroups.map((group) => group.name)],
     icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Server.svg',
   };
 
@@ -1923,10 +1926,7 @@ function buildFunctionalGroups(filteredProxies, generatedRegionGroups, customize
       ? {
           ...selectBaseOption,
           name: dialerProxyName,
-          proxies: [
-            ...filteredProxyNames,
-            ...(landingSubscriptionGroups || []).map((group) => group.name),
-          ],
+          proxies: filteredProxyNames,
           icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Bypass.svg',
         }
       : null;
@@ -2743,7 +2743,11 @@ function main(config) {
   const originalProxies = Array.isArray(config.proxies) ? config.proxies : [];
   const filteredProxies = providerMode ? filterProviderVisibleProxies(config) : filterAndNormalizeProxies(config);
 
-  const { customProxies, customProxyNames, customGroup } = buildCustomizeGroups(filteredProxies);
+  const { customProxies, customProxyNames, customGroup } = buildCustomizeGroups(
+    filteredProxies,
+    customizeProxies,
+    landingSubscriptionConfig.groups,
+  );
 
   const generatedRegionGroups = ruleOptionsEnable.极简模式
     ? []
