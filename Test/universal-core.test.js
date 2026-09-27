@@ -149,7 +149,9 @@ function run() {
       },
     },
   );
-  const integratedProxy = integratedLanding.config.proxies.find((proxy) => proxy.name === '链式落地');
+  const integratedProxy = integratedLanding.config.proxies.find(
+    (proxy) => proxy.name === '链式落地',
+  );
   assert.equal(integratedProxy['dialer-proxy'], '前置节点');
   assert.equal(integratedProxy.type, 'socks');
   assert.ok(
@@ -161,7 +163,11 @@ function run() {
   assert.throws(
     () =>
       core.compileMihomoScript(
-        { proxies: [{ name: '前置节点', type: 'socks', server: 'front.example', port: 443 }] },
+        {
+          proxies: [
+            { name: '前置节点', type: 'socks', server: 'front.example', port: 443 },
+          ],
+        },
         { 链式代理: false },
         {
           frontName: '前置节点',
