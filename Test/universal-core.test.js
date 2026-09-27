@@ -2,7 +2,11 @@
 
 const assert = require('node:assert/strict');
 const core = require('../Core');
-const { customOptionsSchema, getDefaultCustomOptions, validateCustomOptions } = require('../Core/custom-options');
+const {
+  customOptionsSchema,
+  getDefaultCustomOptions,
+  validateCustomOptions,
+} = require('../Core/custom-options');
 
 function run() {
   assert.equal(customOptionsSchema.version, 1);
@@ -46,7 +50,10 @@ function run() {
     链式代理: false,
   };
   assert.deepEqual(getDefaultCustomOptions(), expectedCustomOptions);
-  assert.deepEqual(Object.keys(customOptionsSchema.options), Object.keys(expectedCustomOptions));
+  assert.deepEqual(
+    Object.keys(customOptionsSchema.options),
+    Object.keys(expectedCustomOptions),
+  );
 
   assert.equal(customOptionsSchema.type, 'toggle-map');
   assert.equal(getDefaultCustomOptions()['链式代理'], false);
@@ -81,7 +88,10 @@ function run() {
     kind: 'subscription',
     url: 'https://example.com/subscription',
   });
-  assert.equal(subscriptionLanding['proxy-providers']['链式落地-订阅'].override['dialer-proxy'], '链式中转');
+  assert.equal(
+    subscriptionLanding['proxy-providers']['链式落地-订阅'].override['dialer-proxy'],
+    '链式中转',
+  );
   assert.deepEqual(subscriptionLanding['proxy-groups'][0].use, ['链式落地-订阅']);
 
   const socksLanding = core.compileMihomoLanding('链式中转', {
