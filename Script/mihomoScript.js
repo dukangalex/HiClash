@@ -1596,6 +1596,28 @@ function getIpVersionPreference() {
 /**
  * 过滤并标准化节点：剔除内置/信息节点、按配置过滤、去重、修复 dialer-proxy 引用，空列表时抛错
  */
+function getReservedProxyNames() {
+  const names = new Set([
+    '默认代理', 'GLOBAL', '漏网之鱼', '直连', '其他节点', '自建节点', '链式落地',
+    dialerProxyName, 'REJECT', 'REJECT-DROP', 'PASS',
+    ...directProxies.map((proxy) => proxy.name),
+    ...baseGroups.map((group) => group.name),
+    ...serviceConfigs.map((group) => group.name),
+    ...regionDefinitions.map((region) => region.name),
+    ...rateRegionDefinitions.map((region) => region.name),
+  ]);
+  for (const region of allRegionDefinitions) names.add(region.name + '-自动选择');
+  return names;
+}
+
+function reserveProxyName(name, reservedNames, usedNames) {
+  if (!reservedNames.has(name)) return name;
+  let candidate = '节点-' + name;
+  let index = 2;
+  while (usedNames.has(candidate) || reservedNames.has(candidate)) candidate = '节点-' + name + '-' + index++;
+  return candidate;
+}
+
 function filterAndNormalizeProxies(config) {
   regionMatchCache.clear();
 
@@ -1634,9 +1656,11 @@ function filterAndNormalizeProxies(config) {
     if (normalized.name !== rawProxy.name) {
       renameMap.set(rawProxy.name, normalized.name);
     }
-    if (!uniqueNames.has(normalized.name)) {
-      uniqueNames.add(normalized.name);
-      normalizedProxies.push(normalized);
+    const safeName = reserveProxyName(normalized.name, getReservedProxyNames(), uniqueNames);
+    const safeProxy = safeName === normalized.name ? normalized : { ...normalized, name: safeName };
+    if (!uniqueNames.has(safeName)) {
+      uniqueNames.add(safeName);
+      normalizedProxies.push(safeProxy);
     }
   }
 
@@ -1797,13 +1821,14 @@ function buildCustomizeGroups(filteredProxies, customizeList = customizeProxies)
   }
 
   const usedNames = new Set(filteredProxies.map((p) => p.name));
+  const reservedNames = getReservedProxyNames();
   const customPrefix = '自建-';
   const customProxies = [];
 
   for (const proxy of customizeList) {
     const normalized = normalizeProxyName(proxy);
     let name = normalized.name;
-    while (usedNames.has(name)) {
+    while (usedNames.has(name) || reservedNames.has(name)) {
       name = normalizeProxyName({ name: `${customPrefix}${name}` }).name.replace(`${customPrefix} `, customPrefix);
     }
     usedNames.add(name);
