@@ -19,6 +19,42 @@ function loadMihomoScript() {
   return sandbox.main;
 }
 
+function stableClone(value, omitKey) {
+  if (Array.isArray(value)) return value.map((item) => stableClone(item, omitKey));
+  if (!value || typeof value !== 'object') return value;
+  return Object.fromEntries(
+    Object.keys(value)
+      .filter((key) => key !== omitKey)
+      .sort()
+      .map((key) => [key, stableClone(value[key], omitKey)]),
+  );
+}
+
+function resolveFrontName(config, output, frontName) {
+  const inputProxies = Array.isArray(config.proxies) ? config.proxies : [];
+  const inputGroups = Array.isArray(config['proxy-groups']) ? config['proxy-groups'] : [];
+  const inputProxy = inputProxies.find((proxy) => proxy && proxy.name === frontName);
+  const inputGroup = inputGroups.find((group) => group && group.name === frontName);
+
+  if (!inputProxy && !inputGroup) {
+    throw new Error('frontName does not reference an existing proxy or proxy group: ' + frontName);
+  }
+
+  if (inputGroup) return frontName;
+
+  const outputProxies = Array.isArray(output.proxies) ? output.proxies : [];
+  if (outputProxies.some((proxy) => proxy && proxy.name === frontName)) return frontName;
+
+  const sourceFingerprint = JSON.stringify(stableClone(inputProxy, 'name'));
+  const matches = outputProxies.filter(
+    (proxy) => proxy && JSON.stringify(stableClone(proxy, 'name')) === sourceFingerprint,
+  );
+
+  if (matches.length === 1) return matches[0].name;
+
+  throw new Error('frontName could not be resolved after proxy normalization: ' + frontName);
+}
+
 function mergeUniqueNames(target, names) {
   const existing = new Set(target);
   for (const name of names) {
@@ -105,8 +141,9 @@ function compileMihomoScript(config, customOptions, context) {
   }
 
   if (landing !== undefined) {
-    const frontName = String(compileContext.frontName || '').trim();
-    if (!frontName) throw new Error('frontName is required when landing is configured');
+    const requestedFrontName = String(compileContext.frontName || '').trim();
+    if (!requestedFrontName) throw new Error('frontName is required when landing is configured');
+    const frontName = resolveFrontName(config, output, requestedFrontName);
 
     const landingGroupName = String(landing.name || '链式落地').trim() || '链式落地';
     if (landingGroupName === frontName) {
@@ -116,14 +153,6 @@ function compileMihomoScript(config, customOptions, context) {
     const existingProxyNames = new Set(
       (Array.isArray(output.proxies) ? output.proxies : []).map((proxy) => proxy && proxy.name).filter(Boolean),
     );
-    const existingProxyGroupNames = new Set(
-      (Array.isArray(output['proxy-groups']) ? output['proxy-groups'] : [])
-        .map((group) => group && group.name)
-        .filter(Boolean),
-    );
-    if (!existingProxyNames.has(frontName) && !existingProxyGroupNames.has(frontName)) {
-      throw new Error('frontName does not reference an existing proxy or proxy group: ' + frontName);
-    }
     if (existingProxyNames.has(landingGroupName)) {
       throw new Error('landing group name conflicts with existing proxy: ' + landingGroupName);
     }
