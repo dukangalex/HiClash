@@ -492,10 +492,6 @@ try {
 
 // Runtime validation is pinned to the official v1.19.31 release binary in CI.
 
-const groupNames = new Set(
-  (config['proxy-groups'] || []).map((group) => group.name),
-);
-const baseNames = ['手动选择', '自动选择', '负载均衡', '故障转移'];
 
 for (const name of baseNames) {
   const members = baseGroups[name].proxies || [];
