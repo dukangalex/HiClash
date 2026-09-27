@@ -78,6 +78,9 @@ jobs:
       - name: install dependencies
         run: npm --prefix Test install
 
+      - name: run dashboard integration tests
+        run: node Test/dashboard.test.js
+
       - name: run universal core tests
         run: node Test/universal-core.test.js
 
