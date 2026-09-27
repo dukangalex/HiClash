@@ -13,6 +13,14 @@
     .muted { color: #9aa4af; font-size: 13px; }
     button { border: 1px solid #3a424d; border-radius: 9px; padding: 9px 12px; background: #171c22; color: inherit; cursor: pointer; }
     pre { white-space: pre-wrap; overflow: auto; }
+    .modal-backdrop { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; padding: 18px; background: rgba(0,0,0,.68); z-index: 1000; }
+    .modal-backdrop.open { display: flex; }
+    .modal { width: min(620px, 100%); max-height: min(88vh, 760px); overflow: auto; border: 1px solid #343c47; border-radius: 16px; padding: 18px; background: #11151a; box-shadow: 0 20px 70px rgba(0,0,0,.45); }
+    .modal-header { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+    .modal-close { font-size: 20px; line-height: 1; padding: 6px 10px; }
+    .field { margin-top: 12px; }
+    .field label { display:block; margin-bottom:6px; font-size:13px; color:#c7ced7; }
+    input, select { box-sizing:border-box; width:100%; border:1px solid #3a424d; border-radius:8px; padding:9px 10px; background:#0d1116; color:inherit; }
   </style>
 </head>
 <body>
