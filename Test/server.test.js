@@ -41,7 +41,7 @@ async function run() {
       config: { proxies: [] },
       options: { AI: false },
     });
-    assert.equal(disabled.status, 200);
+    assert.equal(disabled.status, 200, JSON.stringify(disabled));
     assert.equal(disabled.body.options.AI, false);
     assert.ok(!disabled.body.config['proxy-groups'].some((group) => group.name === 'AI'));
 
@@ -55,7 +55,7 @@ async function run() {
         url: 'https://example.com/subscription',
       },
     });
-    assert.equal(integrated.status, 200, JSON.stringify(integrated));
+    assert.equal(integrated.status, 200);
     assert.equal(integrated.body.config['proxy-providers']['链式落地-订阅'].override['dialer-proxy'], '前置节点');
     assert.ok(
       integrated.body.config['proxy-groups'].find((group) => group.name === '默认代理').proxies.includes('链式落地'),
