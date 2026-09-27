@@ -479,4 +479,74 @@ try {
   fs.rmSync(tempDir, { recursive: true, force: true });
 }
 
+// Runtime validation is pinned to the official v1.19.31 release binary in CI.for (const name of ['手动选择', '自动选择', '负载均衡', '故障转移']) {
+  for (const proxyName of proxyNames) {
+    assert(
+      baseGroups[name].proxies.includes(proxyName),
+      name + ' must include node ' + proxyName,
+    );
+  }
+}
+for (const name of ['手动选择', '自动选择', '负载均衡', '故障转移']) {
+  for (const groupName of ['手动选择', '自动选择', '负载均衡', '故障转移']) {
+    assert(
+      !baseGroups[name].proxies.includes(groupName),
+      name + ' must not recursively include base group ' + groupName,
+    );
+  }
+}
+assert(
+  baseGroups['默认代理'].proxies.some((member) => groupNames.has(member)),
+  '默认代理 must expose at least one generated or base strategy group',
+);
+
+const autoGroup = baseGroups['自动选择'];
+assert(autoGroup.url && Number(autoGroup.interval) > 0, '自动选择 must define a positive health-check interval');
+const loadBalance = baseGroups['负载均衡'];
+assert(
+  ['consistent-hashing', 'round-robin', 'sticky-sessions'].includes(loadBalance.strategy),
+  '负载均衡 must use a documented load-balance strategy',
+);
+const fallback = baseGroups['故障转移'];
+assert(fallback['exclude-type'] === 'DIRECT', '故障转移 must exclude DIRECT');
+
+validateGeneratedConfig(config, 'typical');
+
+const providerConfig = api.main(fx.providerSubscription());
+validateGeneratedConfig(providerConfig, 'provider');
+assert(providerConfig['proxy-providers']?.provider1, 'provider: provider1 must be retained');
+for (const groupName of ['默认代理', '手动选择', '自动选择', '负载均衡', '故障转移']) {
+  const group = providerConfig['proxy-groups']?.find((item) => item.name === groupName);
+  assert(group, 'provider: ' + groupName + ' group missing');
+  assert(
+    Array.isArray(group.use) && group.use.includes('provider1'),
+    'provider: ' + groupName + ' must consume provider1',
+  );
+}
+
+const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'hiclash-mihomo-'));
+const configPath = path.join(tempDir, 'config.yaml');
+
+try {
+  fs.writeFileSync(configPath, yaml.dump(config, { noRefs: true, lineWidth: -1 }), 'utf8');
+
+  const result = spawnSync(MIHOMO_BIN, ['-t', '-f', configPath], {
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'pipe'],
+    timeout: 120000,
+  });
+
+  process.stdout.write(result.stdout || '');
+  process.stderr.write(result.stderr || '');
+
+  if (result.error) throw result.error;
+  if (result.status !== 0) {
+    throw new Error(`mihomo ${MIHOMO_VERSION} config validation failed with exit code ${result.status}`);
+  }
+
+  console.log(`Mihomo ${MIHOMO_VERSION} runtime config validation passed`);
+} finally {
+  fs.rmSync(tempDir, { recursive: true, force: true });
+}
+
 // Runtime validation is pinned to the official v1.19.31 release binary in CI.
