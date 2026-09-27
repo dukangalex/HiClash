@@ -40,16 +40,10 @@ test('script accepts generic custom options through the optional adapter context
 
 test('script rejects unknown custom options', () => {
   const main = loadMain();
-  assert.throws(
-    () => main(baseConfig(), { customOptions: { NotARealOption: false } }),
-    /unknown custom option/,
-  );
+  assert.throws(() => main(baseConfig(), { customOptions: { NotARealOption: false } }), /unknown custom option/);
 });
 
 test('script rejects non-boolean custom options', () => {
   const main = loadMain();
-  assert.throws(
-    () => main(baseConfig(), { customOptions: { AI: 'false' } }),
-    /must be boolean/,
-  );
+  assert.throws(() => main(baseConfig(), { customOptions: { AI: 'false' } }), /must be boolean/);
 });
