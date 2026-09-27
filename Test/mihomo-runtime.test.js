@@ -455,6 +455,40 @@ assert(
   'IPv4 and IPv6 preferences together must leave ip-version unchanged',
 );
 
+const rateGroupsEnabled = api.main(rateFixture());
+const rateGroupsDisabled = loadWithSwitches({ 生成倍率组: false }).main(rateFixture());
+assert(
+  rateGroupsEnabled['proxy-groups']?.some((group) => group.name === '低倍率节点'),
+  'rate-group switch baseline must generate low-rate group',
+);
+assert(
+  rateGroupsEnabled['proxy-groups']?.some((group) => group.name === '高倍率节点'),
+  'rate-group switch baseline must generate high-rate group',
+);
+assert(
+  !rateGroupsDisabled['proxy-groups']?.some(
+    (group) => group.name === '低倍率节点' || group.name === '高倍率节点',
+  ),
+  'rate-group switch disabled must remove generated rate groups',
+);
+
+const chainDisabled = loadWithSwitches({ 链式代理: false }).main({
+  proxies: [
+    {
+      name: '自建-日本-链式测试',
+      type: 'ss',
+      server: '1.2.3.23',
+      port: 443,
+      cipher: 'aes-256-gcm',
+      password: 'x',
+    },
+  ],
+});
+assert(
+  !chainDisabled['proxy-groups']?.some((group) => group.name === '链式中转'),
+  'chain switch disabled must remove chain group',
+);
+
 const minimalConfig = loadWithSwitches({ 极简模式: true }).main(fx.typicalSubscription());
 const minimalGroupNames = namesOfGroups(minimalConfig);
 assert(minimalGroupNames.includes('默认代理'), 'minimal mode must retain 默认代理');
