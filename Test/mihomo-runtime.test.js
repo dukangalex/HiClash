@@ -188,7 +188,6 @@ for (const name of switchNames) {
   assertSwitchChangesConfig(name, !enabled, () => fx.typicalSubscription());
 }
 
-
 const serviceSwitchNames = [
   'FCM',
   'YouTube',
@@ -235,7 +234,10 @@ for (const name of serviceSwitchNames) {
     return serviceRules.some((rule) => rule.includes(',' + providerName + ','));
   });
   for (const providerName of groupProviders) {
-    assert(!disabledProviders[providerName], 'service switch must remove its rule-provider: ' + name + '/' + providerName);
+    assert(
+      !disabledProviders[providerName],
+      'service switch must remove its rule-provider: ' + name + '/' + providerName,
+    );
   }
 }
 
