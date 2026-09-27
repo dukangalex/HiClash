@@ -1811,6 +1811,7 @@ function buildLandingSubscriptionConfig(existingProviderNames = []) {
       url: landingModules.subscription.url,
       path: landingModules.subscription.path,
       interval: landingModules.subscription.interval,
+      proxy: dialerProxyName,
       override: { 'dialer-proxy': dialerProxyName },
     };
     providerNames.push(providerName);
