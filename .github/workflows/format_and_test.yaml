@@ -40,10 +40,6 @@ jobs:
       - name: install tools
         run: npm install -g prettier
 
-      - name: print prettier diff
-        run: |
-          prettier --write Test/mihomo-runtime.test.js
-          git diff --no-color -- Test/mihomo-runtime.test.js
       - name: check formatting
         run: git ls-files -z '*.js' '*.yml' '*.yaml' | xargs -0 -r prettier --check
 
