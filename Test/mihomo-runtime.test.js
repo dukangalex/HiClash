@@ -301,6 +301,7 @@ assert(
 
 const landingSubscriptionConfig = loadScript('Script/mihomoScript.js', (source) =>
   source
+    .replace('链式代理: false', '链式代理: true')
     .replace("url: '',\n    path: './proxy_providers/hiclash-landing-socks.yaml'", "url: 'https://example.com/landing-socks',\n    path: './proxy_providers/hiclash-landing-socks.yaml'")
     .replace("url: '',\n    path: './proxy_providers/hiclash-landing-http.yaml'", "url: 'https://example.com/landing-http',\n    path: './proxy_providers/hiclash-landing-http.yaml'")
     .replace('const customizeProxies = [];', "const customizeProxies = [{ name: '自建-日本-落地测试', type: 'ss', server: '1.2.3.50', port: 443, cipher: 'aes-256-gcm', password: 'x' }];"),
