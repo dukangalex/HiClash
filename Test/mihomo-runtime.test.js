@@ -329,9 +329,15 @@ assert(landingGroupNames.includes('落地订阅'), 'landing subscription group m
 assert(landingGroupNames.includes('COCKS'), 'COCKS group must be generated');
 assert(landingGroupNames.includes('HTTP'), 'HTTP group must be generated');
 const landingChainGroup = landingSubscriptionConfig['proxy-groups']?.find((group) => group.name === '链式中转');
-assert(landingChainGroup?.proxies?.includes('落地订阅'), 'chain group must expose landing subscription group');
-assert(landingChainGroup?.proxies?.includes('COCKS'), 'chain group must expose COCKS group');
-assert(landingChainGroup?.proxies?.includes('HTTP'), 'chain group must expose HTTP group');
+assert(!landingChainGroup?.proxies?.includes('落地订阅'), 'chain front group must not contain landing subscription');
+assert(!landingChainGroup?.proxies?.includes('COCKS'), 'chain front group must not contain COCKS');
+assert(!landingChainGroup?.proxies?.includes('HTTP'), 'chain front group must not contain HTTP');
+const landingProvider = landingSubscriptionConfig['proxy-providers']?.hiclash_landing_subscription;
+assert(landingProvider?.override?.['dialer-proxy'] === '链式中转', 'landing subscription must use current config chain front');
+const landingExitGroup = landingSubscriptionConfig['proxy-groups']?.find((group) => group.name === '链式落地');
+assert(landingExitGroup?.proxies?.includes('落地订阅'), 'landing exit group must expose landing subscription');
+assert(landingExitGroup?.proxies?.includes('COCKS'), 'landing exit group must expose COCKS');
+assert(landingExitGroup?.proxies?.includes('HTTP'), 'landing exit group must expose HTTP');
 const landingNode = landingSubscriptionConfig.proxies.find((proxy) => proxy.name === '自建-日本-落地测试');
 assert(landingNode?.['dialer-proxy'] === '链式中转', 'custom landing node must use the chain group as dialer-proxy');
 
