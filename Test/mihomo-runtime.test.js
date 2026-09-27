@@ -592,5 +592,3 @@ for (const rule of [
 assert(ruleList.includes('AND,((NETWORK,UDP),(DST-PORT,3478-3497)),REJECT'), 'STUN UDP protection rule missing');
 assert(ruleList.includes('AND,((NETWORK,UDP),(DST-PORT,5349)),REJECT'), 'STUN/TURN UDP protection rule missing');
 assert(ruleList.includes('AND,((NETWORK,TCP),(DST-PORT,3478-3497)),REJECT'), 'STUN TCP protection rule missing');
-
-
