@@ -143,7 +143,7 @@ function run() {
     },
   );
   const integratedProxy = integratedLanding.config.proxies.find((proxy) => proxy.name === '链式落地');
-  assert.equal(integratedProxy['dialer-proxy'], '前置节点');
+  assert.equal(integratedProxy['dialer-proxy'], 'US-前置节点');
   assert.equal(integratedProxy.type, 'socks');
   assert.ok(
     integratedLanding.config['proxy-groups'].find((group) => group.name === '默认代理').proxies.includes('链式落地'),
