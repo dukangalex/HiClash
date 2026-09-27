@@ -303,11 +303,13 @@ for (const proxyName of allNodeNames) {
   assert(youtubeAll.proxies?.includes(proxyName), 'all-node service switch: YouTube must include node ' + proxyName);
 }
 
-const rateFixture = () => ({ proxies: [
-  { name: '日本 0.3x 测试', type: 'ss', server: '1.2.3.20', port: 443, cipher: 'aes-256-gcm', password: 'x' },
-  { name: '美国 2x 测试', type: 'ss', server: '1.2.3.21', port: 443, cipher: 'aes-256-gcm', password: 'x' },
-  { name: '香港 普通测试', type: 'ss', server: '1.2.3.22', port: 443, cipher: 'aes-256-gcm', password: 'x' },
-] });
+const rateFixture = () => ({
+  proxies: [
+    { name: '日本 0.3x 测试', type: 'ss', server: '1.2.3.20', port: 443, cipher: 'aes-256-gcm', password: 'x' },
+    { name: '美国 2x 测试', type: 'ss', server: '1.2.3.21', port: 443, cipher: 'aes-256-gcm', password: 'x' },
+    { name: '香港 普通测试', type: 'ss', server: '1.2.3.22', port: 443, cipher: 'aes-256-gcm', password: 'x' },
+  ],
+});
 
 const lowFiltered = loadWithSwitches({ 过滤低倍率节点: true }).main(rateFixture());
 const lowFilteredNames = new Set((lowFiltered.proxies || []).map((proxy) => proxy.name));
