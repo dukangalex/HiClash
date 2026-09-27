@@ -465,7 +465,6 @@ assert(
   '默认代理 must expose a strategy group',
 );
 
-
 validateGeneratedConfig(config, 'typical');
 
 const providerConfig = api.main(fx.providerSubscription());
