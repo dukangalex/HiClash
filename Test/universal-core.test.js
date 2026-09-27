@@ -112,22 +112,28 @@ function run() {
     /http\(s\)/,
   );
 
-  const scriptDefault = core.compileMihomoScript({ proxies: [] }, {});
+  const scriptDefault = core.compileMihomoScript(
+    { proxies: [{ name: 'US-前置节点', type: 'http', server: '127.0.0.1', port: 8080 }] },
+    {},
+  );
   assert.ok(scriptDefault.config['proxy-groups'].some((group) => group.name === 'AI'));
   assert.equal(scriptDefault.options.AI, true);
 
-  const scriptDisabled = core.compileMihomoScript({ proxies: [] }, { AI: false, 链式代理: false });
+  const scriptDisabled = core.compileMihomoScript(
+    { proxies: [{ name: 'US-前置节点', type: 'http', server: '127.0.0.1', port: 8080 }] },
+    { AI: false, 链式代理: false },
+  );
   assert.ok(!scriptDisabled.config['proxy-groups'].some((group) => group.name === 'AI'));
   assert.equal(scriptDisabled.options.AI, false);
   assert.equal(scriptDisabled.options['链式代理'], false);
 
   const integratedLanding = core.compileMihomoScript(
     {
-      proxies: [{ name: '前置节点', type: 'socks', server: 'front.example', port: 443 }],
+      proxies: [{ name: 'US-前置节点', type: 'socks', server: 'front.example', port: 443 }],
     },
     { 链式代理: true },
     {
-      frontName: '前置节点',
+      frontName: 'US-前置节点',
       landing: {
         kind: 'socks5',
         name: '链式落地',
