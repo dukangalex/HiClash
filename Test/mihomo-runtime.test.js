@@ -303,18 +303,24 @@ for (const proxyName of allNodeNames) {
   assert(youtubeAll.proxies?.includes(proxyName), 'all-node service switch: YouTube must include node ' + proxyName);
 }
 
-const lowFiltered = loadWithSwitches({ 过滤低倍率节点: true }).main(fx.typicalSubscription());
+const rateFixture = () => ({ proxies: [
+  { name: '日本 0.3x 测试', type: 'ss', server: '1.2.3.20', port: 443, cipher: 'aes-256-gcm', password: 'x' },
+  { name: '美国 2x 测试', type: 'ss', server: '1.2.3.21', port: 443, cipher: 'aes-256-gcm', password: 'x' },
+  { name: '香港 普通测试', type: 'ss', server: '1.2.3.22', port: 443, cipher: 'aes-256-gcm', password: 'x' },
+] });
+
+const lowFiltered = loadWithSwitches({ 过滤低倍率节点: true }).main(rateFixture());
 const lowFilteredNames = new Set((lowFiltered.proxies || []).map((proxy) => proxy.name));
 assert(
   ![...lowFilteredNames].some((name) => /0\\.3x|0\\.5倍/i.test(name)),
   'low-rate filter must remove low-rate nodes',
 );
-assert(lowFilteredNames.has('香港 2x 速率'), 'low-rate filter must retain a high-rate node');
+assert(lowFilteredNames.has('美国 2x 测试'), 'low-rate filter must retain a high-rate node');
 
-const highFiltered = loadWithSwitches({ 过滤高倍率节点: true }).main(fx.typicalSubscription());
+const highFiltered = loadWithSwitches({ 过滤高倍率节点: true }).main(rateFixture());
 const highFilteredNames = new Set((highFiltered.proxies || []).map((proxy) => proxy.name));
 assert(![...highFilteredNames].some((name) => /2x|\\*3/i.test(name)), 'high-rate filter must remove high-rate nodes');
-assert(highFilteredNames.has('日本 0.3x 流量'), 'high-rate filter must retain a low-rate node');
+assert(highFilteredNames.has('日本 0.3x 测试'), 'high-rate filter must retain a low-rate node');
 
 const nonRegionFiltered = api.main(fx.typicalSubscription());
 const nonRegionNames = new Set((nonRegionFiltered.proxies || []).map((proxy) => proxy.name));
