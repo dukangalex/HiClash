@@ -134,6 +134,47 @@ function run() {
   assert.equal(scriptDisabled.options.AI, false);
   assert.equal(scriptDisabled.options['链式代理'], false);
 
+  const integratedLanding = core.compileMihomoScript(
+    {
+      proxies: [{ name: '前置节点', type: 'socks', server: 'front.example', port: 443 }],
+    },
+    { 链式代理: true },
+    {
+      frontName: '前置节点',
+      landing: {
+        kind: 'socks5',
+        name: '链式落地',
+        server: '127.0.0.1',
+        port: 1080,
+      },
+    },
+  );
+  const integratedProxy = integratedLanding.config.proxies.find((proxy) => proxy.name === '链式落地');
+  assert.equal(integratedProxy['dialer-proxy'], '前置节点');
+  assert.equal(integratedProxy.type, 'socks');
+  assert.ok(
+    integratedLanding.config['proxy-groups']
+      .find((group) => group.name === '默认代理')
+      .proxies.includes('链式落地'),
+  );
+
+  assert.throws(
+    () =>
+      core.compileMihomoScript(
+        { proxies: [{ name: '前置节点', type: 'socks', server: 'front.example', port: 443 }] },
+        { 链式代理: false },
+        {
+          frontName: '前置节点',
+          landing: {
+            kind: 'http',
+            server: '127.0.0.1',
+            port: 8080,
+          },
+        },
+      ),
+    /requires 链式代理/,
+  );
+
   assert.throws(
     () => core.compileMihomoScript({ proxies: [] }, { AI: 'false' }),
     /must be boolean/,
