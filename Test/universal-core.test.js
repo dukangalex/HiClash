@@ -6,6 +6,48 @@ const { customOptionsSchema, getDefaultCustomOptions, validateCustomOptions } = 
 
 function run() {
   assert.equal(customOptionsSchema.version, 1);
+  const expectedCustomOptions = {
+    手动选择: true,
+    自动选择: true,
+    负载均衡: true,
+    故障转移: true,
+    远控工具: true,
+    FCM: true,
+    YouTube: true,
+    Google: true,
+    AI: true,
+    Claude: true,
+    Microsoft: true,
+    Apple: true,
+    Telegram: true,
+    Steam: true,
+    TikTok: true,
+    Twitter: true,
+    Meta: true,
+    Line: true,
+    Netflix: true,
+    Emby: true,
+    PikPak: true,
+    Spotify: true,
+    Crypto: true,
+    EHentai: true,
+    AdBlock: true,
+    极简模式: false,
+    生成地区自动选择组: true,
+    隐藏地区手动选择组: false,
+    生成倍率组: true,
+    分流组添加所有节点: false,
+    过滤低倍率节点: false,
+    过滤高倍率节点: false,
+    过滤非地区节点: true,
+    屏蔽国外QUIC: true,
+    代理IPV4优先: false,
+    代理IPV6优先: false,
+    链式代理: false,
+  };
+  assert.deepEqual(getDefaultCustomOptions(), expectedCustomOptions);
+  assert.deepEqual(Object.keys(customOptionsSchema.options), Object.keys(expectedCustomOptions));
+
   assert.equal(customOptionsSchema.type, 'toggle-map');
   assert.equal(getDefaultCustomOptions()['链式代理'], false);
   assert.equal(getDefaultCustomOptions()['故障转移'], true);
