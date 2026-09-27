@@ -114,9 +114,7 @@ function compileMihomoScript(config, customOptions, context) {
     }
 
     const existingProxyNames = new Set(
-      (Array.isArray(output.proxies) ? output.proxies : [])
-        .map((proxy) => proxy && proxy.name)
-        .filter(Boolean),
+      (Array.isArray(output.proxies) ? output.proxies : []).map((proxy) => proxy && proxy.name).filter(Boolean),
     );
     if (existingProxyNames.has(landingGroupName)) {
       throw new Error('landing group name conflicts with existing proxy: ' + landingGroupName);
