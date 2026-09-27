@@ -116,6 +116,14 @@ function compileMihomoScript(config, customOptions, context) {
     const existingProxyNames = new Set(
       (Array.isArray(output.proxies) ? output.proxies : []).map((proxy) => proxy && proxy.name).filter(Boolean),
     );
+    const existingProxyGroupNames = new Set(
+      (Array.isArray(output['proxy-groups']) ? output['proxy-groups'] : [])
+        .map((group) => group && group.name)
+        .filter(Boolean),
+    );
+    if (!existingProxyNames.has(frontName) && !existingProxyGroupNames.has(frontName)) {
+      throw new Error('frontName does not reference an existing proxy or proxy group: ' + frontName);
+    }
     if (existingProxyNames.has(landingGroupName)) {
       throw new Error('landing group name conflicts with existing proxy: ' + landingGroupName);
     }
