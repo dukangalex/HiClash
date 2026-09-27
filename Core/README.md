@@ -8,8 +8,8 @@
 - `chain-compiler.js`：节点→节点、节点→订阅、订阅→节点、订阅→订阅统一抽象；内核编译分别生成 Mihomo `dialer-proxy`、sing-box `detour`、Xray `dialerProxy`。
 - `adapters.js`：统一 Core Adapter 生命周期与控制接口，供 Android/桌面端绑定真实内核控制 API。
 - `network-context.js`：Wi-Fi/移动网络/公共网络/Captive Portal/UDP 丢包状态机。
-- `bypass-engine.js`：进程、SNI、ASN、低延迟四信号交叉决策。
-- `security-policy.js`：Kill Switch、WebRTC STUN、IPv6 泄漏、禁止意外 DIRECT fallback 等安全基线。
+- `bypass-engine.js`：进程、SNI、ASN 与低延迟信号评估；低延迟仅作诊断信号，不单独触发 DIRECT。
+- `security-policy.js`：统一安全策略模型，并实际执行 Kill Switch、禁止意外 DIRECT fallback、WebRTC STUN 端口阻断；IPv6/DNS/QUIC 等字段目前属于策略声明，具体内核/平台执行仍需对应 Adapter。
 - `self-healing.js`：连续失败阈值与备用节点切换状态机。
 - `schema.json`：跨内核统一配置模型。
 - `index.js`：统一控制平面入口。
