@@ -6,13 +6,17 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 
-function loadMain() {
+function loadScript() {
   const source = fs.readFileSync(path.join(__dirname, '..', 'Script', 'mihomoScript.js'), 'utf8');
   const sandbox = { console };
   vm.createContext(sandbox);
   vm.runInContext(source, sandbox, { filename: 'mihomoScript.js' });
   assert.equal(typeof sandbox.main, 'function');
-  return sandbox.main;
+  return sandbox;
+}
+
+function loadMain() {
+  return loadScript().main;
 }
 
 function baseConfig() {
@@ -34,6 +38,22 @@ test('script accepts generic custom options through the optional adapter context
       链式代理: false,
     },
   });
+
+  assert.ok(!output['proxy-groups'].some((group) => group.name === 'AI'));
+});
+
+test('script applies host-side ruleOptionsEnable overrides before main()', () => {
+  const sandbox = loadScript();
+  assert.deepEqual(sandbox.HiClash_CustomOptions, {
+    version: 1,
+    type: 'toggle-map',
+    source: 'ruleOptionsEnable',
+  });
+
+  // Bettbox's verified runtime path mutates ruleOptionsEnable after loading the script
+  // and then invokes main(config). This test reproduces that exact ordering.
+  sandbox.ruleOptionsEnable.AI = false;
+  const output = sandbox.main(baseConfig());
 
   assert.ok(!output['proxy-groups'].some((group) => group.name === 'AI'));
 });
