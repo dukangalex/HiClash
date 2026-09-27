@@ -135,7 +135,7 @@ const landingModules = {
 // 链式代理启用时，自定义节点的 dialer-proxy 引用目标
 const dialerProxyName = '链式中转';
 const landingSubscriptionGroupName = '落地订阅';
-const socks5GroupName = 'COCKS';
+const socks5GroupName = 'SOCKS5';
 const httpGroupName = 'HTTP';
 
 // 定义全局排除节点的正则表达式，用于排除非地区节点
