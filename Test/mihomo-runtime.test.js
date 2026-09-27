@@ -292,7 +292,11 @@ assert(!namesOfGroups(noRateGroups).includes('低倍率节点'), 'rate groups di
 assert(!namesOfGroups(noRateGroups).includes('高倍率节点'), 'rate groups disabled: high-rate group must be removed');
 
 const allNodesInServices = loadWithSwitches({ 分流组添加所有节点: true }).main(fx.typicalSubscription());
-const allNodeNames = new Set((allNodesInServices.proxies || []).map((proxy) => proxy.name));
+const allNodeNames = new Set(
+  (allNodesInServices.proxies || [])
+    .filter((proxy) => !['direct', 'reject', 'rematch'].includes(String(proxy.type).toLowerCase()))
+    .map((proxy) => proxy.name),
+);
 const youtubeAll = allNodesInServices['proxy-groups']?.find((group) => group.name === 'YouTube');
 assert(youtubeAll, 'all-node service switch: YouTube group missing');
 for (const proxyName of allNodeNames) {
