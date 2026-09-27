@@ -2,7 +2,7 @@
 
 const http = require('node:http');
 const { sniff, compile, compileMihomoLanding, createAdapter } = require('./index');
-const { customOptionsSchema } = require('./custom-options');
+const { customOptionsSchema, getDefaultCustomOptions, validateCustomOptions } = require('./custom-options');
 
 function readJson(req) {
   return new Promise((resolve, reject) => {
@@ -33,6 +33,14 @@ function createServer(options) {
   const server = http.createServer(async (req, res) => {
     try {
       if (req.method === 'GET' && req.url === '/api/custom-options') return send(res, 200, customOptionsSchema);
+      if (req.method === 'POST' && req.url === '/api/custom-options/resolve') {
+        const body = await readJson(req);
+        validateCustomOptions(body.options || {});
+        return send(res, 200, {
+          schema: customOptionsSchema.version,
+          options: { ...getDefaultCustomOptions(), ...(body.options || {}) },
+        });
+      }
       if (req.method === 'GET' && req.url === '/api/health') {
         return send(res, 200, { ok: true, service: 'HiClash Universal Core' });
       }

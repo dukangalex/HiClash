@@ -54,6 +54,10 @@ function run() {
   assert.equal(validateCustomOptions({ 链式代理: true, AI: false }), true);
   assert.throws(() => validateCustomOptions({ 不存在的开关: true }), /unknown custom option/);
   assert.throws(() => validateCustomOptions({ AI: 'true' }), /must be boolean/);
+  assert.deepEqual(
+    { ...getDefaultCustomOptions(), AI: false, 链式代理: true },
+    { ...getDefaultCustomOptions(), AI: false, 链式代理: true },
+  );
   assert.equal(core.sniff('vless://uuid@example.com:443?security=tls#US').kernel, 'sing-box');
   assert.equal(core.sniff('proxies:\n  - name: US\n    type: vmess').kernel, 'mihomo');
   assert.equal(core.sniff(JSON.stringify({ inbounds: [], outbounds: [], route: {} })).kernel, 'sing-box');
