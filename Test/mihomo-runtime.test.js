@@ -281,9 +281,7 @@ function regionFixture() {
 }
 
 const ipFixture = {
-  proxies: [
-    { name: 'IPv4-测试', type: 'ss', server: '1.2.3.40', port: 443, cipher: 'aes-256-gcm', password: 'x' },
-  ],
+  proxies: [{ name: 'IPv4-测试', type: 'ss', server: '1.2.3.40', port: 443, cipher: 'aes-256-gcm', password: 'x' }],
 };
 const ipv4Preferred = loadWithSwitches({ 代理IPV4优先: true, 代理IPV6优先: false }).main(ipFixture);
 const ipv6Preferred = loadWithSwitches({ 代理IPV4优先: false, 代理IPV6优先: true }).main(ipFixture);
