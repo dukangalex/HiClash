@@ -63,7 +63,7 @@ async function health() {
 function openLanding(){const m=document.getElementById('landingModal');m.classList.add('open');renderLandingFields();setTimeout(()=>document.getElementById('landingKind').focus(),0);}
 function closeLanding(){document.getElementById('landingModal').classList.remove('open');}
 function backdropClose(e){if(e.target===e.currentTarget) closeLanding();}
-document.addEventListener('keydown',e=>{if(e.key==='Escape') closeLanding();}
+document.addEventListener('keydown',e=>{if(e.key==='Escape') closeLanding();});
 function renderLandingFields(){
   const kind=document.getElementById('landingKind').value;
   document.getElementById('landingFields').innerHTML=kind==='subscription' ? '<div class="field"><label for="landingUrl">订阅 URL</label><input id="landingUrl" placeholder="https://example.com/subscription"></div>' : '<div class="field"><label for="landingServer">服务器</label><input id="landingServer"></div><div class="field"><label for="landingPort">端口</label><input id="landingPort" type="number" min="1" max="65535"></div><div class="field"><label for="landingUsername">用户名（可选）</label><input id="landingUsername"></div><div class="field"><label for="landingPassword">密码（可选）</label><input id="landingPassword" type="password"></div>';
