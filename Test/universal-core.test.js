@@ -116,7 +116,10 @@ function run() {
   assert.ok(scriptDefault.config['proxy-groups'].some((group) => group.name === 'AI'));
   assert.equal(scriptDefault.options.AI, true);
 
-  const scriptDisabled = core.compileMihomoScript({ proxies: [] }, { AI: false, 链式代理: false });
+  const scriptDisabled = core.compileMihomoScript(
+    { proxies: [] },
+    { AI: false, 链式代理: false },
+  );
   assert.ok(!scriptDisabled.config['proxy-groups'].some((group) => group.name === 'AI'));
   assert.equal(scriptDisabled.options.AI, false);
   assert.equal(scriptDisabled.options['链式代理'], false);
