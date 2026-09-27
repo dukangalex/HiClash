@@ -56,7 +56,7 @@ async function run() {
       },
     });
     assert.equal(integrated.status, 200);
-    assert.equal(integrated.body.config['proxy-providers']['链式落地-订阅'].override['dialer-proxy'], 'US-前置节点');
+    assert.equal(integrated.body.config['proxy-providers']['链式落地-订阅'].override['dialer-proxy'], '🇺🇸 US-前置节点');
     assert.ok(
       integrated.body.config['proxy-groups'].find((group) => group.name === '默认代理').proxies.includes('链式落地'),
     );
@@ -80,7 +80,7 @@ async function run() {
     assert.equal(socksProxy.port, 1080);
     assert.equal(socksProxy.username, 'user');
     assert.equal(socksProxy.password, 'pass');
-    assert.equal(socksProxy['dialer-proxy'], 'US-前置节点');
+    assert.equal(socksProxy['dialer-proxy'], '🇺🇸 US-前置节点');
 
     const integratedHttp = await request(port, {
       config: { proxies: [{ name: 'US-前置节点', type: 'http', server: '127.0.0.1', port: 8080 }] },
@@ -97,7 +97,7 @@ async function run() {
     const httpProxy = integratedHttp.body.config.proxies.find((proxy) => proxy.name === '链式落地-HTTP');
     assert.equal(httpProxy.type, 'http');
     assert.equal(httpProxy.port, 8081);
-    assert.equal(httpProxy['dialer-proxy'], 'US-前置节点');
+    assert.equal(httpProxy['dialer-proxy'], '🇺🇸 US-前置节点');
 
     const invalid = await request(port, {
       config: { proxies: [] },
