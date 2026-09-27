@@ -317,6 +317,11 @@ assert(
 );
 
 const serviceBaseline = api.main(fx.typicalSubscription());
+const serviceNodeNames = new Set(
+  (serviceBaseline.proxies || [])
+    .filter((proxy) => !['direct', 'reject', 'rematch'].includes(String(proxy.type).toLowerCase()))
+    .map((proxy) => proxy.name),
+);
 const serviceDefaultGroups = new Set(
   (serviceBaseline['proxy-groups'] || [])
     .filter((group) => group.type === 'select')
@@ -326,11 +331,11 @@ const youtubeBaseline = serviceBaseline['proxy-groups']?.find((group) => group.n
 const appleBaseline = serviceBaseline['proxy-groups']?.find((group) => group.name === 'Apple');
 assert(youtubeBaseline?.proxies.includes('默认代理'), 'YouTube must use 默认代理 by default');
 assert(youtubeBaseline?.proxies.some((name) => serviceDefaultGroups.has(name)), 'YouTube must expose strategy groups');
-assert(!youtubeBaseline?.proxies.some((name) => allNodeNames.has(name)), 'YouTube must not include all nodes by default');
+assert(!youtubeBaseline?.proxies.some((name) => serviceNodeNames.has(name)), 'YouTube must not include all nodes by default');
 assert(appleBaseline?.proxies.includes('直连'), 'Apple direct service must expose 直连');
 const serviceAll = loadWithSwitches({ 分流组添加所有节点: true }).main(fx.typicalSubscription());
 const serviceAllYoutube = serviceAll['proxy-groups']?.find((group) => group.name === 'YouTube');
-for (const proxyName of allNodeNames) {
+for (const proxyName of serviceNodeNames) {
   assert(serviceAllYoutube?.proxies.includes(proxyName), 'YouTube all-node mode must include node ' + proxyName);
 }
 
