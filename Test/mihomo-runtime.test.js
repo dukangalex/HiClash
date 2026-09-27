@@ -412,12 +412,13 @@ for (const name of ['默认代理', '手动选择', '自动选择', '负载均�
   );
 }
 
-const proxyNames = (config.proxies || []).map((proxy) => proxy.name);
+const proxyNames = new Set((config.proxies || []).map((proxy) => proxy.name));
+const groupNames = new Set((config['proxy-groups'] || []).map((group) => group.name));
 const assertGroupMembersAreNodes = (name) => {
   const group = baseGroups[name];
   for (const member of group.proxies || []) {
     assert(
-      proxyNames.includes(member) || ['DIRECT', 'REJECT', 'REJECT-DROP'].includes(member),
+      proxyNames.has(member) || groupNames.has(member) || ['DIRECT', 'REJECT', 'REJECT-DROP'].includes(member),
       name + ' contains unexpected member: ' + member,
     );
   }
