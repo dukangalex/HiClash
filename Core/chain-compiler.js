@@ -65,7 +65,9 @@ function validateLanding(landing) {
     throw new Error('unsupported landing kind');
   }
   if (kind === 'subscription') {
-    if (!/^https?:\/\//i.test(String(landing.url || ''))) throw new Error('subscription landing requires an http(s) URL');
+    if (!/^https?:\/\//i.test(String(landing.url || ''))) {
+      throw new Error('subscription landing requires an http(s) URL');
+    }
   } else if (
     !landing.server ||
     !Number.isInteger(Number(landing.port)) ||
@@ -88,7 +90,12 @@ function compileMihomoLanding(frontName, landing) {
     return {
       proxies: [],
       'proxy-providers': {
-        [providerName]: { type: 'http', url: String(landing.url), interval: 86400, override: { 'dialer-proxy': frontName } },
+        [providerName]: {
+          type: 'http',
+          url: String(landing.url),
+          interval: 86400,
+          override: { 'dialer-proxy': frontName },
+        },
       },
       'proxy-groups': [{ name, type: 'select', use: [providerName] }],
     };
