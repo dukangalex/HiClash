@@ -2,11 +2,7 @@
 
 const assert = require('node:assert/strict');
 const core = require('../Core');
-const {
-  customOptionsSchema,
-  getDefaultCustomOptions,
-  validateCustomOptions,
-} = require('../Core/custom-options');
+const { customOptionsSchema, getDefaultCustomOptions, validateCustomOptions } = require('../Core/custom-options');
 
 function run() {
   assert.equal(customOptionsSchema.version, 1);
