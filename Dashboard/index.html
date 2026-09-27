@@ -22,6 +22,11 @@
     .field label { display:block; margin-bottom:6px; font-size:13px; color:#c7ced7; }
     input, select { box-sizing:border-box; width:100%; border:1px solid #3a424d; border-radius:8px; padding:9px 10px; background:#0d1116; color:inherit; }
     .option-panel { margin-top:14px; }
+    .option-panel summary { cursor:pointer; list-style:none; display:flex; align-items:center; justify-content:space-between; gap:12px; font-weight:600; }
+    .option-panel summary::-webkit-details-marker { display:none; }
+    .option-panel summary::after { content:"＋"; color:#9aa4af; font-size:18px; }
+    .option-panel[open] summary::after { content:"−"; }
+    .option-body { margin-top:12px; }
     .option-category { margin-top:14px; }
     .option-category h3 { margin:0 0 8px; font-size:14px; color:#c7ced7; }
     .option-list { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:8px; }
@@ -54,13 +59,15 @@
       <pre id="landingResult"></pre>
     </section>
   </div>
-  <section class="card option-panel">
-    <strong>自定义开关</strong>
-    <p class="muted">开关定义由 Core schema 提供。这里修改的是 HiClash 脚本选项，不会假设 Mihomo 内核本身识别这些字段。</p>
-    <div id="customOptions" class="muted">正在读取开关定义…</div>
-    <div class="option-actions"><button onclick="loadCustomOptions()">重新读取</button><button onclick="resolveCustomOptions()">校验并生成选项</button><button onclick="copyCustomOptions()">复制选项 JSON</button></div>
-    <pre id="customOptionsResult"></pre>
-  </section>
+  <details class="card option-panel" id="customOptionsPanel">
+    <summary>自定义开关</summary>
+    <div class="option-body">
+      <p class="muted">开关定义由 Core schema 提供。这里修改的是 HiClash 脚本选项，不会假设 Mihomo 内核本身识别这些字段。</p>
+      <div id="customOptions" class="muted">正在读取开关定义…</div>
+      <div class="option-actions"><button onclick="loadCustomOptions()">重新读取</button><button onclick="resolveCustomOptions()">校验并生成选项</button><button onclick="copyCustomOptions()">复制选项 JSON</button></div>
+      <pre id="customOptionsResult"></pre>
+    </div>
+  </details>
   <section class="card" style="margin-top:14px"><strong>API</strong><pre>POST /api/sniff
 POST /api/chain/compile
 POST /api/chain/landing
@@ -91,11 +98,11 @@ async function compileLanding(){
   try{ const r=await fetch('/api/chain/landing',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({frontName:document.getElementById('frontName').value.trim(),landing})}); const data=await r.json(); if(!r.ok) throw new Error(data.error||'配置失败'); document.getElementById('landingStatus').textContent='已生成链式落地配置（尚未写入当前 Mihomo 配置）'; document.getElementById('landingResult').textContent=JSON.stringify(data,null,2); }
   catch(e){document.getElementById('landingResult').textContent=e.message;}
 }
-loadCustomOptions();
-health();
-
 let customOptionSchema = null;
 let customOptionState = {};
+
+loadCustomOptions();
+health();
 async function loadCustomOptions(){const host=document.getElementById('customOptions');try{const r=await fetch('/api/custom-options');const data=await r.json();if(!r.ok)throw new Error(data.error||'读取失败');customOptionSchema=data;customOptionState={};for(const [name,meta] of Object.entries(data.options||{}))customOptionState[name]=meta.default===true;renderCustomOptions();document.getElementById('customOptionsResult').textContent='schema v'+data.version+'，共 '+Object.keys(data.options||{}).length+' 个开关';}catch(e){host.textContent='读取失败：'+e.message;}}
 function renderCustomOptions(){const host=document.getElementById('customOptions');const groups={};for(const [name,meta] of Object.entries(customOptionSchema.options||{}))(groups[meta.category] ||= []).push([name,meta]);host.innerHTML=Object.entries(groups).map(([category,items])=>'<div class="option-category"><h3>'+escapeHtml(category)+'</h3><div class="option-list">'+items.map(([name])=>'<div class="option-row"><label for="opt-'+encodeURIComponent(name)+'">'+escapeHtml(name)+'</label><input id="opt-'+encodeURIComponent(name)+'" type="checkbox" '+(customOptionState[name]?'checked':'')+' onchange="customOptionState['+JSON.stringify(name)+']=this.checked"></div>').join('')+'</div></div>').join('');}
 function escapeHtml(value){return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
