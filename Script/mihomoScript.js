@@ -1887,8 +1887,6 @@ function buildCustomizeGroups(filteredProxies, customizeList = customizeProxies)
 /**
  * 构建基础/分流策略组/部分节点组、GLOBAL 组与规则集，并汇总分流规则
  */
-let landingSubscriptionGroups = [];
-
 function buildFunctionalGroups(filteredProxies, generatedRegionGroups, customizeInfo) {
   const minimalModeEnabled = ruleOptionsEnable.极简模式;
   const blockForeignQuicEnabled = ruleOptionsEnable.屏蔽国外QUIC;
@@ -1904,7 +1902,7 @@ function buildFunctionalGroups(filteredProxies, generatedRegionGroups, customize
     delete finalRuleProviders.cn_additional;
   }
 
-  const { customProxyNames = [], customGroup = null } = customizeInfo || {};
+  const { customProxyNames = [], customGroup = null, landingSubscriptionGroups = [] } = customizeInfo || {};
   const filteredProxyNames = filteredProxies.map((p) => p.name);
   const allProxiesNames = [...customProxyNames, ...filteredProxyNames];
   const groupNamesOfSelect = generatedRegionGroups.filter((g) => g.type === 'select').map((g) => g.name);
@@ -2730,7 +2728,6 @@ function main(config) {
   const providerMode = hasProxyProviders(config);
   const providerNames = providerMode ? Object.keys(config['proxy-providers']) : [];
   const landingSubscriptionConfig = buildLandingSubscriptionConfig(providerNames);
-  landingSubscriptionGroups = landingSubscriptionConfig.groups;
   const newConfig = {};
 
   // 普通订阅沿用原有节点标准化流程；provider 配置不下载、不展开、不改写节点。
@@ -2746,7 +2743,11 @@ function main(config) {
       : buildRegionGroups(filteredProxies, customProxies);
 
   const { globalGroup, functionalGroups, functionalRules, finalRuleProviders, chainGroup, directGroup } =
-    buildFunctionalGroups(filteredProxies, generatedRegionGroups, { customProxyNames, customGroup });
+    buildFunctionalGroups(filteredProxies, generatedRegionGroups, {
+      customProxyNames,
+      customGroup,
+      landingSubscriptionGroups: landingSubscriptionConfig.groups,
+    });
 
   if (providerMode) {
     enableProviderSources(functionalGroups, chainGroup, providerNames);
