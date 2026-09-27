@@ -111,24 +111,30 @@ const customizeProxies = [];
 // 落地订阅通过 mihomo 的 proxy-providers 加载；订阅内容应提供可直接作为
 // outbound 的节点。SOCKS / HTTP 分开配置，避免把未确认的节点类型混入对应模块。
 // 留空 URL 时不会生成对应 provider，不改变现有配置行为。
-const landingSubscriptions = {
+const landingModules = {
   enabled: true,
-  socks: {
+  subscription: {
     url: '',
-    path: './proxy_providers/hiclash-landing-socks.yaml',
+    path: './proxy_providers/hiclash-landing-subscription.yaml',
+    interval: 3600,
+  },
+  cocks: {
+    url: '',
+    path: './proxy_providers/hiclash-cocks.yaml',
     interval: 3600,
   },
   http: {
     url: '',
-    path: './proxy_providers/hiclash-landing-http.yaml',
+    path: './proxy_providers/hiclash-http.yaml',
     interval: 3600,
   },
 };
 
 // 链式代理启用时，自定义节点的 dialer-proxy 引用目标
 const dialerProxyName = '链式中转';
-const landingSocksGroupName = '落地 SOCKS';
-const landingHttpGroupName = '落地 HTTP';
+const landingSubscriptionGroupName = '落地订阅';
+const cocksGroupName = 'COCKS';
+const httpGroupName = 'HTTP';
 
 // 定义全局排除节点的正则表达式，用于排除非地区节点
 const excludeFilter =
@@ -1781,22 +1787,25 @@ function buildRegionGroups(filteredProxies, customProxies) {
  * 自定义节点不参与订阅节点过滤，也不参与 hosts 改写及 DNS 域名处理。
  */
 function buildLandingSubscriptionConfig(existingProviderNames = []) {
-  if (!landingSubscriptions.enabled || !ruleOptionsEnable.链式代理) {
+  if (!landingModules.enabled || !ruleOptionsEnable.链式代理) {
     return { providers: {}, groups: [], providerNames: [] };
   }
 
   const modules = [
     {
-      key: 'socks',
-      groupName: landingSocksGroupName,
-      providerBaseName: 'hiclash_landing_socks',
-      ...landingSubscriptions.socks,
+      providerBaseName: 'hiclash_landing_subscription',
+      groupName: landingSubscriptionGroupName,
+      ...landingModules.subscription,
     },
     {
-      key: 'http',
-      groupName: landingHttpGroupName,
-      providerBaseName: 'hiclash_landing_http',
-      ...landingSubscriptions.http,
+      providerBaseName: 'hiclash_cocks',
+      groupName: cocksGroupName,
+      ...landingModules.cocks,
+    },
+    {
+      providerBaseName: 'hiclash_http',
+      groupName: httpGroupName,
+      ...landingModules.http,
     },
   ];
 
