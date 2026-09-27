@@ -414,21 +414,24 @@ for (const name of ['默认代理', '手动选择', '自动选择', '负载均�
 
 const proxyNames = new Set((config.proxies || []).map((proxy) => proxy.name));
 const groupNames = new Set((config['proxy-groups'] || []).map((group) => group.name));
-const assertGroupMembersAreNodes = (name) => {
-  const group = baseGroups[name];
-  for (const member of group.proxies || []) {
+const baseNames = ['手动选择', '自动选择', '负载均衡', '故障转移'];
+for (const name of baseNames) {
+  const members = baseGroups[name].proxies || [];
+  for (const member of members) {
     assert(
       proxyNames.has(member) || groupNames.has(member) || ['DIRECT', 'REJECT', 'REJECT-DROP'].includes(member),
-      name + ' contains unexpected member: ' + member,
+      name + ' member must be a node or group: ' + member,
     );
   }
-};
-for (const name of ['默认代理', '手动选择', '自动选择', '负载均衡', '故障转移']) {
-  assertGroupMembersAreNodes(name);
+  for (const proxyName of proxyNames) {
+    assert(members.includes(proxyName), name + ' must include node ' + proxyName);
+  }
+  for (const groupName of baseNames) {
+    assert(!members.includes(groupName), name + ' must not include base group ' + groupName);
+  }
 }
-assert(baseGroups['手动选择'].proxies.includes('自动选择'), '手动选择 must expose 自动选择 as a selectable member');
-assert(baseGroups['默认代理'].proxies.includes('手动选择'), '默认代理 must expose 手动选择 as a selectable member');
-assert(baseGroups['默认代理'].proxies.includes('故障转移'), '默认代理 must expose 故障转移 as a selectable member');
+assert(baseGroups['默认代理'].proxies.some((member) => groupNames.has(member)), '默认代理 must expose a strategy group');
+
 
 const autoGroup = baseGroups['自动选择'];
 assert(autoGroup.url && Number(autoGroup.interval) > 0, '自动选择 must define a positive health-check interval');
