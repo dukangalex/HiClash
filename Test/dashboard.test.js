@@ -27,3 +27,9 @@ assert.match(html, /http/);
 assert.match(html, /mihomoConfigInput/);
 
 console.log('Dashboard integration assertions passed');
+
+assert.match(html, /function cancelLanding\(\)/);
+assert.match(html, /if\(!chainLanding && customOptionState\.链式代理\)/);
+assert.match(html, /chainLanding=null;/);
+assert.match(html, /if\(customOptionState\.链式代理 && chainLanding\)/);
+assert.match(html, /document\.getElementById\('frontName'\)\.value=chainLanding\?\.frontName\|\|''/);
