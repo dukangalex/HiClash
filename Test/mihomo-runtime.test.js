@@ -168,7 +168,8 @@ for (const name of switchNames) {
   if (name === '链式代理') {
     const baseConfig = loadScript('Script/mihomoScript.js').main(fx.typicalSubscription());
     const toggleConfig = loadScript('Script/mihomoScript.js', (source) => {
-      const enabledSource = source.replace('链式代理: false', '链式代理: true');
+      const enabledSource = source.replace('链式代理: false', '链式代理: true')
+    .replace("url: '',\n    path: './proxy_providers/hiclash-http.yaml'", "url: 'https://example.com/landing-http',\n    path: './proxy_providers/hiclash-http.yaml'");
       const customSource = enabledSource.replace(
         'const customizeProxies = [];',
         "const customizeProxies = [{ name: '自建-日本-01', type: 'ss', server: '1.2.3.12', port: 443, cipher: 'aes-256-gcm', password: 'x' }];",
@@ -302,24 +303,24 @@ assert(
 const landingSubscriptionConfig = loadScript('Script/mihomoScript.js', (source) =>
   source
     .replace('链式代理: false', '链式代理: true')
-    .replace("url: '',\n    path: './proxy_providers/hiclash-landing-socks.yaml'", "url: 'https://example.com/landing-socks',\n    path: './proxy_providers/hiclash-landing-socks.yaml'")
-    .replace("url: '',\n    path: './proxy_providers/hiclash-landing-http.yaml'", "url: 'https://example.com/landing-http',\n    path: './proxy_providers/hiclash-landing-http.yaml'")
+    .replace("url: '',\n    path: './proxy_providers/hiclash-landing-subscription.yaml', "url: 'https://example.com/landing-subscription',\n    path: './proxy_providers/hiclash-landing-socks.yaml'")
+    .replace("url: '',\n    path: './proxy_providers/hiclash-cocks.yaml', "url: 'https://example.com/landing-http',\n    path: './proxy_providers/hiclash-landing-http.yaml'")
     .replace('const customizeProxies = [];', "const customizeProxies = [{ name: '自建-日本-落地测试', type: 'ss', server: '1.2.3.50', port: 443, cipher: 'aes-256-gcm', password: 'x' }];"),
 ).main({
   proxies: [
     { name: '香港-落地链测试', type: 'ss', server: '1.2.3.51', port: 443, cipher: 'aes-256-gcm', password: 'x' },
   ],
 });
-assert(landingSubscriptionConfig['proxy-providers']?.hiclash_landing_socks?.type === 'http', 'SOCKS landing subscription must use an HTTP proxy-provider');
-assert(landingSubscriptionConfig['proxy-providers']?.hiclash_landing_http?.type === 'http', 'HTTP landing subscription must use an HTTP proxy-provider');
-assert(landingSubscriptionConfig['proxy-providers']?.hiclash_landing_socks?.url === 'https://example.com/landing-socks', 'SOCKS landing subscription URL must be preserved');
-assert(landingSubscriptionConfig['proxy-providers']?.hiclash_landing_http?.url === 'https://example.com/landing-http', 'HTTP landing subscription URL must be preserved');
+assert(landingSubscriptionConfig['proxy-providers']?.hiclash_landing_subscription?.type === 'http', 'landing subscription subscription must use an HTTP proxy-provider');
+assert(landingSubscriptionConfig['proxy-providers']?.hiclash_cocks?.type === 'http', 'COCKS landing subscription must use an HTTP proxy-provider');
+assert(landingSubscriptionConfig['proxy-providers']?.hiclash_landing_subscription?.url === 'https://example.com/landing-socks', 'landing subscription subscription URL must be preserved');
+assert(landingSubscriptionConfig['proxy-providers']?.hiclash_cocks?.url === 'https://example.com/landing-http', 'COCKS landing subscription URL must be preserved');
 const landingGroupNames = namesOfGroups(landingSubscriptionConfig);
-assert(landingGroupNames.includes('落地 SOCKS'), 'SOCKS landing group must be generated');
-assert(landingGroupNames.includes('落地 HTTP'), 'HTTP landing group must be generated');
+assert(landingGroupNames.includes('落地订阅'), 'landing subscription group must be generated');
+assert(landingGroupNames.includes('COCKS'), 'COCKS landing group must be generated');
 const landingChainGroup = landingSubscriptionConfig['proxy-groups']?.find((group) => group.name === '链式中转');
-assert(landingChainGroup?.proxies?.includes('落地 SOCKS'), 'chain group must expose SOCKS landing group');
-assert(landingChainGroup?.proxies?.includes('落地 HTTP'), 'chain group must expose HTTP landing group');
+assert(landingChainGroup?.proxies?.includes('落地订阅'), 'chain group must expose landing subscription group');
+assert(landingChainGroup?.proxies?.includes('COCKS'), 'chain group must expose COCKS landing group');
 const landingNode = landingSubscriptionConfig.proxies.find((proxy) => proxy.name === '自建-日本-落地测试');
 assert(landingNode?.['dialer-proxy'] === '链式中转', 'custom landing node must use the chain group as dialer-proxy');
 
