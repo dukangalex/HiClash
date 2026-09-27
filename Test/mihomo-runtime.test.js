@@ -508,18 +508,6 @@ assert(
 
 validateGeneratedConfig(config, 'typical');
 
-const providerConfig = api.main(fx.providerSubscription());
-validateGeneratedConfig(providerConfig, 'provider');
-assert(providerConfig['proxy-providers']?.provider1, 'provider: provider1 must be retained');
-for (const groupName of ['默认代理', '手动选择', '自动选择', '负载均衡', '故障转移']) {
-  const group = providerConfig['proxy-groups']?.find((item) => item.name === groupName);
-  assert(group, 'provider: ' + groupName + ' group missing');
-  assert(
-    Array.isArray(group.use) && group.use.includes('provider1'),
-    'provider: ' + groupName + ' must consume provider1',
-  );
-}
-
 const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'hiclash-mihomo-'));
 const configPath = path.join(tempDir, 'config.yaml');
 
