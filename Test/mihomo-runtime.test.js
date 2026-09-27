@@ -312,8 +312,8 @@ const landingSubscriptionConfig = loadScript('Script/mihomoScript.js', (source) 
       "server: 'socks5.example.com',\n    port: 1080,\n    username: 'user',\n    password: 'pass',",
     )
     .replace(
-      "server: '',\n    port: 0,\n    username: '',\n    password: '',",
-      "server: 'http.example.com',\n    port: 8080,\n    username: 'http-user',\n    password: 'http-pass',",
+      "  http: {\n    server: '',\n    port: 0,\n    username: '',\n    password: '',",
+      "  http: {\n    server: 'http.example.com',\n    port: 8080,\n    username: 'http-user',\n    password: 'http-pass',",
     )
     .replace('const customizeProxies = [];', "const customizeProxies = [{ name: '自建-日本-落地测试', type: 'ss', server: '1.2.3.50', port: 443, cipher: 'aes-256-gcm', password: 'x' }];"),
 ).main({
