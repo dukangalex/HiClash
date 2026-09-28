@@ -28,6 +28,8 @@ test('script keeps built-in defaults when no custom options are supplied', () =>
   const output = main(baseConfig());
   assert.ok(Array.isArray(output['proxy-groups']));
   assert.ok(output['proxy-groups'].some((group) => group.name === 'AI'));
+  const fallback = output['proxy-groups'].find((group) => group.name === '漏网之鱼');
+  assert.equal(fallback?.['default-selected'], '默认代理');
 });
 
 test('script accepts generic custom options through the optional adapter context', () => {
