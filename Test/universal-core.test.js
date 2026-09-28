@@ -241,6 +241,37 @@ function run() {
   assert.throws(() => core.compileMihomoScript({ proxies: [] }, { AI: 'false' }), /must be boolean/);
   assert.throws(() => core.compileMihomoScript({ proxies: [] }, { 不存在的开关: true }), /unknown custom option/);
 
+  const providerLanding = core.compileMihomoScript(
+    {
+      proxies: [{ name: '🇺🇸 US 01', type: 'vmess', server: 'front.example', port: 443 }],
+      'proxy-providers': {
+        airport: {
+          type: 'http',
+          url: 'https://example.com/sub.yaml',
+          path: './airport.yaml',
+        },
+      },
+    },
+    { 链式代理: true },
+    {
+      frontName: '🇺🇸 US 01',
+      landing: {
+        kind: 'http',
+        name: '链式落地',
+        server: '127.0.0.1',
+        port: 8080,
+      },
+    },
+  );
+  assert.equal(providerLanding.config['proxy-providers'].airport.url, 'https://example.com/sub.yaml');
+  assert.equal(
+    providerLanding.config.proxies.find((proxy) => proxy.name === '链式落地')['dialer-proxy'],
+    '🇺🇸 US 01',
+  );
+  assert.ok(
+    providerLanding.config['proxy-groups'].find((group) => group.name === '默认代理').proxies.includes('链式落地'),
+  );
+
   const network = new core.NetworkContext();
   assert.equal(network.update({ connected: true, trusted: false, udpLoss: 0.9 }).transport, 'tcp');
   assert.equal(network.policy().killSwitch, true);
