@@ -58,8 +58,8 @@ test('provider mode preserves visible region groups and binds them to providers'
   assert.ok(auto);
   assert.deepEqual(Array.from(region.use), ['airport']);
   assert.deepEqual(Array.from(auto.use), ['airport']);
-  assert.equal(region['include-all'], true);
-  assert.equal(auto['include-all'], true);
+  assert.equal(region['include-all'], undefined);
+  assert.equal(auto['include-all'], undefined);
   assert.equal(
     region.filter,
     '(?i)' +
@@ -130,9 +130,24 @@ test('provider-only mode supplies provider sources to core strategy groups', () 
   for (const name of ['默认代理', '手动选择', '自动选择', '负载均衡', '故障转移']) {
     const group = output['proxy-groups'].find((item) => item.name === name);
     assert.ok(group, 'missing core strategy group: ' + name);
-    assert.equal(group['include-all'], true, name + ' should include provider nodes');
+    assert.equal(group['include-all'], undefined, name + ' must not mix all outbound proxies into provider mode');
     assert.deepEqual(Array.from(group.use || []), ['airport']);
   }
+});
+
+test('provider chain mode keeps the chain group scoped to provider nodes', () => {
+  const main = loadMain();
+  const output = main({
+    proxies: [{ name: '前置节点', type: 'socks', server: 'front.example', port: 443 }],
+    'proxy-providers': {
+      airport: { type: 'http', url: 'https://example.com/sub.yaml', path: './airport.yaml' },
+    },
+  });
+
+  const chain = output['proxy-groups'].find((group) => group.name === '链式中转');
+  assert.ok(chain);
+  assert.deepEqual(Array.from(chain.use || []), ['airport']);
+  assert.equal(chain['include-all'], undefined);
 });
 
 test('script accepts generic custom options through the optional adapter context', () => {
