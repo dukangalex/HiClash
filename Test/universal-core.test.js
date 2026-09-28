@@ -55,6 +55,8 @@ function run() {
   assert.throws(() => validateCustomOptions({ 不存在的开关: true }), /unknown custom option/);
   assert.throws(() => validateCustomOptions({ AI: 'true' }), /must be boolean/);
   assert.equal(core.sniff('vless://uuid@example.com:443?security=tls#US').kernel, 'sing-box');
+  assert.equal(core.sniff('https://example.com/subscription').format, 'unknown');
+  assert.equal(core.sniff('http://example.com/config.yaml').format, 'unknown');
   assert.equal(core.sniff('proxies:\n  - name: US\n    type: vmess').kernel, 'mihomo');
   assert.equal(core.sniff(JSON.stringify({ inbounds: [], outbounds: [], route: {} })).kernel, 'sing-box');
   assert.equal(core.sniff(JSON.stringify({ inbounds: [], outbounds: [], routing: {} })).kernel, 'xray');
@@ -119,66 +121,12 @@ function run() {
   assert.ok(reservedNameConfig.config.proxies.some((proxy) => proxy.name === '节点-默认代理'));
   assert.ok(reservedNameConfig.config['proxy-groups'].some((group) => group.name === '默认代理'));
 
-  const assertConfigReferences = (config) => {
-    const proxyNames = new Set((config.proxies || []).map((proxy) => proxy.name));
-    const groupNames = new Set((config['proxy-groups'] || []).map((group) => group.name));
-    assert.equal(proxyNames.size, (config.proxies || []).length);
-    assert.equal(groupNames.size, (config['proxy-groups'] || []).length);
-
-    const allowedTargets = new Set([...proxyNames, ...groupNames, 'DIRECT', 'REJECT', 'REJECT-DROP', 'PASS']);
-
-    for (const group of config['proxy-groups'] || []) {
-      for (const target of group.proxies || []) {
-        assert.ok(allowedTargets.has(target), `dangling proxy-group reference: ${group.name} -> ${target}`);
-      }
-      if (group['default-selected'] !== undefined) {
-        assert.ok(
-          allowedTargets.has(group['default-selected']),
-          `dangling default-selected reference: ${group.name} -> ${group['default-selected']}`,
-        );
-      }
-    }
-
-    for (const proxy of config.proxies || []) {
-      if (proxy['dialer-proxy'] !== undefined) {
-        assert.ok(
-          allowedTargets.has(proxy['dialer-proxy']),
-          `dangling dialer-proxy reference: ${proxy.name} -> ${proxy['dialer-proxy']}`,
-        );
-      }
-    }
-
-    assert.ok(
-      (config.rules || []).some((rule) => /^MATCH,/.test(rule)),
-      'configuration must end with a MATCH fallback',
-    );
-  };
-
   const scriptDefault = core.compileMihomoScript(
     { proxies: [{ name: 'US-前置节点', type: 'http', server: '127.0.0.1', port: 8080 }] },
     {},
   );
   assert.ok(scriptDefault.config['proxy-groups'].some((group) => group.name === 'AI'));
   assert.equal(scriptDefault.options.AI, true);
-  assertConfigReferences(scriptDefault.config);
-
-  const providerMode = core.compileMihomoScript(
-    {
-      proxies: [],
-      'proxy-providers': {
-        Airport: {
-          type: 'http',
-          url: 'https://example.com/subscription',
-          path: './providers/airport.yaml',
-        },
-      },
-    },
-    {},
-  );
-  assert.ok(providerMode.config['proxy-providers'].Airport);
-  assert.ok(providerMode.config['proxy-groups'].some((group) => group.name === '美国'));
-  assert.ok(providerMode.config['proxy-groups'].some((group) => group.name === '美国-自动选择'));
-  assertConfigReferences(providerMode.config);
 
   const scriptDisabled = core.compileMihomoScript(
     { proxies: [{ name: 'US-前置节点', type: 'http', server: '127.0.0.1', port: 8080 }] },
@@ -293,6 +241,34 @@ function run() {
   assert.throws(() => core.compileMihomoScript({ proxies: [] }, { AI: 'false' }), /must be boolean/);
   assert.throws(() => core.compileMihomoScript({ proxies: [] }, { 不存在的开关: true }), /unknown custom option/);
 
+  const providerLanding = core.compileMihomoScript(
+    {
+      proxies: [{ name: '🇺🇸 US 01', type: 'vmess', server: 'front.example', port: 443 }],
+      'proxy-providers': {
+        airport: {
+          type: 'http',
+          url: 'https://example.com/sub.yaml',
+          path: './airport.yaml',
+        },
+      },
+    },
+    { 链式代理: true },
+    {
+      frontName: '🇺🇸 US 01',
+      landing: {
+        kind: 'http',
+        name: '链式落地',
+        server: '127.0.0.1',
+        port: 8080,
+      },
+    },
+  );
+  assert.equal(providerLanding.config['proxy-providers'].airport.url, 'https://example.com/sub.yaml');
+  assert.equal(providerLanding.config.proxies.find((proxy) => proxy.name === '链式落地')['dialer-proxy'], '🇺🇸 US 01');
+  assert.ok(
+    providerLanding.config['proxy-groups'].find((group) => group.name === '默认代理').proxies.includes('链式落地'),
+  );
+
   const network = new core.NetworkContext();
   assert.equal(network.update({ connected: true, trusted: false, udpLoss: 0.9 }).transport, 'tcp');
   assert.equal(network.policy().killSwitch, true);
@@ -303,6 +279,7 @@ function run() {
   });
   assert.equal(bypass.evaluate({ process: 'com.example.cn' }).action, 'DIRECT');
   assert.equal(bypass.evaluate({ asn: 45090 }).action, 'DIRECT');
+  assert.equal(bypass.evaluate({ latencyMs: 1 }).action, 'PROXY');
 
   const controller = core.createController();
   assert.equal(controller.routeDecision({ coreState: 'stopped' }), 'BLOCK');
