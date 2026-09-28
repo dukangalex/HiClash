@@ -87,6 +87,9 @@ jobs:
       - name: run universal core tests
         run: node Test/universal-core.test.js
 
+      - name: run custom options regression tests
+        run: node Test/custom-options-script.test.js
+
       - name: run existing regression tests
         run: node Test/run-tests.js
 
