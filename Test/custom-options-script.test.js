@@ -83,10 +83,7 @@ test('script applies host-side ruleOptionsEnable overrides before main()', () =>
   const sandbox = loadScript();
   // Bettbox's verified runtime path mutates ruleOptionsEnable after loading the script
   // and then invokes main(config). Execute that mutation in the same VM lexical scope.
-  const output = vm.runInContext(
-    'ruleOptionsEnable.AI = false; main(' + JSON.stringify(baseConfig()) + ')',
-    sandbox,
-  );
+  const output = vm.runInContext('ruleOptionsEnable.AI = false; main(' + JSON.stringify(baseConfig()) + ')', sandbox);
 
   assert.ok(!output['proxy-groups'].some((group) => group.name === 'AI'));
 });
