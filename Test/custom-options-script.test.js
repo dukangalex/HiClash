@@ -135,6 +135,33 @@ test('provider-only mode supplies provider sources to core strategy groups', () 
   }
 });
 
+test('script preserves dialer-proxy when the target node is renamed for a reserved name', () => {
+  const main = loadMain();
+  const output = main({
+    proxies: [
+      {
+        name: '默认代理',
+        type: 'socks',
+        server: 'landing.example',
+        port: 1080,
+      },
+      {
+        name: '🇺🇸 US 01',
+        type: 'socks',
+        server: 'front.example',
+        port: 443,
+        'dialer-proxy': '默认代理',
+      },
+    ],
+  });
+
+  const renamedLanding = output.proxies.find((proxy) => proxy.name === '节点-默认代理');
+  const front = output.proxies.find((proxy) => proxy.name === '🇺🇸 US 01');
+
+  assert.ok(renamedLanding);
+  assert.equal(front?.['dialer-proxy'], '节点-默认代理');
+});
+
 test('script accepts generic custom options through the optional adapter context', () => {
   const main = loadMain();
   const output = main(baseConfig(), {
