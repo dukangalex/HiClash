@@ -1,0 +1,16 @@
+name: temporary-prettier-check-303
+on:
+  push:
+    branches:
+      - tmp/format-303
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - run: npm install -g prettier
+      - run: prettier --write Test/universal-core.test.js
+      - run: prettier --check Test/universal-core.test.js
