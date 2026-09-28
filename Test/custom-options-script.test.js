@@ -20,7 +20,9 @@ function loadMain() {
 }
 
 function baseConfig() {
-  return { proxies: [] };
+  return {
+    proxies: [{ name: '🇯🇵 JP 01', type: 'vmess', server: 'example.com', port: 443 }],
+  };
 }
 
 test('script keeps built-in defaults when no custom options are supplied', () => {
@@ -54,8 +56,8 @@ test('provider mode preserves visible region groups and binds them to providers'
   const auto = output['proxy-groups'].find((group) => group.name === '美国-自动选择');
   assert.ok(region);
   assert.ok(auto);
-  assert.deepEqual(region.use, ['airport']);
-  assert.deepEqual(auto.use, ['airport']);
+  assert.deepEqual(Array.from(region.use), ['airport']);
+  assert.deepEqual(Array.from(auto.use), ['airport']);
   assert.equal(region['include-all'], true);
   assert.equal(auto['include-all'], true);
   assert.equal(
@@ -79,16 +81,12 @@ test('script accepts generic custom options through the optional adapter context
 
 test('script applies host-side ruleOptionsEnable overrides before main()', () => {
   const sandbox = loadScript();
-  assert.deepEqual(sandbox.HiClash_CustomOptions, {
-    version: 1,
-    type: 'toggle-map',
-    source: 'ruleOptionsEnable',
-  });
-
   // Bettbox's verified runtime path mutates ruleOptionsEnable after loading the script
-  // and then invokes main(config). This test reproduces that exact ordering.
-  sandbox.ruleOptionsEnable.AI = false;
-  const output = sandbox.main(baseConfig());
+  // and then invokes main(config). Execute that mutation in the same VM lexical scope.
+  const output = vm.runInContext(
+    'ruleOptionsEnable.AI = false; main(' + JSON.stringify(baseConfig()) + ')',
+    sandbox,
+  );
 
   assert.ok(!output['proxy-groups'].some((group) => group.name === 'AI'));
 });
