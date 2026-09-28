@@ -997,8 +997,7 @@ const baseRuleProviders = {
   },
   'geolocation-cn': {
     ...ruleProviderCommonDomain,
-    url: 'https://fastly.jsdelivr.net/gh/appshubcc/bett-rules@meta/geo/geosite/geolocation-cn.mrs',
-    path: './ruleset/geolocation-cn.mrs',
+    url: 'https://fastly.jsdelivr.net/gh/appshubcc/bett-rules@meta/geo/geosite/geolocation-cn.mrs',    path: './ruleset/geolocation-cn.mrs',
     'path-in-bundle': 'geo/geosite/geolocation-cn.mrs',
   },
   cn_ip: {
@@ -1992,14 +1991,12 @@ function buildFunctionalGroups(filteredProxies, generatedRegionGroups, customize
     ...selectBaseOption,
     name: '漏网之鱼',
     proxies: ['默认代理', '直连', ...groupNamesOfSelect],
-    'default-selected': '默认代理',
     icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Stack.svg',
   });
 
   const directGroup = {
     ...selectBaseOption,
-    name: '直连',
-    proxies: [...directProxies.map((p) => p.name)],
+    name: '直连',    proxies: [...directProxies.map((p) => p.name)],
     icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/China.svg',
     hidden: hideManualSelectGroupEnabled,
   };
@@ -2659,10 +2656,10 @@ function getProviderRegionFilter(region) {
 }
 
 function buildProviderRegionGroups(filteredProxies, customProxies, providerNames) {
-  // Provider 本身的远程节点在脚本执行阶段不可见，因此严格沿用原有
-  // getMatchedRegions() + buildRegionGroups() 逻辑：只有当前脚本实际可见的
-  // 节点能够证明某地区存在时，才创建该地区组；绝不为未知/空地区预建空组。
-  const groups = buildRegionGroups(filteredProxies, customProxies);
+  // Provider 远程节点在脚本执行阶段不可见，因此不能用当前可见节点决定地区组是否存在。
+  // 对 provider 模式，按已知地区定义建立过滤组；实际节点由 Mihomo 运行时从 provider
+  // 加载。这样服务组的默认选择（例如“美国”）不会在 provider 模式下变成悬空引用。
+  const groups = allRegionDefinitions.flatMap((region) => createRegionGroup(region.name, region.icon, []));
   const regionByName = new Map(allRegionDefinitions.map((region) => [region.name, region]));
 
   for (const group of groups) {
