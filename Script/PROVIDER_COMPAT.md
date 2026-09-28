@@ -19,7 +19,7 @@
 - `Script/Script.js`
 - `Script/mihomoScript.js`
 
-主脚本不会在脚本阶段下载或展开 provider，而是使用 Mihomo 的 `include-all` / `filter` 机制在运行期消费 provider 节点；这样可以保留原节点信息，同时由 HiClash 接管 DNS、TUN、Sniffer、策略组和规则。
+主脚本不会在脚本阶段下载或展开 provider，而是使用 Mihomo 的 `use` / `filter` 机制在运行期消费 provider 节点；这样可以保留原节点信息，同时由 HiClash 接管 DNS、TUN、Sniffer、策略组和规则。
 
 `Script/mihomoScriptProvider.js` 继续保留，供需要独立 provider 兼容层的场景使用。
 
