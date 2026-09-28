@@ -17,7 +17,6 @@ const HiClash_CustomOptions = Object.freeze({
   type: 'toggle-map',
   source: 'ruleOptionsEnable',
 });
-const Compatible_With_Bettbox = { ruleOptionsEnable: true };
 
 const ruleOptionsEnable = {
   // 基础策略组
