@@ -44,7 +44,7 @@ test('script keeps built-in defaults when no custom options are supplied', () =>
 test('provider mode preserves visible region groups and binds them to providers', () => {
   const main = loadMain();
   const output = main({
-    proxies: [{ name: '🇺🇸 US 01', type: 'direct' }],
+    proxies: [{ name: '🇺🇸 US 01', type: 'vmess', server: 'example.com', port: 443 }],
     'proxy-providers': {
       airport: { type: 'http', url: 'https://example.com/sub.yaml', path: './airport.yaml' },
     },
