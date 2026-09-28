@@ -1663,10 +1663,12 @@ function filterAndNormalizeProxies(config) {
 
   for (const rawProxy of filteredRawProxies) {
     const normalized = normalizeProxyName(rawProxy);
-    if (normalized.name !== rawProxy.name) {
-      renameMap.set(rawProxy.name, normalized.name);
-    }
     const safeName = reserveProxyName(normalized.name, getReservedProxyNames(), uniqueNames);
+    // 引用修复必须指向最终安全名称，而不仅是标准化后的中间名称。
+    // 对重复原名只保留第一次映射，避免后续重复节点覆盖已有引用目标。
+    if (!renameMap.has(rawProxy.name)) {
+      renameMap.set(rawProxy.name, safeName);
+    }
     const safeProxy = safeName === normalized.name ? normalized : { ...normalized, name: safeName };
     if (!uniqueNames.has(safeName)) {
       uniqueNames.add(safeName);
