@@ -2065,7 +2065,6 @@ function buildProviderRegionGroups(filteredProxies, customProxies, providerNames
     const region = regionByName.get(regionName);
     if (!region) continue;
 
-    group['include-all'] = true;
     group.use = [...providerNames];
     group.filter = getProviderRegionFilter(region);
     group['exclude-filter'] = excludeFilter.source;
@@ -2090,7 +2089,6 @@ function enableProviderSources(groups, chainGroup, providerNames) {
   }
 
   if (chainGroup) {
-    chainGroup['include-all'] = true;
     chainGroup.use = [...providerNames];
     chainGroup['exclude-filter'] = excludeFilter.source;
     chainGroup['exclude-type'] = 'DIRECT|REJECT|REJECT-DROP|PASS';
