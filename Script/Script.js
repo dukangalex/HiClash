@@ -2022,7 +2022,7 @@ function buildDnsAndHostsConfig(config, filteredProxies) {
 /**
  * 判断输入是否包含 proxy-providers。
  * provider 模式下不尝试在脚本运行期展开远端订阅，而是直接让 Mihomo
- * 通过 include-all/filter 使用 provider 中的节点；这样不会修改或丢失原节点信息。
+ * 通过 provider 的 use/filter 机制使用节点；这样不会修改或丢失原节点信息。
  */
 function hasProxyProviders(config) {
   return !!(
@@ -2036,7 +2036,7 @@ function hasProxyProviders(config) {
 
 /**
  * provider 模式的地区组。
- * Mihomo 会在运行期从 proxy-providers 中加载节点，因此这里使用 include-all + filter，
+ * Mihomo 会在运行期从 proxy-providers 中加载节点，因此这里使用 use + filter，
  * 不需要脚本读取/下载机场订阅内容。
  */
 function getProviderRegionFilter(region) {
@@ -2082,7 +2082,6 @@ function enableProviderSources(groups, chainGroup, providerNames) {
   const baseNames = new Set(baseGroups.map((group) => group.name));
   for (const group of groups) {
     if (!group || (!baseNames.has(group.name) && group.name !== '默认代理')) continue;
-    group['include-all'] = true;
     group.use = [...providerNames];
     group['exclude-filter'] = excludeFilter.source;
     group['exclude-type'] = 'DIRECT|REJECT|REJECT-DROP|PASS';
