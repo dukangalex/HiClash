@@ -58,7 +58,11 @@ test('provider mode preserves visible region groups and binds them to providers'
   assert.deepEqual(auto.use, ['airport']);
   assert.equal(region['include-all'], true);
   assert.equal(auto['include-all'], true);
-  assert.equal(region.filter, '(?i)' + '🇺🇸|美国|(?:^|[^A-Za-z])US(?:$|[^A-Za-z])|(?:^|[^A-Za-z])USA(?:$|[^A-Za-z])|america|united[\\s_-]*states|los[\\s_-]*angeles|洛杉矶|san[\\s_-]*jose|圣何塞');
+  assert.equal(
+    region.filter,
+    '(?i)' +
+      '🇺🇸|美国|(?:^|[^A-Za-z])US(?:$|[^A-Za-z])|(?:^|[^A-Za-z])USA(?:$|[^A-Za-z])|america|united[\\s_-]*states|los[\\s_-]*angeles|洛杉矶|san[\\s_-]*jose|圣何塞',
+  );
 });
 
 test('script accepts generic custom options through the optional adapter context', () => {
