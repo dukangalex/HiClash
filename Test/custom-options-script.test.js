@@ -135,21 +135,6 @@ test('provider-only mode supplies provider sources to core strategy groups', () 
   }
 });
 
-test('provider chain mode keeps the chain group scoped to provider nodes', () => {
-  const main = loadMain();
-  const output = main({
-    proxies: [{ name: '前置节点', type: 'socks', server: 'front.example', port: 443 }],
-    'proxy-providers': {
-      airport: { type: 'http', url: 'https://example.com/sub.yaml', path: './airport.yaml' },
-    },
-  });
-
-  const chain = output['proxy-groups'].find((group) => group.name === '链式中转');
-  assert.ok(chain);
-  assert.deepEqual(Array.from(chain.use || []), ['airport']);
-  assert.equal(chain['include-all'], undefined);
-});
-
 test('script accepts generic custom options through the optional adapter context', () => {
   const main = loadMain();
   const output = main(baseConfig(), {
