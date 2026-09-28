@@ -55,6 +55,34 @@ function validateGeneratedConfig(config, label) {
   assert(config['bind-address'] === '127.0.0.1', label + ': inbound bind address must remain loopback-only');
   assert(config['external-controller'] === '127.0.0.1:19090', label + ': external controller must stay loopback-only');
 
+  const rules = Array.isArray(config.rules) ? config.rules : [];
+  const privateRuleIndex = rules.indexOf('RULE-SET,private,直连');
+  const cnRuleIndex = rules.indexOf('RULE-SET,geolocation-cn,直连');
+  assert(privateRuleIndex === 0, label + ': private rule must remain the first routing rule');
+  assert(cnRuleIndex > privateRuleIndex, label + ': China direct rule must follow private rule');
+  for (const rule of [
+    'AND,((NETWORK,UDP),(DST-PORT,3478-3497)),REJECT',
+    'AND,((NETWORK,UDP),(DST-PORT,5349)),REJECT',
+    'AND,((NETWORK,UDP),(DST-PORT,19302-19309)),REJECT',
+    'AND,((NETWORK,TCP),(DST-PORT,3478-3497)),REJECT',
+    'AND,((NETWORK,TCP),(DST-PORT,5349)),REJECT',
+  ]) {
+    assert(rules.includes(rule), label + ': WebRTC/STUN protection rule missing: ' + rule);
+  }
+  assert(
+    rules.includes(
+      'AND,((NETWORK,UDP),(DST-PORT,443),(NOT,((OR,((RULE-SET,cn_additional),(RULE-SET,cn_ip,no-resolve)))))),REJECT',
+    ),
+    label + ': foreign QUIC protection rule missing',
+  );
+  assert(rules[rules.length - 1] === 'MATCH,漏网之鱼', label + ': normal-mode final rule must remain MATCH,漏网之鱼');
+  const claudeRuleIndex = rules.indexOf('DOMAIN-SUFFIX,claude.ai,Claude');
+  const aiRuleIndex = rules.findIndex((rule) => rule.endsWith(',AI'));
+  assert(
+    claudeRuleIndex >= 0 && aiRuleIndex >= 0 && claudeRuleIndex < aiRuleIndex,
+    label + ': Claude routing rules must be emitted before AI routing rules',
+  );
+
   const fallback = config['proxy-groups']?.find((group) => group.name === '故障转移');
   assert(fallback?.type === 'fallback', label + ': 故障转移 must use fallback strategy type');
 
