@@ -30,6 +30,15 @@ test('script keeps built-in defaults when no custom options are supplied', () =>
   assert.ok(output['proxy-groups'].some((group) => group.name === 'AI'));
   const fallback = output['proxy-groups'].find((group) => group.name === '漏网之鱼');
   assert.equal(fallback?.['default-selected'], '默认代理');
+  const rules = output.rules;
+  const privateIndex = rules.indexOf('RULE-SET,private,直连');
+  const foreignIndex = rules.indexOf('RULE-SET,geolocation-!cn,默认代理');
+  const cnIpIndex = rules.indexOf('RULE-SET,cn_ip,直连');
+  const fallbackIndex = rules.findIndex((rule) => rule.startsWith('MATCH,'));
+  assert.ok(privateIndex >= 0 && foreignIndex >= 0 && cnIpIndex >= 0 && fallbackIndex >= 0);
+  assert.ok(privateIndex < foreignIndex);
+  assert.ok(foreignIndex < cnIpIndex);
+  assert.ok(cnIpIndex < fallbackIndex);
 });
 
 test('script accepts generic custom options through the optional adapter context', () => {
