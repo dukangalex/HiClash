@@ -119,6 +119,22 @@ test('provider mode keeps mixed visible/provider group references closed', () =>
   }
 });
 
+test('provider-only mode supplies provider sources to core strategy groups', () => {
+  const main = loadMain();
+  const output = main({
+    'proxy-providers': {
+      airport: { type: 'http', url: 'https://example.com/sub.yaml', path: './airport.yaml' },
+    },
+  });
+
+  for (const name of ['默认代理', '手动选择', '自动选择', '负载均衡', '故障转移']) {
+    const group = output['proxy-groups'].find((item) => item.name === name);
+    assert.ok(group, 'missing core strategy group: ' + name);
+    assert.equal(group['include-all'], true, name + ' should include provider nodes');
+    assert.deepEqual(Array.from(group.use || []), ['airport']);
+  }
+});
+
 test('script accepts generic custom options through the optional adapter context', () => {
   const main = loadMain();
   const output = main(baseConfig(), {
