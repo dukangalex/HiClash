@@ -1992,6 +1992,7 @@ function buildFunctionalGroups(filteredProxies, generatedRegionGroups, customize
     ...selectBaseOption,
     name: '漏网之鱼',
     proxies: ['默认代理', '直连', ...groupNamesOfSelect],
+    'default-selected': '默认代理',
     icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Stack.svg',
   });
 
