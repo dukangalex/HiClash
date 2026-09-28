@@ -92,6 +92,33 @@ test('provider-only mode keeps proxy-group references closed', () => {
   }
 });
 
+test('provider mode keeps mixed visible/provider group references closed', () => {
+  const main = loadMain();
+  const output = main({
+    proxies: [{ name: '🇺🇸 US 01', type: 'vmess', server: 'example.com', port: 443 }],
+    'proxy-providers': {
+      airport: { type: 'http', url: 'https://example.com/sub.yaml', path: './airport.yaml' },
+      backup: { type: 'http', url: 'https://example.com/sub2.yaml', path: './backup.yaml' },
+    },
+  });
+
+  const groupNames = new Set(output['proxy-groups'].map((group) => group.name));
+  const proxyNames = new Set(output.proxies.map((proxy) => proxy.name));
+  const builtIns = new Set(['DIRECT', 'REJECT', 'REJECT-DROP', 'PASS']);
+
+  for (const group of output['proxy-groups']) {
+    for (const reference of group.proxies || []) {
+      assert.ok(
+        groupNames.has(reference) || proxyNames.has(reference) || builtIns.has(reference),
+        group.name + ' contains unresolved proxy/group reference: ' + reference,
+      );
+    }
+    for (const providerName of group.use || []) {
+      assert.ok(output['proxy-providers'][providerName], group.name + ' references missing provider: ' + providerName);
+    }
+  }
+});
+
 test('script accepts generic custom options through the optional adapter context', () => {
   const main = loadMain();
   const output = main(baseConfig(), {
