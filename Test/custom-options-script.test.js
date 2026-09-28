@@ -41,6 +41,26 @@ test('script keeps built-in defaults when no custom options are supplied', () =>
   assert.ok(cnIpIndex < fallbackIndex);
 });
 
+test('provider mode preserves visible region groups and binds them to providers', () => {
+  const main = loadMain();
+  const output = main({
+    proxies: [{ name: '🇺🇸 US 01', type: 'direct' }],
+    'proxy-providers': {
+      airport: { type: 'http', url: 'https://example.com/sub.yaml', path: './airport.yaml' },
+    },
+  });
+
+  const region = output['proxy-groups'].find((group) => group.name === '美国');
+  const auto = output['proxy-groups'].find((group) => group.name === '美国-自动选择');
+  assert.ok(region);
+  assert.ok(auto);
+  assert.deepEqual(region.use, ['airport']);
+  assert.deepEqual(auto.use, ['airport']);
+  assert.equal(region['include-all'], true);
+  assert.equal(auto['include-all'], true);
+  assert.equal(region.filter, '(?i)' + '🇺🇸|美国|(?:^|[^A-Za-z])US(?:$|[^A-Za-z])|(?:^|[^A-Za-z])USA(?:$|[^A-Za-z])|america|united[\\s_-]*states|los[\\s_-]*angeles|洛杉矶|san[\\s_-]*jose|圣何塞');
+});
+
 test('script accepts generic custom options through the optional adapter context', () => {
   const main = loadMain();
   const output = main(baseConfig(), {
