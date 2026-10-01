@@ -135,6 +135,25 @@ function runIntegrationTests(h, api, meta, fx, loadScript, scriptFile) {
     h.assert(rules.includes('DST-PORT,3478-3497'), '应拦截常见 WebRTC STUN 端口');
     h.assert(rules.includes('DST-PORT,5349'), '应拦截 STUN/TURN TLS 端口');
   });
+  h.test('规则源：全部指向 MetaCubeX 官方 meta-rules-dat', () => {
+    const out = api.main(fx.typicalSubscription());
+    const providers = out['rule-providers'];
+    const urls = Object.values(providers).map((p) => p.url);
+    h.assert(urls.length > 0, '应生成规则集');
+    for (const url of urls) {
+      h.assert(url.startsWith('https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/'), url);
+      h.assert(!/bett-rules|217heidai|666OS|binaryu|353355/.test(url), url);
+    }
+    h.assertEqual(providers.private.proxy, 'DIRECT', '规则集应直连下载，避免节点未就绪时更新失败');
+    h.assert(providers.bilibili, '应包含官方 bilibili 规则集');
+    h.assert(providers.disney, '应包含官方 disney 规则集');
+    h.assert(!providers.microsoft_ip, '官方未提供的 IP 规则集不应保留');
+    h.assert(!providers.emos, '第三方 Emby 规则集应移除');
+    const rules = out.rules.join('\n');
+    h.assert(rules.includes('RULE-SET,bilibili,直连'));
+    h.assert(rules.includes('RULE-SET,onedrive,直连'));
+    h.assert(rules.includes('RULE-SET,disney,默认代理'));
+  });
   h.test('冷启动优化：记住策略选择与 fake-ip、懒测速、mips 栈', () => {
     const out = api.main(fx.typicalSubscription());
     h.assertEqual(out.profile['store-selected'], true, '应记住上次策略组选择，避免重启后重新测速');

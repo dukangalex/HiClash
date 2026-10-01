@@ -75,6 +75,21 @@ GitHub：
 
 > `tun.stack: mips` 需要 **Mihomo ≥ v1.19.31**。更早的内核请把栈改成 `mixed`。
 
+## 📚 官方规则源
+
+规则集已从第三方镜像换成 [MetaCubeX/meta-rules-dat](https://github.com/MetaCubeX/meta-rules-dat) 的 `meta` 分支 MRS，和内核自带的 `path-in-bundle` 对齐。规则下载走 `proxy: DIRECT`，节点还没就绪时也能更新。
+
+按社区里反复出现的问题，在官方集合上做了这些取舍：
+
+- **B 站本体直连、国际版走默认代理**，减轻国内视频被送去代理后的卡顿。
+- **OneDrive 直连**，避免和微软国内服务抢路由导致同步失败。
+- **Disney+ 走默认代理**，用官方 `disney` 域名集，不另开策略组。
+- **广告**改用官方 `category-ads-all`。它比第三方大列表更瘦，误杀更少，拦截面也更小。
+- **STUN** 用官方 `category-stun` 做 fake-ip 例外，减少通话和网页拿不到真实地址或连不上的情况。
+- **国内 QUIC 放行**改用官方 `cn`（ChinaMax），不再依赖不明镜像。
+- 官方没有发布的 IP 集（Microsoft / Apple / Steam / TikTok / Spotify）已去掉，只保留有域名集、以及官方确实提供的 IP 集（Google、Telegram、Twitter、Netflix、Facebook）。
+- Emby 改为官方 `category-emby`，客户端进程名规则仍保留。
+
 ## 🌐 DNS / Hosts 优化
 
 针对部分机场常见的私有 DNS、节点域名 Hosts 映射、DNS 覆写导致的解析异常等问题，本版本会对 DNS 与 Hosts 进行统一处理，并将必要的节点 Hosts 映射应用到节点配置。
@@ -269,10 +284,9 @@ node Test/run-tests.js
 感谢原作者与所有上游开源项目及规则资源：
 
 - [AIsouler/MyClash（原作者项目）](https://github.com/AIsouler/MyClash)
+- [MetaCubeX/meta-rules-dat（官方规则集）](https://github.com/MetaCubeX/meta-rules-dat)
 - [dahaha-365/YaNet](https://github.com/dahaha-365/YaNet)
 - [YiXuanZX/rules](https://github.com/YiXuanZX/rules)
-- [appshubcc/bett-rules](https://github.com/appshubcc/bett-rules)
-- [217heidai/adblockfilters](https://github.com/217heidai/adblockfilters)
 - [Koolson/Qure](https://github.com/Koolson/Qure)
 
 ## ⭐ 项目
