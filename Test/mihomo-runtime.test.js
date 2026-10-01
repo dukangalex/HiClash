@@ -9,7 +9,7 @@ const { loadScript } = require('./lib/loader');
 const fx = require('./lib/fixtures');
 
 const MIHOMO_BIN = process.env.MIHOMO_BIN;
-const MIHOMO_VERSION = 'v1.19.31';
+const MIHOMO_VERSION = 'v1.19.32';
 
 if (!MIHOMO_BIN) {
   throw new Error('MIHOMO_BIN is required');
@@ -21,12 +21,11 @@ if (!fs.existsSync(MIHOMO_BIN)) {
 
 const api = loadScript('Script/mihomoScript.js');
 const fixture = fx.typicalSubscription();
-// The shared fixture intentionally focuses on script behavior and contains a minimal VMess node.
-// For kernel-level validation, add the required mihomo cipher field without changing production code.
-fixture.proxies = fixture.proxies.map((proxy) =>
-  proxy.type === 'vmess' && !proxy.cipher ? { ...proxy, cipher: 'auto' } : proxy,
-);
 const config = api.main(fixture);
+assert(
+  config.proxies.some((proxy) => proxy.type === 'vmess' && proxy.cipher === 'auto'),
+  'vmess nodes must gain cipher=auto so mihomo v1.19.32 can parse the profile',
+);
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -35,6 +34,7 @@ function assert(condition, message) {
 function validateGeneratedConfig(config, label) {
   assert(config.tun?.enable === true, label + ': TUN must be enabled');
   assert(config.tun?.stack === 'mips', label + ': TUN stack must be mips');
+  assert(config.tun?.['congestion-controller'] === 'bbr', label + ': mips congestion controller must be bbr');
   assert(config.tun?.['strict-route'] === true, label + ': strict-route must be enabled');
   assert(config.tun?.['auto-redirect'] === true, label + ': auto-redirect must be enabled');
   assert(config.tun?.['auto-detect-interface'] === true, label + ': auto-detect-interface must be enabled');
@@ -125,4 +125,4 @@ try {
   fs.rmSync(tempDir, { recursive: true, force: true });
 }
 
-// Runtime validation is pinned to the official v1.19.31 release binary in CI.
+// Runtime validation is pinned to the official v1.19.32 release binary in CI.

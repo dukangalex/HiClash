@@ -5,7 +5,7 @@
  * 原始 proxies、proxy-providers、rules、dns、tun、sniffer 等均保留；
  * 仅补充 provider-aware 策略组，避免旧脚本因 proxy-providers 直接报错。
  *
- * 适用于 Mihomo v1.19.31+。
+ * 适用于 Mihomo v1.19.32+。
  */
 
 const PROVIDER_EXCLUDE_FILTER =

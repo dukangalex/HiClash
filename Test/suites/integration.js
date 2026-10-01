@@ -66,7 +66,14 @@ function runIntegrationTests(h, api, meta, fx, loadScript, scriptFile) {
 
       const out = api.main(cfg);
 
-      h.assertDeep(out.proxies.slice(0, originalProxies.length), originalProxies, '原始 proxies 必须原样保留');
+      const preserved = originalProxies.map((proxy) =>
+        proxy.type === 'vmess' && !proxy.cipher ? { ...proxy, cipher: 'auto' } : proxy,
+      );
+      h.assertDeep(
+        out.proxies.slice(0, preserved.length),
+        preserved,
+        '原始 proxies 除 v1.19.32 必需的 vmess cipher 外必须原样保留',
+      );
       h.assertDeep(out['proxy-providers'], originalProviders, '原始 proxy-providers 必须原样保留');
       h.assert(groupByName(out['proxy-groups'], '默认代理'), '应生成 HiClash 默认代理组');
       h.assert(groupByName(out['proxy-groups'], '自动选择'), '应生成自动选择组');
@@ -158,7 +165,8 @@ function runIntegrationTests(h, api, meta, fx, loadScript, scriptFile) {
     const out = api.main(fx.typicalSubscription());
     h.assertEqual(out.profile['store-selected'], true, '应记住上次策略组选择，避免重启后重新测速');
     h.assertEqual(out.profile['store-fake-ip'], true, '应持久化 fake-ip 映射，避免重启后首包等 DNS');
-    h.assertEqual(out.tun.stack, 'mips', '应对齐 mihomo v1.19.31 的 mips 栈');
+    h.assertEqual(out.tun.stack, 'mips', '应对齐 mihomo v1.19.32 的默认 mips 栈');
+    h.assertEqual(out.tun['congestion-controller'], 'bbr', 'mips 栈应显式指定拥塞控制');
     h.assertEqual(out.tun['udp-timeout'], 300);
     h.assertEqual(out['tcp-concurrent'], true);
     h.assertEqual(out['unified-delay'], true);
@@ -168,6 +176,9 @@ function runIntegrationTests(h, api, meta, fx, loadScript, scriptFile) {
     h.assertEqual(out['geodata-loader'], 'memconservative');
     h.assertEqual(out.dns['cache-algorithm'], 'arc');
     h.assertEqual(out.dns['prefer-h3'], false, '冷启动勿抢 HTTP/3，避免 UDP 不通时首包卡住');
+    h.assertEqual(out.dns['fake-ip-filter-mode'], 'blacklist');
+    h.assertEqual(out.dns['respect-rules'], false, 'DNS 上游不应跟着规则走，避免规则集未就绪时成环');
+    h.assert(out.rules[0] === 'IP-CIDR,127.0.0.0/8,DIRECT,no-resolve', '本机回环应最先直连');
     const auto = groupByName(out['proxy-groups'], '自动选择');
     h.assert(auto, '缺少自动选择组');
     h.assertEqual(auto.lazy, true, '自动选择组应懒测速，启动时不探测全部节点');
@@ -418,11 +429,12 @@ function runIntegrationTests(h, api, meta, fx, loadScript, scriptFile) {
     h.assertDeep(out.hosts['services.googleapis.cn'], 'services.googleapis.com');
   });
 
-  // ---------------- Mihomo v1.19.31 基线 ----------------
-  h.section('集成测试 · Mihomo v1.19.31 基线');
+  // ---------------- Mihomo v1.19.32 基线 ----------------
+  h.section('集成测试 · Mihomo v1.19.32 基线');
   h.test('mips TUN、succinct GeoSite 与安全 Sniffer 基线', () => {
     const out = api.main(fx.minimalSubscription());
-    h.assertEqual(out.tun.stack, 'mips', 'v1.19.31 基线使用 mips TUN 协议栈');
+    h.assertEqual(out.tun.stack, 'mips', 'v1.19.32 默认 TUN 协议栈为 mips');
+    h.assertEqual(out.tun['congestion-controller'], 'bbr', 'congestion-controller 仅在 mips 上生效');
     h.assertEqual(out['geosite-matcher'], 'succinct', '显式固定 succinct GeoSite matcher');
     h.assertEqual(out.sniffer['override-destination'], false, '全局 Sniffer 不覆盖实际目标');
     h.assertEqual(out.sniffer.sniff.HTTP['override-destination'], true, 'HTTP 保留显式目标覆盖');
@@ -509,16 +521,58 @@ function runIntegrationTests(h, api, meta, fx, loadScript, scriptFile) {
       h.assert(groupByName(out['proxy-groups'], 'AI').proxies.includes('🇭🇰 香港 A'), 'AI 组应含全部节点');
     }),
   );
-  h.test('屏蔽国外QUIC 开关：true 生成 / false 移除 QUIC 规则与 cn_additional', () => {
-    // true（默认）→ 生成 cn_additional 规则集
-    h.assert(api.main(fx.minimalSubscription())['rule-providers'].cn_additional, 'cn_additional 规则集应生成');
-    // false → 移除 QUIC 规则与 cn_additional，cn 规则集保留
+  h.test('屏蔽国外QUIC 开关：true 复用 cn 规则集 / false 移除 QUIC 规则', () => {
+    const enabled = api.main(fx.minimalSubscription());
+    h.assert(
+      enabled.rules.some((r) => r.includes('RULE-SET,cn)') && r.includes('REJECT')),
+      'QUIC 例外应复用官方 cn，避免同一 URL 两个 provider',
+    );
+    h.assert(!enabled['rule-providers'].cn_additional, '不应再单独下载一份 cn.mrs');
     withOptions(api, { 屏蔽国外QUIC: false }, () => {
       const out = api.main(fx.minimalSubscription());
       h.assert(!out.rules.some((r) => r.includes('DST-PORT,443') && r.includes('REJECT')), '不应含 QUIC 规则');
-      h.assert(!out['rule-providers'].cn_additional, 'cn_additional 规则集不应生成');
       h.assert(out['rule-providers'].cn, 'cn 规则集仍应生成（供 nameserver-policy 使用）');
     });
+  });
+  h.test('v1.19.32：vmess 补 cipher，并丢掉订阅里的本地 subconverter 规则集', () => {
+    const input = fx.minimalSubscription();
+    input.proxies.push({
+      name: '🇭🇰 香港 VMess',
+      type: 'vmess',
+      server: 'vmess.example.com',
+      port: 443,
+      uuid: 'x',
+      alterId: 0,
+    });
+    input['rule-providers'] = {
+      ProxyMedia: {
+        type: 'http',
+        behavior: 'ipcidr',
+        format: 'text',
+        url: 'http://127.0.0.1:25500/getruleset?type=4&url=abc',
+        path: './ruleset/ProxyMedia.yaml',
+      },
+      GoogleCN: {
+        type: 'http',
+        behavior: 'domain',
+        format: 'text',
+        url: 'http://127.0.0.1:25500/getruleset?type=3&url=def',
+        path: './ruleset/GoogleCN.list',
+      },
+    };
+    input['proxy-groups'] = [{ name: '🐟 Final', type: 'select', proxies: ['DIRECT'] }];
+    const out = api.main(input);
+    const vmess = out.proxies.find((p) => p.type === 'vmess');
+    h.assert(vmess, '应保留 vmess 节点');
+    h.assertEqual(vmess.cipher, 'auto', '缺 cipher 的 vmess 在 v1.19.32 无法加载');
+    h.assert(!out['rule-providers'].ProxyMedia, '应丢弃订阅自带的 ProxyMedia');
+    h.assert(!out['rule-providers'].GoogleCN, '应丢弃订阅自带的 GoogleCN');
+    h.assert(!out['proxy-groups'].some((g) => String(g.name).includes('Final')), '应替换订阅策略组');
+    h.assert(
+      Object.values(out['rule-providers']).every((p) => !String(p.url).includes('127.0.0.1')),
+      '规则集不应再指向本机 subconverter',
+    );
+    h.assertEqual(out['rule-providers'].private.header['User-Agent'][0], 'mihomo/1.19.32');
   });
   h.test('关闭 AI 分流组 → 移除组/规则/规则集', () =>
     withOptions(api, { AI: false }, () => {

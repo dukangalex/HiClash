@@ -98,6 +98,8 @@ dns:
   prefer-h3: false
   use-system-hosts: true
   enhanced-mode: fake-ip
+  fake-ip-filter-mode: blacklist
+  respect-rules: false
   fake-ip-range: 198.18.0.1/15
   fake-ip-range6: 2001:2::1/48
   fake-ip-filter: ['rule-set:private', 'rule-set:fakeip_filter', 'rule-set:geolocation-cn', 'rule-set:googlefcm']
@@ -131,13 +133,15 @@ ntp:
 
 tun:
   enable: true
-  stack: mips
+  stack: mips # gvisor / mixed / system；v1.19.32 默认 mips
+  congestion-controller: bbr # cubic / reno / bbr / bbr3，仅 mips 生效
   auto-route: true
   strict-route: true
   auto-redirect: true
   auto-detect-interface: true
   dns-hijack: ['any:53', 'tcp://any:53']
   udp-timeout: 300
+  route-exclude-address: ['127.0.0.0/8', '::1/128']
 
 sniffer:
   enable: true
@@ -160,8 +164,23 @@ sniffer:
 # Rule Provider 通用配置
 rule_providers_common:
   rule_providers_domain:
-    &rule_providers_domain { type: http, format: mrs, interval: 86400, behavior: domain, proxy: DIRECT }
-  rule_providers_ip: &rule_providers_ip { type: http, format: mrs, interval: 86400, behavior: ipcidr, proxy: DIRECT }
+    &rule_providers_domain {
+      type: http,
+      behavior: domain,
+      format: mrs,
+      interval: 86400,
+      proxy: DIRECT,
+      header: { User-Agent: ['mihomo/1.19.32'] },
+    }
+  rule_providers_ip:
+    &rule_providers_ip {
+      type: http,
+      behavior: ipcidr,
+      format: mrs,
+      interval: 86400,
+      proxy: DIRECT,
+      header: { User-Agent: ['mihomo/1.19.32'] },
+    }
 
 # 定义 Rule Providers
 rule-providers:
@@ -353,11 +372,6 @@ rule-providers:
     url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/category-stun.mrs'
     path: './ruleset/category-stun.mrs'
     path-in-bundle: 'geo/geosite/category-stun.mrs'
-  cn_additional:
-    <<: *rule_providers_domain
-    url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/cn.mrs'
-    path: './ruleset/cn-additional.mrs'
-    path-in-bundle: 'geo/geosite/cn.mrs'
   cn:
     <<: *rule_providers_domain
     url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/cn.mrs'
@@ -707,6 +721,10 @@ proxy-groups:
 # --- 路由规则 (Rules) ---
 
 rules:
+  # 本机回环直连，避免 127.0.0.1:25500 等本地转换器被收进隧道
+  - IP-CIDR,127.0.0.0/8,DIRECT,no-resolve
+  - IP-CIDR6,::1/128,DIRECT,no-resolve
+
   # 私有网络直连
   - RULE-SET,private,直连
 
@@ -732,7 +750,7 @@ rules:
   - AND,((NETWORK,TCP),(DST-PORT,5349)),REJECT
 
   # 禁用国外 QUIC 流量
-  - AND,((NETWORK,UDP),(DST-PORT,443),(NOT,((OR,((RULE-SET,cn_additional),(RULE-SET,cn_ip,no-resolve)))))),REJECT
+  - AND,((NETWORK,UDP),(DST-PORT,443),(NOT,((OR,((RULE-SET,cn),(RULE-SET,cn_ip,no-resolve)))))),REJECT
 
   # 广告拦截
   - RULE-SET,adblockmihomolite,AdBlock

@@ -2,7 +2,7 @@
 
 > **dukangalex/HiClash · Mihomo 全量增强版**
 >
-> 基于 Mihomo 的个人增强版配置与覆写脚本。当前核心版本为 **200+ 地区自动识别 + 动态节点归类 + 倍率识别 + DNS/Hosts 优化 + 安全基线 + 冷启动优化**，对齐 **Mihomo v1.19.31**。
+> 基于 Mihomo 的个人增强版配置与覆写脚本。当前核心版本为 **200+ 地区自动识别 + 动态节点归类 + 倍率识别 + DNS/Hosts 优化 + 安全基线 + 冷启动优化**，对齐 **Mihomo v1.19.32**。
 
 ## 🚀 本版本的核心特色
 
@@ -11,7 +11,7 @@
 - 📊 **倍率自动识别**：自动识别低倍率/高倍率节点，并分别归类。
 - 🧹 **智能节点过滤**：自动排除官网、客服、订阅、通知、流量、到期等非代理信息节点。
 - 🛡️ **安全基线增强**：默认限制局域网访问、管理接口本地绑定，并强化 CORS、进程匹配等配置。
-- ⚡ **冷启动优化**：记住策略选择与 fake-ip 映射，策略组懒测速，TUN 使用 mihomo v1.19.31 的 `mips` 栈。
+- ⚡ **冷启动优化**：记住策略选择与 fake-ip 映射，策略组懒测速，TUN 使用 mihomo v1.19.32 默认的 `mips` 栈，并指定 `congestion-controller: bbr`。
 - 🌐 **DNS / Hosts 优化**：针对机场私有 DNS、Hosts 映射和节点域名解析问题进行统一处理。
 - 🔍 **Sniffer 增强**：提供 HTTP/TLS 等流量嗅探及必要的域名覆盖配置。
 - 🚫 **QUIC 控制**：支持屏蔽国外 QUIC 流量。
@@ -59,21 +59,23 @@ GitHub：
 
 ## ⚡ 冷启动优化
 
-针对「打开客户端后前几秒打不开网页 / 全部节点一起测速」做了内核级优化，对齐 **Mihomo v1.19.31**（2026-09-14）：
+针对「打开客户端后前几秒打不开网页 / 全部节点一起测速」做了内核级优化，对齐 **Mihomo v1.19.32**（2026-09-30）：
 
-| 项                                              | 作用                                                  |
-| ----------------------------------------------- | ----------------------------------------------------- |
-| `profile.store-selected: true`                  | 记住上次策略组选择，重启后不必重新测速                |
-| `profile.store-fake-ip: true`                   | 持久化 fake-ip 映射，首包不再等 DNS                   |
-| `lazy: true`                                    | url-test / fallback / 负载均衡仅在被选中时测速        |
-| `tcp-concurrent` + `unified-delay`              | 并发握手，延迟读数不受协议握手差影响                  |
-| `keep-alive-interval/idle: 15`                  | 复用已建立连接，缩短二次请求                          |
-| `etag-support: true`                            | 规则集按 ETag 跳过重复下载                            |
-| `geodata-loader: memconservative`               | 低内存加载 Geo 数据，弱设备启动更快                   |
-| `dns.cache-algorithm: arc` + `prefer-h3: false` | ARC 缓存；冷启动不做 HTTP/3 探测，避免 UDP 不通时卡住 |
-| `tun.stack: mips`                               | v1.19.31 新增的 mihomo 自研 IP 栈，内存低于 gVisor    |
+| 项                                               | 作用                                                  |
+| ------------------------------------------------ | ----------------------------------------------------- |
+| `profile.store-selected: true`                   | 记住上次策略组选择，重启后不必重新测速                |
+| `profile.store-fake-ip: true`                    | 持久化 fake-ip 映射，首包不再等 DNS                   |
+| `lazy: true`                                     | url-test / fallback / 负载均衡仅在被选中时测速        |
+| `tcp-concurrent` + `unified-delay`               | 并发握手，延迟读数不受协议握手差影响                  |
+| `keep-alive-interval/idle: 15`                   | 复用已建立连接，缩短二次请求                          |
+| `etag-support: true`                             | 规则集按 ETag 跳过重复下载                            |
+| `geodata-loader: memconservative`                | 低内存加载 Geo 数据，弱设备启动更快                   |
+| `dns.cache-algorithm: arc` + `prefer-h3: false`  | ARC 缓存；冷启动不做 HTTP/3 探测，避免 UDP 不通时卡住 |
+| `tun.stack: mips` + `congestion-controller: bbr` | v1.19.32 默认自研 IP 栈；`bbr` 只在 mips 上生效       |
 
-> `tun.stack: mips` 需要 **Mihomo ≥ v1.19.31**。更早的内核请把栈改成 `mixed`。
+> `tun.stack: mips` 需要 **Mihomo ≥ v1.19.31**。v1.19.32 起这是默认栈，并支持 `congestion-controller`（`cubic` / `reno` / `bbr` / `bbr3`）。更早的内核请把栈改成 `mixed`。
+
+开启覆写后如果日志里还是 `ProxyMedia`、`GoogleCN`、`Telegram` 这类机场规则集，并且地址是 `http://127.0.0.1:25500/getruleset`，说明脚本结果没有被内核吃进去，订阅自带的 subconverter 规则集仍在跑。v1.19.32 会因为 vmess 缺少 `cipher` 拒绝整份配置。脚本现在会补上 `cipher: auto`，并整表替换 `rule-providers`，不再保留这些本机转换地址。本机 `127.0.0.0/8` 也会先走 `DIRECT`。
 
 ## 📚 官方规则源
 
@@ -86,7 +88,7 @@ GitHub：
 - **Disney+ 走默认代理**，用官方 `disney` 域名集，不另开策略组。
 - **广告**改用官方 `category-ads-all`。它比第三方大列表更瘦，误杀更少，拦截面也更小。
 - **STUN** 用官方 `category-stun` 做 fake-ip 例外，减少通话和网页拿不到真实地址或连不上的情况。
-- **国内 QUIC 放行**改用官方 `cn`（ChinaMax），不再依赖不明镜像。
+- **国内 QUIC 放行**复用官方 `cn`，不再为同一份 `cn.mrs` 建第二个 provider。Bettbox 会按 URL 重写 `path`，两个 provider 共用一个文件时会互相覆盖。
 - 官方没有发布的 IP 集（Microsoft / Apple / Steam / TikTok / Spotify）已去掉，只保留有域名集、以及官方确实提供的 IP 集（Google、Telegram、Twitter、Netflix、Facebook）。
 - Emby 改为官方 `category-emby`，客户端进程名规则仍保留。
 

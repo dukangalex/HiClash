@@ -45,6 +45,10 @@ const ruleOptionsEnable = {
 
 // 定义前置规则
 const prefixRules = [
+  // 本机服务直连。订阅里的 subconverter 规则集常用 127.0.0.1:25500，不能被 TUN 吸走。
+  'IP-CIDR,127.0.0.0/8,DIRECT,no-resolve',
+  'IP-CIDR6,::1/128,DIRECT,no-resolve',
+
   // 私有网络直连
   'RULE-SET,private,直连',
 
@@ -102,7 +106,7 @@ const blockWebRtcStun = [
 ];
 
 const blockForeignQuic = [
-  'AND,((NETWORK,UDP),(DST-PORT,443),(NOT,((OR,((RULE-SET,cn_additional),(RULE-SET,cn_ip,no-resolve)))))),REJECT',
+  'AND,((NETWORK,UDP),(DST-PORT,443),(NOT,((OR,((RULE-SET,cn),(RULE-SET,cn_ip,no-resolve)))))),REJECT',
 ];
 
 // 直连节点
@@ -890,17 +894,23 @@ const allRegionDefinitions = [...regionDefinitions, ...rateRegionDefinitions];
 // Rule Providers 通用配置
 const ruleProviderCommonDomain = {
   type: 'http',
+  behavior: 'domain',
   format: 'mrs',
   interval: 86400,
-  behavior: 'domain',
   proxy: 'DIRECT',
+  header: {
+    'User-Agent': ['mihomo/1.19.32'],
+  },
 };
 const ruleProviderCommonIpcidr = {
   type: 'http',
+  behavior: 'ipcidr',
   format: 'mrs',
   interval: 86400,
-  behavior: 'ipcidr',
   proxy: 'DIRECT',
+  header: {
+    'User-Agent': ['mihomo/1.19.32'],
+  },
 };
 
 // 定义基础 Rule Providers
@@ -972,12 +982,6 @@ const baseRuleProviders = {
     url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/category-stun.mrs',
     path: './ruleset/category-stun.mrs',
     'path-in-bundle': 'geo/geosite/category-stun.mrs',
-  },
-  cn_additional: {
-    ...ruleProviderCommonDomain,
-    url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/cn.mrs',
-    path: './ruleset/cn-additional.mrs',
-    'path-in-bundle': 'geo/geosite/cn.mrs',
   },
   cn: {
     ...ruleProviderCommonDomain,
@@ -1226,7 +1230,21 @@ function normalizeProxyName(proxy) {
     regionMatchCache.set(normalizedName, matchedRegions);
   }
 
-  return normalizedName === originalName ? proxy : { ...proxy, name: normalizedName };
+  const renamed = normalizedName === originalName ? proxy : { ...proxy, name: normalizedName };
+  return applyKernelProxyDefaults(renamed);
+}
+
+/**
+ * Mihomo v1.19.32 起 vmess.cipher 没有 omitempty，缺字段会让整份配置解析失败。
+ * 机场订阅经常省略它；Clash 历史默认值是 auto。这里只补缺失字段，不改已有值。
+ */
+function applyKernelProxyDefaults(proxy) {
+  if (!proxy || typeof proxy !== 'object') return proxy;
+  const type = String(proxy.type || '').toLowerCase();
+  if (type === 'vmess' && !proxy.cipher) {
+    return { ...proxy, cipher: 'auto' };
+  }
+  return proxy;
 }
 
 /**
@@ -1508,7 +1526,6 @@ function buildCustomizeGroups(filteredProxies, customizeList = customizeProxies)
  */
 function buildFunctionalGroups(filteredProxies, generatedRegionGroups, customizeInfo) {
   const minimalModeEnabled = ruleOptionsEnable.极简模式;
-  const blockForeignQuicEnabled = ruleOptionsEnable.屏蔽国外QUIC;
   const addAllNodesToServiceGroupsEnabled = ruleOptionsEnable.分流组添加所有节点;
   const chainEnabled = ruleOptionsEnable.链式代理;
   const hideManualSelectGroupEnabled = ruleOptionsEnable.隐藏地区手动选择组;
@@ -1516,10 +1533,6 @@ function buildFunctionalGroups(filteredProxies, generatedRegionGroups, customize
   const functionalGroups = [];
   const functionalRules = [];
   const finalRuleProviders = { ...baseRuleProviders };
-
-  if (!blockForeignQuicEnabled) {
-    delete finalRuleProviders.cn_additional;
-  }
 
   const { customProxyNames = [], customGroup = null } = customizeInfo || {};
   const filteredProxyNames = filteredProxies.map((p) => p.name);
@@ -1546,7 +1559,6 @@ function buildFunctionalGroups(filteredProxies, generatedRegionGroups, customize
       icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Proxy.svg',
     };
     const finalRuleProviders = { ...baseRuleProviders };
-    if (!blockForeignQuicEnabled) delete finalRuleProviders.cn_additional;
     const directGroup = {
       ...selectBaseOption,
       name: '直连',
@@ -2021,6 +2033,9 @@ function buildDnsAndHostsConfig(config, filteredProxies) {
       'rule-set:cn': chinaDNS,
     },
     'direct-nameserver': chinaDNS,
+    // 官方默认：黑名单 fake-ip；DNS 服务器自身不跟 rules，避免规则集没下完时解析环路。
+    'fake-ip-filter-mode': 'blacklist',
+    'respect-rules': false,
   };
 
   const hosts = {
@@ -2128,7 +2143,8 @@ function main(config) {
   const providerNames = providerMode ? Object.keys(config['proxy-providers']) : [];
   const newConfig = {};
 
-  // 普通订阅沿用原有节点标准化流程；provider 配置不下载、不展开、不改写节点。
+  // 普通订阅沿用原有节点标准化流程；provider 配置不下载、不展开、不改名。
+  // 仅补 v1.19.32 必填的 vmess.cipher，否则内核会拒绝整份配置。
   const originalProxies = Array.isArray(config.proxies) ? config.proxies : [];
   const filteredProxies = providerMode ? filterProviderVisibleProxies(config) : filterAndNormalizeProxies(config);
 
@@ -2191,14 +2207,17 @@ function main(config) {
 
   newConfig['tun'] = {
     enable: true,
-    // Mihomo v1.19.31 起正式支持 mips。
+    // v1.19.32 默认栈是 mips；congestion-controller 只在 mips 上生效。
     stack: 'mips',
+    'congestion-controller': 'bbr',
     'auto-route': true,
     'strict-route': true,
     'auto-redirect': true,
     'auto-detect-interface': true,
     'dns-hijack': ['any:53', 'tcp://any:53'],
     'udp-timeout': 300,
+    // 排除本机，避免 127.0.0.1:25500 这类订阅转换器被 TUN 收走后规则集更新 EOF。
+    'route-exclude-address': ['127.0.0.0/8', '::1/128'],
   };
   newConfig['sniffer'] = {
     enable: true,
@@ -2217,7 +2236,11 @@ function main(config) {
   // - 原始 proxies 原样保留；
   // - 原始 proxy-providers 原样保留；
   // 脚本只接管其余配置结构。
-  newConfig['proxies'] = [...(providerMode ? originalProxies : mappedProxies), ...customProxies, ...directProxies];
+  newConfig['proxies'] = [
+    ...(providerMode ? originalProxies.map(applyKernelProxyDefaults) : mappedProxies),
+    ...customProxies,
+    ...directProxies,
+  ];
   if (providerMode) {
     newConfig['proxy-providers'] = config['proxy-providers'];
   }
