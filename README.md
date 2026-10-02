@@ -296,7 +296,7 @@ node Test/run-tests.js
 
 ## 📄 许可
 
-本仓库的 HiClash 修改以 [MIT License](LICENSE) 发布。项目衍生自 [AIsouler/MyClash](https://github.com/AIsouler/MyClash)；上游原作版权归其作者所有，MyClash 当时未声明许可证。
+本仓库以 [MIT License](LICENSE) 发布。项目衍生自 [AIsouler/MyClash](https://github.com/AIsouler/MyClash)（同为 MIT，`Copyright (c) 2026 AIsouler`，自 2026-09-24 起；本项目于 2026-09-21 fork，早于其加入许可证）。依据 MIT 的要求，`LICENSE` 中保留了上游的版权声明。
 
 ## 🙏 致谢
 
