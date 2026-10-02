@@ -231,7 +231,7 @@ mihomo convert-ruleset domain text Rules/cn-additional-list.txt Rules/cn-additio
 node Test/rules-files.test.js && MIHOMO_BIN=$(which mihomo) node Test/rules-mrs.test.js
 ```
 
-> 该文件通过 `@main` 分支引用，**合并到 `main` 之后**客户端才能下载到；合并前使用本分支的脚本会下载失败。
+> 本仓库的 `Icons/`、`Rules/` 通过版本 tag（`assets-vN`）引用，而不是 `@main`，合并到 `main` 不会立即影响用户。jsDelivr 会永久缓存 tag 的内容，所以**不要移动或复用已有 tag**；发布新资源的步骤见下文「维护者须知」。
 
 ## 📄 配置文件
 
@@ -294,9 +294,18 @@ node Test/run-tests.js
 
 `Core/` 不直接携带 Go 内核二进制。Android `VpnService/JNI`、Windows WFP/TUN、真实 Mihomo REST/WS、sing-box Command/WS、Xray gRPC 等平台绑定应作为 Adapter 接入，以保持 UI、控制层和内核解耦。
 
+## 🧰 维护者须知
+
+| 事项 | 做法 |
+|---|---|
+| **共享数据块** | 全量版与精简版共用的块（地区表、DNS 列表、规则集公共选项等，约 940 行）只在 `Script/shared/<NAME>.js` 维护。脚本里用 `// @shared:begin NAME … // @shared:end NAME` 包住，仍是单文件。修改后运行 `node Script/tools/sync-shared.js --write`；CI/测试用不带参数的形式检查漂移，任何一份被手改或漏掉标记都会报错。 |
+| **输出快照** | `Test/golden-output.test.js` 固定 24 个场景（2 脚本 × 4 夹具 × 3 组选项）的输出哈希，用来证明重构没有改变行为。变化是有意的，先人工确认差异，再 `UPDATE_GOLDEN=1 node Test/golden-output.test.js`。 |
+| **发布图标/规则资源** | 改 `Icons/` 或 `Rules/` 并提交 → 在该提交上打**新** tag（如 `assets-v2`）并推送 → `node Script/tools/bump-asset-tag.js assets-v2` 统一改写 所有引用 → 更新快照 → 合并。 |
+| **规则集金丝雀** | `MIHOMO_BIN=… node Test/rules-canary.test.js` 下载并解码官方规则集，检查数量相对基线（±25%）、标志性域名/IP 分类、`cn` 与 `geolocation-!cn` 的重叠比例。退出码 1 为规则异常告警，2 为网络/环境问题。有意的大幅变化用 `UPDATE_CANARY_BASELINE=1` 更新基线。适合配成定时任务。 |
+
 ## 📄 许可
 
-本仓库的 HiClash 修改以 [MIT License](LICENSE) 发布。项目衍生自 [AIsouler/MyClash](https://github.com/AIsouler/MyClash)；上游原作版权归其作者所有，MyClash 当时未声明许可证。
+本仓库以 [MIT License](LICENSE) 发布。项目衍生自 [AIsouler/MyClash](https://github.com/AIsouler/MyClash)（同为 MIT，`Copyright (c) 2026 AIsouler`，自 2026-09-24 起；本项目于 2026-09-21 fork，早于其加入许可证）。依据 MIT 的要求，`LICENSE` 中保留了上游的版权声明。
 
 ## 🙏 致谢
 

@@ -149,10 +149,14 @@ function runIntegrationTests(h, api, meta, fx, loadScript, scriptFile) {
     h.assert(urls.length > 0, '应生成规则集');
     h.assertEqual(new Set(urls).size, urls.length, '不应有两个 provider 使用同一 URL（同一文件重复下载）');
     // 唯一的例外：官方 cn 未收录的国内站点补充名单，托管在本仓库 Rules/，必须是这个确切地址。
-    const selfHosted = 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Rules/cn-additional-list.mrs';
+    const selfHosted =
+      /^https:\/\/fastly\.jsdelivr\.net\/gh\/dukangalex\/HiClash@assets-v\d+\/Rules\/cn-additional-list\.mrs$/;
     for (const [name, provider] of Object.entries(providers)) {
       if (name === 'cn_additional') {
-        h.assertEqual(provider.url, selfHosted, 'cn_additional 应指向本仓库 Rules/ 下的自托管文件');
+        h.assert(
+          selfHosted.test(provider.url),
+          'cn_additional 应指向本仓库 Rules/ 下、带版本 tag 的自托管文件: ' + provider.url,
+        );
         continue;
       }
       h.assert(provider.url.startsWith('https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/'), provider.url);

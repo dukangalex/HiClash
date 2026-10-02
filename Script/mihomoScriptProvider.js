@@ -90,7 +90,7 @@ function main(config) {
     use: names.slice(),
     'exclude-filter': PROVIDER_EXCLUDE_FILTER,
     'exclude-type': 'DIRECT|REJECT|REJECT-DROP|PASS',
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Global.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Global.svg',
   });
 
   addGroup(groups, {
@@ -103,7 +103,7 @@ function main(config) {
     interval: 300,
     tolerance: 50,
     lazy: true,
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Auto.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Auto.svg',
   });
 
   addGroup(groups, {
@@ -118,7 +118,7 @@ function main(config) {
     'max-failed-times': 3,
     timeout: 3000,
     'empty-fallback': 'REJECT',
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Auto.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Auto.svg',
   });
 
   for (let i = 0; i < REGIONS.length; i++) {
@@ -133,7 +133,7 @@ function main(config) {
       filter: filter,
       'exclude-filter': PROVIDER_EXCLUDE_FILTER,
       'exclude-type': 'DIRECT|REJECT|REJECT-DROP|PASS',
-      icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/WorldMap.svg',
+      icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/WorldMap.svg',
     });
 
     addGroup(groups, {
@@ -147,7 +147,7 @@ function main(config) {
       interval: 300,
       tolerance: 50,
       lazy: true,
-      icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/Auto.svg',
+      icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Auto.svg',
     });
   }
 
