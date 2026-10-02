@@ -22,7 +22,7 @@ for (const line of lines) {
 assert.ok(fs.statSync(path.join(root, 'Rules', 'cn-additional-list.mrs')).size > 1000, 'mrs missing or empty');
 
 // Every config must reference a file that really exists in this repo (jsDelivr serves it once merged to main).
-const SELF_HOSTED = /^https:\/\/fastly\.jsdelivr\.net\/gh\/dukangalex\/HiClash@main\/(Rules\/[^/]+\.mrs)$/;
+const SELF_HOSTED = /^https:\/\/fastly\.jsdelivr\.net\/gh\/dukangalex\/HiClash@assets-v\d+\/(Rules\/[^/]+\.mrs)$/;
 function checkProvider(label, provider) {
   assert.ok(provider, label + ': cn_additional provider missing');
   const match = SELF_HOSTED.exec(provider.url);
