@@ -218,6 +218,21 @@ const customizeProxies = [
 
 `https://raw.githubusercontent.com/dukangalex/HiClash/main/Script/Script.js`
 
+## 🧾 自托管规则集
+
+`屏蔽国外QUIC` 会拒绝所有「目标不在国内名单」的 UDP 443（QUIC）流量。国内名单由三部分组成：官方 `cn`、官方 `cn_ip`，以及本仓库自托管的 `cn_additional`——补充那些国内运营、但落在 `.com/.net/.top` 等通用顶级域上而官方 `cn` 未收录的站点（约 1.9 万条，与 `cn` 内容不同，不是重复下载）。该文件放在 `Rules/` 目录，经 jsDelivr 分发，不依赖第三方个人域名；关闭 `屏蔽国外QUIC` 时不会下载它。
+
+- `Rules/cn-additional-list.txt`：可审查的源文件（`+.域名` 后缀格式，LF 换行，`LC_ALL=C` 排序去重）。
+- `Rules/cn-additional-list.mrs`：由源文件生成的内核二进制格式。**修改源文件后必须重新生成**，CI 会用真实内核核对二者一致：
+
+```bash
+LC_ALL=C sort -u -o Rules/cn-additional-list.txt Rules/cn-additional-list.txt
+mihomo convert-ruleset domain text Rules/cn-additional-list.txt Rules/cn-additional-list.mrs
+node Test/rules-files.test.js && MIHOMO_BIN=$(which mihomo) node Test/rules-mrs.test.js
+```
+
+> 该文件通过 `@main` 分支引用，**合并到 `main` 之后**客户端才能下载到；合并前使用本分支的脚本会下载失败。
+
 ## 📄 配置文件
 
 全量版：

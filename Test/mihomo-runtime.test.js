@@ -106,6 +106,12 @@ const configPath = path.join(tempDir, 'config.yaml');
 try {
   fs.writeFileSync(configPath, yaml.dump(config, { noRefs: true, lineWidth: -1 }), 'utf8');
 
+  // Fail loudly if CI fetches a different binary than the version this test claims to validate.
+  const versionOutput = spawnSync(MIHOMO_BIN, ['-v'], { encoding: 'utf8' }).stdout || '';
+  if (!versionOutput.includes(MIHOMO_VERSION)) {
+    throw new Error(`expected mihomo ${MIHOMO_VERSION}, binary reports: ${versionOutput.split('\n')[0]}`);
+  }
+
   const result = spawnSync(MIHOMO_BIN, ['-t', '-f', configPath], {
     encoding: 'utf8',
     stdio: ['ignore', 'pipe', 'pipe'],

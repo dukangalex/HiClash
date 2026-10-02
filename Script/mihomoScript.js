@@ -165,7 +165,7 @@ const blockWebRtcStun = [
 ];
 
 const blockForeignQuic = [
-  'AND,((NETWORK,UDP),(DST-PORT,443),(NOT,((OR,((RULE-SET,cn),(RULE-SET,cn_ip,no-resolve)))))),REJECT',
+  'AND,((NETWORK,UDP),(DST-PORT,443),(NOT,((OR,((RULE-SET,cn),(RULE-SET,cn_additional),(RULE-SET,cn_ip,no-resolve)))))),REJECT',
 ];
 
 // 直连节点
@@ -1058,6 +1058,13 @@ const baseRuleProviders = {
     url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/cn.mrs',
     path: './ruleset/cn.mrs',
     'path-in-bundle': 'geo/geosite/cn.mrs',
+  },
+  // 自托管补充名单：国内运营、但落在通用顶级域上而官方 cn 未收录的站点（见 Rules/）。
+  // 与 cn 内容不同，不是重复下载；仓库内没有对应的内置副本，所以不设置 path-in-bundle。
+  cn_additional: {
+    ...ruleProviderCommonDomain,
+    url: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Rules/cn-additional-list.mrs',
+    path: './ruleset/cn-additional.mrs',
   },
   bilibili: {
     ...ruleProviderCommonDomain,
@@ -2505,7 +2512,7 @@ const securityBaseline = {
   'etag-support': true,
   'external-controller': '127.0.0.1:19090',
   'external-ui': 'ui',
-  'external-ui-url': 'https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip',
+  'external-ui-url': 'https://github.com/Zephyruso/zashboard/releases/download/v3.29.1/dist.zip',
   'geodata-mode': false,
   'geodata-loader': 'memconservative',
   'geosite-matcher': 'succinct',
@@ -2868,6 +2875,8 @@ function main(config, context) {
     directGroup,
     ...generatedRegionGroups,
   ];
+  // cn_additional 只服务于 QUIC 放行规则；关闭「屏蔽国外QUIC」时不必下载。
+  if (!activeRuleOptions.屏蔽国外QUIC) delete finalRuleProviders.cn_additional;
   newConfig['rule-providers'] = finalRuleProviders;
 
   newConfig['rules'] = [
