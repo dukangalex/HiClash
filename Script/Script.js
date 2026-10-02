@@ -38,6 +38,7 @@ const ruleOptionsEnable = {
   过滤高倍率节点: false, // 是否过滤高倍率节点
   过滤非地区节点: true, // 是否过滤非地区节点
   屏蔽国外QUIC: true, // 是否屏蔽国外QUIC流量
+  屏蔽WebRTC: true, // 是否屏蔽 WebRTC STUN 端口；关闭后 Zoom/Teams/Discord 等通话可 UDP 直连，但可能暴露真实 IP
   代理IPV4优先: false, // 是否将订阅节点统一为 IPv4 优先（与“代理IPV6优先”同时开启时不生效）
   代理IPV6优先: false, // 是否将订阅节点统一为 IPv6 优先（与“代理IPV4优先”同时开启时不生效）
   链式代理: false, // 是否启用链式代理（自定义节点作为落地节点，经“链式中转”策略组中转）
@@ -96,7 +97,13 @@ const dialerProxyName = '链式中转';
 const excludeFilter =
   /群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|电报|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|优惠|福利|邀请|好友|失联|选择|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|过滤|⚠️|@|t\.me\/\+|\bexpire\b|\bhttps?:\/\/|\btraffic\b/iu;
 
-// 屏蔽国外QUIC
+// 强信息词：机场公告 / 客服 / 流量 / 到期类信息节点。这类节点名称常偶然带有地区缩写
+//（如“剩余流量 120 GB”命中 GB=英国、“客服 TG”命中 TG=多哥），因此即使地区匹配成功也必须排除。
+// 与 excludeFilter 中“使用/支持/备用”等弱词不同：弱词可能出现在正常节点名里，仍以地区匹配为准。
+const strongExcludeFilter =
+  /剩余|已用|距离下次|下次重置|套餐|到期|过期|官网|官址|客服|订阅|工单|邮箱|网址|流量\s*[:：]|traffic\s*[:：]|\bexpire\b|\bhttps?:\/\/|t\.me\//iu;
+
+// 屏蔽 WebRTC STUN，降低浏览器真实地址暴露风险
 const blockWebRtcStun = [
   'AND,((NETWORK,UDP),(DST-PORT,3478-3497)),REJECT',
   'AND,((NETWORK,UDP),(DST-PORT,5349)),REJECT',
@@ -106,7 +113,7 @@ const blockWebRtcStun = [
 ];
 
 const blockForeignQuic = [
-  'AND,((NETWORK,UDP),(DST-PORT,443),(NOT,((OR,((RULE-SET,cn),(RULE-SET,cn_ip,no-resolve)))))),REJECT',
+  'AND,((NETWORK,UDP),(DST-PORT,443),(NOT,((OR,((RULE-SET,cn),(RULE-SET,cn_additional),(RULE-SET,cn_ip,no-resolve)))))),REJECT',
 ];
 
 // 直连节点
@@ -140,7 +147,12 @@ const directProxies = [
 // 定义地区策略组
 const regionDefinitions = [
   { name: '香港', flag: '🇭🇰', regex: new RegExp('🇭🇰|香港|\\bHKG?\\b|hong[\\s_-]*kong', 'i'), icon: '' },
-  { name: '台湾', flag: '🇹🇼', regex: new RegExp('🇹🇼|台湾|\\bTWN?\\b|taiwan', 'i'), icon: '' },
+  {
+    name: '台湾',
+    flag: '🇹🇼',
+    regex: new RegExp('🇹🇼|台湾|台北|高雄|新北|桃园|新竹|\\bTWN?\\b|taiwan|taipei|hinet', 'i'),
+    icon: '',
+  },
   { name: '日本', flag: '🇯🇵', regex: new RegExp('🇯🇵|日本|\\bJPN?\\b|japan|tokyo|osaka|东京|大阪', 'i'), icon: '' },
   {
     name: '韩国',
@@ -153,7 +165,7 @@ const regionDefinitions = [
     name: '美国',
     flag: '🇺🇸',
     regex: new RegExp(
-      '🇺🇸|美国|(?:^|[^A-Za-z])US(?:$|[^A-Za-z])|(?:^|[^A-Za-z])USA(?:$|[^A-Za-z])|america|united[\\s_-]*states|los[\\s_-]*angeles|洛杉矶|san[\\s_-]*jose|圣何塞',
+      '🇺🇸|美国|(?:^|[^A-Za-z])US(?:$|[^A-Za-z])|(?:^|[^A-Za-z])USA(?:$|[^A-Za-z])|america|united[\\s_-]*states|los[\\s_-]*angeles|洛杉矶|san[\\s_-]*jose|圣何塞|纽约|new[\\s_-]*york|芝加哥|chicago|达拉斯|dallas|西雅图|seattle|硅谷|矽谷|silicon|迈阿密|miami|凤凰城|phoenix',
       'i',
     ),
     icon: '',
@@ -161,7 +173,7 @@ const regionDefinitions = [
   {
     name: '英国',
     flag: '🇬🇧',
-    regex: new RegExp('🇬🇧|英国|(?:^|[^A-Za-z])GB(?:$|[^A-Za-z])|united[\\s_-]*kingdom|london|伦敦', 'i'),
+    regex: new RegExp('🇬🇧|英国|(?:^|[^A-Za-z0-9])GB(?:$|[^A-Za-z])|united[\\s_-]*kingdom|london|伦敦', 'i'),
     icon: '',
   },
   {
@@ -989,6 +1001,13 @@ const baseRuleProviders = {
     path: './ruleset/cn.mrs',
     'path-in-bundle': 'geo/geosite/cn.mrs',
   },
+  // 自托管补充名单：国内运营、但落在通用顶级域上而官方 cn 未收录的站点（见 Rules/）。
+  // 与 cn 内容不同，不是重复下载；仓库内没有对应的内置副本，所以不设置 path-in-bundle。
+  cn_additional: {
+    ...ruleProviderCommonDomain,
+    url: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Rules/cn-additional-list.mrs',
+    path: './ruleset/cn-additional.mrs',
+  },
   bilibili: {
     ...ruleProviderCommonDomain,
     url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/bilibili.mrs',
@@ -1185,19 +1204,67 @@ const serviceConfigs = [
 /**
  * 节点匹配缓存，避免重复执行正则
  */
+// 繁体 → 简体折叠（仅用于地区匹配，不改动节点原名）。大陆/港台机场常用繁体命名（台灣、美國、韓國……），
+// 地区正则均为简体，匹配前先折叠，一处覆盖全部 200+ 地区。
+const traditionalToSimplified = {
+  灣: '湾',
+  國: '国',
+  臺: '台',
+  東: '东',
+  島: '岛',
+  亞: '亚',
+  倫: '伦',
+  蘭: '兰',
+  馬: '马',
+  賓: '宾',
+  紐: '纽',
+  約: '约',
+  達: '达',
+  磯: '矶',
+  聖: '圣',
+  門: '门',
+  韓: '韩',
+  羅: '罗',
+  蘇: '苏',
+  聯: '联',
+  愛: '爱',
+  爾: '尔',
+  烏: '乌',
+  薩: '萨',
+  華: '华',
+  頓: '顿',
+  維: '维',
+  緬: '缅',
+  廣: '广',
+};
+const traditionalRegex = new RegExp('[' + Object.keys(traditionalToSimplified).join('') + ']', 'g');
+// provider 模式下地区正则由 Mihomo 在运行时执行，无法预先折叠：把每个有繁体对应字的简体字展开成字符组（湾 → [湾灣]）。
+const simplifiedToTraditional = {};
+for (const [trad, simp] of Object.entries(traditionalToSimplified)) {
+  simplifiedToTraditional[simp] = (simplifiedToTraditional[simp] || simp) + trad;
+}
+const simplifiedRegex = new RegExp('[' + Object.keys(simplifiedToTraditional).join('') + ']', 'g');
+function expandTraditional(source) {
+  return source.replace(simplifiedRegex, (ch) => '[' + simplifiedToTraditional[ch] + ']');
+}
+function foldTraditional(text) {
+  return String(text).replace(traditionalRegex, (ch) => traditionalToSimplified[ch]);
+}
+
 const regionMatchCache = new Map();
 function getMatchedRegions(proxyName) {
   if (regionMatchCache.has(proxyName)) {
     return regionMatchCache.get(proxyName);
   }
 
-  const regions = allRegionDefinitions.filter((region) => region.regex.test(proxyName));
+  const text = foldTraditional(proxyName);
+  const regions = allRegionDefinitions.filter((region) => region.regex.test(text));
   const geoMatches = regions.filter((region) => regionDefinitions.includes(region));
   const otherMatches = regions.filter((region) => !regionDefinitions.includes(region));
   let selectedGeo = geoMatches;
   if (geoMatches.length > 1) {
     const matchLength = (region) => {
-      const match = proxyName.match(region.regex);
+      const match = text.match(region.regex);
       return match ? match[0].length : 0;
     };
     const bestLen = Math.max(...geoMatches.map(matchLength));
@@ -1309,6 +1376,7 @@ function filterAndNormalizeProxies(config) {
 
     const isRegionProxy = getMatchedRegions(proxy.name).some((region) => regionDefinitions.includes(region));
 
+    if (strongExcludeFilter.test(proxy.name)) return false;
     return isRegionProxy || !excludeFilter.test(proxy.name);
   });
 
@@ -1379,6 +1447,7 @@ function filterProviderVisibleProxies(config) {
 
     if (filterNonRegionProxiesEnabled) {
       const isRegionProxy = getMatchedRegions(name).some((region) => regionDefinitions.includes(region));
+      if (strongExcludeFilter.test(name)) continue;
       if (!isRegionProxy && excludeFilter.test(name)) continue;
     }
 
@@ -1757,10 +1826,10 @@ const commonDnsRegex = new RegExp(
 );
 
 // 国内外 DNS 定义
-const chinaDNS = ['223.5.5.5#DIRECT', '119.29.29.29#DIRECT'];
+const chinaDNS = ['https://223.5.5.5/dns-query#DIRECT', 'https://1.12.12.12/dns-query#DIRECT'];
 const foreignDNS = ['https://cloudflare-dns.com/dns-query#默认代理', 'https://dns.google/dns-query#默认代理'];
-const defaultDNS = ['114.114.114.114#DIRECT', 'tls://223.5.5.5#DIRECT', 'https://1.12.12.12/dns-query#DIRECT'];
-const proxyServerDNS = ['114.114.114.114#DIRECT', 'tls://223.5.5.5#DIRECT', 'https://doh.pub/dns-query#DIRECT'];
+const defaultDNS = ['tls://223.5.5.5#DIRECT', 'https://1.12.12.12/dns-query#DIRECT'];
+const proxyServerDNS = ['tls://223.5.5.5#DIRECT', 'https://doh.pub/dns-query#DIRECT'];
 
 /**
  * hosts 匹配优先级：精确 > +. > . > *（同级按出现顺序）
@@ -2089,7 +2158,7 @@ function getProviderRegionFilter(region) {
     return '(?i)(?:^|[^0-9])(?:[2-9]\\d*|1\\d+)(?:\\.\\d+)?(?:倍|[x×*])|(?:^|[^0-9])[*×x]\\s*(?:[2-9]\\d*|1\\d+)(?:\\.\\d+)?';
   }
 
-  return '(?i)' + region.regex.source;
+  return '(?i)' + expandTraditional(region.regex.source);
 }
 
 function buildProviderRegionGroups(filteredProxies, customProxies, providerNames) {
@@ -2134,6 +2203,18 @@ function enableProviderSources(groups, chainGroup, providerNames) {
 }
 
 // --- 主入口 ---
+
+// 客户端（Clash Verge Rev / Mihomo Party / FlClash 等）会注入自己的端口与控制器地址。
+// 仅当端口合法、控制器为回环地址时才保留；非回环地址一律回落到安全基线，不放宽安全边界。
+function isValidPort(value) {
+  return Number.isInteger(value) && value >= 1 && value <= 65535;
+}
+
+function isLoopbackController(value) {
+  if (typeof value !== 'string') return false;
+  const match = /^(127\.0\.0\.1|localhost|\[::1\]):(\d{1,5})$/i.exec(value.trim());
+  return Boolean(match) && isValidPort(Number(match[2]));
+}
 
 /**
  * 主入口：覆写机场订阅配置，生成完整 mihomo 配置
@@ -2189,8 +2270,15 @@ function main(config) {
   newConfig['geosite-matcher'] = 'succinct';
 
   newConfig['external-controller'] = '127.0.0.1:19090';
+  // 保留客户端注入的控制器密钥：覆写从空对象重建配置，若不显式透传，secret 会被静默丢弃，
+  // 外部控制器随之变成无鉴权。
+  if (typeof config.secret === 'string' && config.secret.length > 0) newConfig['secret'] = config.secret;
+  if (isValidPort(config['mixed-port'])) newConfig['mixed-port'] = config['mixed-port'];
+  if (isLoopbackController(config['external-controller'])) {
+    newConfig['external-controller'] = config['external-controller'].trim();
+  }
   newConfig['external-ui'] = 'ui';
-  newConfig['external-ui-url'] = 'https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip';
+  newConfig['external-ui-url'] = 'https://github.com/Zephyruso/zashboard/releases/download/v3.29.1/dist.zip';
 
   newConfig['profile'] = {
     'store-selected': true,
@@ -2252,11 +2340,13 @@ function main(config) {
     directGroup,
     ...generatedRegionGroups,
   ];
+  // cn_additional 只服务于 QUIC 放行规则；关闭「屏蔽国外QUIC」时不必下载。
+  if (!ruleOptionsEnable.屏蔽国外QUIC) delete finalRuleProviders.cn_additional;
   newConfig['rule-providers'] = finalRuleProviders;
 
   newConfig['rules'] = [
     ...prefixRules,
-    ...blockWebRtcStun,
+    ...(ruleOptionsEnable.屏蔽WebRTC ? blockWebRtcStun : []),
     ...(ruleOptionsEnable.屏蔽国外QUIC ? blockForeignQuic : []),
     ...functionalRules,
 

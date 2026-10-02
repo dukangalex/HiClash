@@ -76,7 +76,7 @@ async function run() {
     });
     assert.equal(integratedSocks.status, 200);
     const socksProxy = integratedSocks.body.config.proxies.find((proxy) => proxy.name === '链式落地-SOCKS5');
-    assert.equal(socksProxy.type, 'socks');
+    assert.equal(socksProxy.type, 'socks5');
     assert.equal(socksProxy.port, 1080);
     assert.equal(socksProxy.username, 'user');
     assert.equal(socksProxy.password, 'pass');

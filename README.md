@@ -53,7 +53,7 @@ GitHub：
 - HTTP / TLS / QUIC Sniffer 配置
 - 针对常见 Google、YouTube、Telegram、AI 等服务的必要域名处理
 - TUN 严格路由与 DNS 劫持
-- 阻断常见 WebRTC STUN UDP/TCP 端口，降低浏览器真实地址暴露风险
+- 阻断常见 WebRTC STUN UDP/TCP 端口，降低浏览器真实地址暴露风险（可通过 `屏蔽WebRTC` 开关关闭；关闭后 Zoom/Teams/Discord 等通话更顺畅，但可能暴露真实 IP）
 
 > 安全基线用于提高默认配置的安全性；实际安全效果仍取决于客户端、系统、订阅内容和网络环境。
 
@@ -107,7 +107,7 @@ GitHub：
 脚本顶部的 `ruleOptionsEnable` 支持控制：
 
 - 手动选择 / 自动选择 / 负载均衡
-- FCM、YouTube、Google、AI、Microsoft、Apple
+- FCM、YouTube、Google、AI、Claude、Microsoft、Apple
 - Telegram、Steam、TikTok、Twitter、Meta、Line
 - Netflix、Emby、PikPak、Spotify、Crypto、EHentai、AdBlock
 - 极简模式
@@ -115,7 +115,7 @@ GitHub：
 - 高/低倍率节点组
 - 分流组是否加入全部节点
 - 低倍率 / 高倍率 / 非地区节点过滤
-- 国外 QUIC 屏蔽
+- 国外 QUIC 屏蔽、WebRTC STUN 屏蔽
 - IPv4 / IPv6 优先
 - 链式代理
 
@@ -151,7 +151,7 @@ HiClash 保留并整合了完整的脚本自定义能力；这些功能属于脚
 
 脚本顶部的 `ruleOptionsEnable` 可直接开关以下功能：
 
-- **策略组开关**：手动选择、自动选择、负载均衡，以及 FCM、YouTube、Google、AI、Microsoft、Apple、Telegram、Steam、TikTok、Twitter、Meta、Line、Netflix、Emby、PikPak、Spotify、Crypto、EHentai、AdBlock 等分流组。
+- **策略组开关**：手动选择、自动选择、负载均衡，以及 FCM、YouTube、Google、AI、Claude、Microsoft、Apple、Telegram、Steam、TikTok、Twitter、Meta、Line、Netflix、Emby、PikPak、Spotify、Crypto、EHentai、AdBlock 等分流组。
 - **极简模式**：仅保留基础代理/直连/兜底分流结构。
 - **地区策略自定义**：控制是否生成地区自动选择组、是否隐藏地区手动选择组。
 - **倍率策略自定义**：控制是否生成低倍率/高倍率节点组。
@@ -218,6 +218,21 @@ const customizeProxies = [
 
 `https://raw.githubusercontent.com/dukangalex/HiClash/main/Script/Script.js`
 
+## 🧾 自托管规则集
+
+`屏蔽国外QUIC` 会拒绝所有「目标不在国内名单」的 UDP 443（QUIC）流量。国内名单由三部分组成：官方 `cn`、官方 `cn_ip`，以及本仓库自托管的 `cn_additional`——补充那些国内运营、但落在 `.com/.net/.top` 等通用顶级域上而官方 `cn` 未收录的站点（约 1.9 万条，与 `cn` 内容不同，不是重复下载）。该文件放在 `Rules/` 目录，经 jsDelivr 分发，不依赖第三方个人域名；关闭 `屏蔽国外QUIC` 时不会下载它。
+
+- `Rules/cn-additional-list.txt`：可审查的源文件（`+.域名` 后缀格式，LF 换行，`LC_ALL=C` 排序去重）。
+- `Rules/cn-additional-list.mrs`：由源文件生成的内核二进制格式。**修改源文件后必须重新生成**，CI 会用真实内核核对二者一致：
+
+```bash
+LC_ALL=C sort -u -o Rules/cn-additional-list.txt Rules/cn-additional-list.txt
+mihomo convert-ruleset domain text Rules/cn-additional-list.txt Rules/cn-additional-list.mrs
+node Test/rules-files.test.js && MIHOMO_BIN=$(which mihomo) node Test/rules-mrs.test.js
+```
+
+> 该文件通过 `@main` 分支引用，**合并到 `main` 之后**客户端才能下载到；合并前使用本分支的脚本会下载失败。
+
 ## 📄 配置文件
 
 全量版：
@@ -240,7 +255,7 @@ const customizeProxies = [
 >
 > 1. 本脚本直接覆写输入配置的控制面；原始 `proxies` 与 `proxy-providers` 节点信息保留，其余配置由 HiClash 接管。
 > 2. 包含 `proxy-providers` 的完整 Mihomo 配置也可直接使用 `Script.js` / `mihomoScript.js` 覆写，无需再切换到专用 provider 脚本。
-> 3. 覆写会重置 `mixed-port`（默认 7890）、`allow-lan`、`bind-address`、TUN、外部控制器等安全基线字段；请以覆写结果为准，并按需在客户端设置 `secret`。
+> 3. 覆写会重置 `mixed-port`（默认 7890）、`allow-lan`、`bind-address`、TUN、外部控制器等安全基线字段；请以覆写结果为准。客户端注入的 `secret` 会被原样保留；未设置 `secret` 时外部控制器无鉴权，请在客户端中设置。
 > 4. DNS、TUN、Sniffer、Hosts 等行为可能受到客户端自身设置影响。
 > 5. `tun.stack` 默认 `mips`，需要较新的 Mihomo 内核；旧内核请改为 `mixed` 或 `gvisor`。
 > 6. 如果出现节点解析异常，请检查客户端 DNS 覆写、Fake-IP、TUN / 严格路由等设置。
@@ -267,6 +282,8 @@ const customizeProxies = [
 ```bash
 node Core/server.js
 ```
+
+启动后在浏览器打开 `http://127.0.0.1:8787/` 即可使用控制台。服务仅监听本机回环地址，拒绝非回环 `Host`（防 DNS rebinding）及非 `application/json` 的 POST（防跨站请求）。
 
 测试：
 

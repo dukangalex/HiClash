@@ -142,14 +142,21 @@ function runIntegrationTests(h, api, meta, fx, loadScript, scriptFile) {
     h.assert(rules.includes('DST-PORT,3478-3497'), '应拦截常见 WebRTC STUN 端口');
     h.assert(rules.includes('DST-PORT,5349'), '应拦截 STUN/TURN TLS 端口');
   });
-  h.test('规则源：全部指向 MetaCubeX 官方 meta-rules-dat', () => {
+  h.test('规则源：除自托管的 cn_additional 外，全部指向 MetaCubeX 官方 meta-rules-dat', () => {
     const out = api.main(fx.typicalSubscription());
     const providers = out['rule-providers'];
     const urls = Object.values(providers).map((p) => p.url);
     h.assert(urls.length > 0, '应生成规则集');
-    for (const url of urls) {
-      h.assert(url.startsWith('https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/'), url);
-      h.assert(!/bett-rules|217heidai|666OS|binaryu|353355/.test(url), url);
+    h.assertEqual(new Set(urls).size, urls.length, '不应有两个 provider 使用同一 URL（同一文件重复下载）');
+    // 唯一的例外：官方 cn 未收录的国内站点补充名单，托管在本仓库 Rules/，必须是这个确切地址。
+    const selfHosted = 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Rules/cn-additional-list.mrs';
+    for (const [name, provider] of Object.entries(providers)) {
+      if (name === 'cn_additional') {
+        h.assertEqual(provider.url, selfHosted, 'cn_additional 应指向本仓库 Rules/ 下的自托管文件');
+        continue;
+      }
+      h.assert(provider.url.startsWith('https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/'), provider.url);
+      h.assert(!/bett-rules|217heidai|666OS|binaryu|353355/.test(provider.url), provider.url);
     }
     h.assertEqual(providers.private.proxy, 'DIRECT', '规则集应直连下载，避免节点未就绪时更新失败');
     h.assert(providers.bilibili, '应包含官方 bilibili 规则集');
@@ -527,10 +534,18 @@ function runIntegrationTests(h, api, meta, fx, loadScript, scriptFile) {
       enabled.rules.some((r) => r.includes('RULE-SET,cn)') && r.includes('REJECT')),
       'QUIC 例外应复用官方 cn，避免同一 URL 两个 provider',
     );
-    h.assert(!enabled['rule-providers'].cn_additional, '不应再单独下载一份 cn.mrs');
+    // cn_additional 是自托管的补充名单（官方 cn 未收录的站点），内容与 cn 不同，不能是 cn.mrs 的重复下载。
+    const providers = enabled['rule-providers'];
+    h.assert(providers.cn_additional, '开启时应生成自托管的 cn_additional 补充名单');
+    h.assert(providers.cn_additional.url !== providers.cn.url, 'cn_additional 不应与 cn 使用同一 URL');
+    h.assert(
+      enabled.rules.some((r) => r.includes('DST-PORT,443') && r.includes('RULE-SET,cn_additional')),
+      'QUIC 例外应同时引用 cn_additional',
+    );
     withOptions(api, { 屏蔽国外QUIC: false }, () => {
       const out = api.main(fx.minimalSubscription());
       h.assert(!out.rules.some((r) => r.includes('DST-PORT,443') && r.includes('REJECT')), '不应含 QUIC 规则');
+      h.assert(!out['rule-providers'].cn_additional, '关闭 QUIC 屏蔽后不应再下载 cn_additional');
       h.assert(out['rule-providers'].cn, 'cn 规则集仍应生成（供 nameserver-policy 使用）');
     });
   });

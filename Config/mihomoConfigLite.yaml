@@ -76,7 +76,7 @@ external-controller-cors:
     - 'https://localhost:19090'
   allow-private-network: false
 external-ui: ui
-external-ui-url: 'https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip'
+external-ui-url: 'https://github.com/Zephyruso/zashboard/releases/download/v3.29.1/dist.zip'
 
 profile:
   store-selected: true
@@ -84,11 +84,10 @@ profile:
 
 # 国内外 DNS 定义
 dns_common:
-  chinaDNS: &chinaDNS ['223.5.5.5#DIRECT', '119.29.29.29#DIRECT']
+  chinaDNS: &chinaDNS ['https://223.5.5.5/dns-query#DIRECT', 'https://1.12.12.12/dns-query#DIRECT']
   foreignDNS: &foreignDNS ['https://cloudflare-dns.com/dns-query#默认代理', 'https://dns.google/dns-query#默认代理']
-  defaultDNS: &defaultDNS ['114.114.114.114#DIRECT', 'tls://223.5.5.5#DIRECT', 'https://1.12.12.12/dns-query#DIRECT']
-  proxyServerDNS:
-    &proxyServerDNS ['114.114.114.114#DIRECT', 'tls://223.5.5.5#DIRECT', 'https://doh.pub/dns-query#DIRECT']
+  defaultDNS: &defaultDNS ['tls://223.5.5.5#DIRECT', 'https://1.12.12.12/dns-query#DIRECT']
+  proxyServerDNS: &proxyServerDNS ['tls://223.5.5.5#DIRECT', 'https://doh.pub/dns-query#DIRECT']
 
 dns:
   enable: true
@@ -282,6 +281,11 @@ rule-providers:
     url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/cn.mrs'
     path: './ruleset/cn.mrs'
     path-in-bundle: 'geo/geosite/cn.mrs'
+  # 自托管补充名单：国内运营、但落在通用顶级域上而官方 cn 未收录的站点（见 Rules/）。与 cn 内容不同，无内置副本，故不设 path-in-bundle。
+  cn_additional:
+    <<: *rule_providers_domain
+    url: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Rules/cn-additional-list.mrs'
+    path: './ruleset/cn-additional.mrs'
   bilibili:
     <<: *rule_providers_domain
     url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/bilibili.mrs'
@@ -573,7 +577,7 @@ rules:
   - AND,((NETWORK,TCP),(DST-PORT,5349)),REJECT
 
   # 禁用国外 QUIC 流量
-  - AND,((NETWORK,UDP),(DST-PORT,443),(NOT,((OR,((RULE-SET,cn),(RULE-SET,cn_ip,no-resolve)))))),REJECT
+  - AND,((NETWORK,UDP),(DST-PORT,443),(NOT,((OR,((RULE-SET,cn),(RULE-SET,cn_additional),(RULE-SET,cn_ip,no-resolve)))))),REJECT
 
   # 广告拦截
   - RULE-SET,adblockmihomolite,AdBlock
