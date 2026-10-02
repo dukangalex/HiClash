@@ -43,14 +43,10 @@ function sniffShareLink(text) {
   const line = text.trim().split(/\s+/)[0];
   const scheme = LINK_SCHEMES.find((item) => line.toLowerCase().startsWith(item));
   if (!scheme) return null;
-  let kernel = 'sing-box';
-  if (scheme === 'vmess:' || scheme === 'vless:' || scheme === 'trojan:' || scheme === 'ss:') {
-    kernel = 'sing-box';
-  }
   return {
     format: 'share-link',
     protocol: scheme.slice(0, -1),
-    kernel,
+    kernel: 'sing-box',
     confidence: 0.9,
   };
 }

@@ -26,7 +26,7 @@ function validateChain(chain) {
 function compileMihomo(chain) {
   validateChain(chain);
   const proxies = chain.map((hop, index) => {
-    const proxy = { ...hop.proxy };
+    const proxy = { ...hop.proxy, name: hop.name };
     if (index < chain.length - 1) proxy['dialer-proxy'] = chain[index + 1].name;
     return proxy;
   });
@@ -104,7 +104,8 @@ function compileMihomoLanding(frontName, landing) {
   }
   const proxy = {
     name,
-    type: kind === 'socks5' ? 'socks' : 'http',
+    // Mihomo only recognises `socks5` (a bare `socks` fails config validation).
+    type: kind === 'socks5' ? 'socks5' : 'http',
     server: String(landing.server),
     port: Number(landing.port),
     'dialer-proxy': frontName,

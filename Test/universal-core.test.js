@@ -41,6 +41,7 @@ function run() {
     过滤高倍率节点: false,
     过滤非地区节点: true,
     屏蔽国外QUIC: true,
+    屏蔽WebRTC: true,
     代理IPV4优先: false,
     代理IPV6优先: false,
     链式代理: false,
@@ -66,6 +67,16 @@ function run() {
     { name: 'exit', proxy: { name: 'exit', type: 'vmess' } },
   ]);
   assert.equal(mihomo.proxies[0]['dialer-proxy'], 'exit');
+
+  // Regression: hop.name must become the Mihomo proxy name even when proxy omits it.
+  const unnamed = core.compile('mihomo', [
+    { name: 'entry', proxy: { type: 'ss' } },
+    { name: 'exit', proxy: { type: 'ss' } },
+  ]);
+  assert.deepEqual(
+    unnamed.proxies.map((proxy) => proxy.name),
+    ['entry', 'exit'],
+  );
 
   const sing = core.compile('sing-box', [
     { name: 'entry', outbound: { type: 'vmess' } },
@@ -93,7 +104,7 @@ function run() {
     username: 'u',
     password: 'p',
   });
-  assert.equal(socksLanding.proxies[0].type, 'socks');
+  assert.equal(socksLanding.proxies[0].type, 'socks5');
   assert.equal(socksLanding.proxies[0]['dialer-proxy'], '链式中转');
   assert.equal(socksLanding.proxies[0].port, 1080);
 
@@ -153,7 +164,7 @@ function run() {
   );
   const integratedProxy = integratedLanding.config.proxies.find((proxy) => proxy.name === '链式落地');
   assert.equal(integratedProxy['dialer-proxy'], '🇺🇸 US-前置节点');
-  assert.equal(integratedProxy.type, 'socks');
+  assert.equal(integratedProxy.type, 'socks5');
   assert.ok(
     integratedLanding.config['proxy-groups'].find((group) => group.name === '默认代理').proxies.includes('链式落地'),
   );
@@ -281,8 +292,20 @@ function run() {
   assert.equal(bypass.evaluate({ asn: 45090 }).action, 'DIRECT');
   assert.equal(bypass.evaluate({ latencyMs: 1 }).action, 'PROXY');
 
+  // Regression: empty patterns must not match everything; suffixes must respect path boundaries.
+  assert.equal(new core.ChinaBypassEngine({ processPatterns: [''] }).evaluate({ process: 'x.exe' }).action, 'PROXY');
+  const strict = new core.ChinaBypassEngine({ processPatterns: ['chat.exe'] });
+  assert.equal(strict.evaluate({ process: 'evil-chat.exe' }).action, 'PROXY');
+  assert.equal(strict.evaluate({ process: 'chat.exe' }).action, 'DIRECT');
+  assert.equal(strict.evaluate({ process: '/usr/bin/chat.exe' }).action, 'DIRECT');
+  assert.equal(strict.evaluate({ process: 'C:\\Apps\\Chat.exe' }).action, 'DIRECT');
+  const bounded = new core.ChinaBypassEngine({ processPatterns: ['a'], cacheLimit: 3 });
+  for (let i = 0; i < 10; i += 1) bounded.evaluate({ process: 'a', cacheKey: 'k' + i });
+  assert.equal(bounded.cache.size, 3);
+
   const controller = core.createController();
   assert.equal(controller.routeDecision({ coreState: 'stopped' }), 'BLOCK');
+  assert.equal(controller.routeDecision(undefined), 'BLOCK'); // fail closed on missing route
   assert.equal(controller.routeDecision({ coreState: 'running', fallback: 'DIRECT' }), 'BLOCK');
 
   console.log('Universal Core tests passed');

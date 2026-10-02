@@ -18,6 +18,9 @@ function mergeSecurityPolicy(overrides) {
 
 function evaluateRoute(policy, route) {
   const effective = mergeSecurityPolicy(policy);
+  // Fail closed: with the kill switch on, a missing/garbled route description
+  // must never be treated as safe to pass.
+  if (effective.killSwitch && (!route || typeof route !== 'object')) return 'BLOCK';
   if (effective.killSwitch && route && route.coreState !== 'running') return 'BLOCK';
   if (effective.preventDirectFallback && route && route.fallback === 'DIRECT') return 'BLOCK';
   if (effective.blockWebRTCStun && route && route.port >= 3478 && route.port <= 3497) return 'BLOCK';
