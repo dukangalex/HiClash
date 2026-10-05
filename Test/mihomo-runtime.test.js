@@ -100,33 +100,51 @@ for (const groupName of ['默认代理', '手动选择', '自动选择', '负载
   );
 }
 
+// provider 模式：同时覆盖「只有基础组」与「基础组 + 地区组」两种形态，地区组的 exclude-filter 与 filter
+// 由 Mihomo 的 regexp2 引擎编译（无法编译会直接 panic），只有真实内核能确认它们可被解析。
+const providerRegionConfig = api.main(fx.providerRegionSubscription());
+validateGeneratedConfig(providerRegionConfig, 'providerRegion');
+assert(
+  providerRegionConfig['proxy-groups'].some((group) => group.filter && group['exclude-filter']),
+  'providerRegion: expected provider-fed region groups carrying filter + exclude-filter',
+);
+
+const SCENARIOS = [
+  ['typical', config],
+  ['provider', providerConfig],
+  ['providerRegion', providerRegionConfig],
+];
+
 const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'hiclash-mihomo-'));
-const configPath = path.join(tempDir, 'config.yaml');
 
 try {
-  fs.writeFileSync(configPath, yaml.dump(config, { noRefs: true, lineWidth: -1 }), 'utf8');
-
   // Fail loudly if CI fetches a different binary than the version this test claims to validate.
   const versionOutput = spawnSync(MIHOMO_BIN, ['-v'], { encoding: 'utf8' }).stdout || '';
   if (!versionOutput.includes(MIHOMO_VERSION)) {
     throw new Error(`expected mihomo ${MIHOMO_VERSION}, binary reports: ${versionOutput.split('\n')[0]}`);
   }
 
-  const result = spawnSync(MIHOMO_BIN, ['-t', '-f', configPath], {
-    encoding: 'utf8',
-    stdio: ['ignore', 'pipe', 'pipe'],
-    timeout: 120000,
-  });
+  for (const [label, scenarioConfig] of SCENARIOS) {
+    const configPath = path.join(tempDir, label + '.yaml');
+    fs.writeFileSync(configPath, yaml.dump(scenarioConfig, { noRefs: true, lineWidth: -1 }), 'utf8');
 
-  process.stdout.write(result.stdout || '');
-  process.stderr.write(result.stderr || '');
+    const result = spawnSync(MIHOMO_BIN, ['-t', '-f', configPath], {
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'pipe'],
+      timeout: 120000,
+    });
 
-  if (result.error) throw result.error;
-  if (result.status !== 0) {
-    throw new Error(`mihomo ${MIHOMO_VERSION} config validation failed with exit code ${result.status}`);
+    process.stdout.write(result.stdout || '');
+    process.stderr.write(result.stderr || '');
+
+    if (result.error) throw result.error;
+    if (result.status !== 0) {
+      throw new Error(`mihomo ${MIHOMO_VERSION} rejected the "${label}" config (exit code ${result.status})`);
+    }
+    console.log(`  ${label}: accepted by mihomo ${MIHOMO_VERSION}`);
   }
 
-  console.log(`Mihomo ${MIHOMO_VERSION} runtime config validation passed`);
+  console.log(`Mihomo ${MIHOMO_VERSION} runtime config validation passed (${SCENARIOS.length} scenarios)`);
 } finally {
   fs.rmSync(tempDir, { recursive: true, force: true });
 }

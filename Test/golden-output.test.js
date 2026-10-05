@@ -21,6 +21,7 @@ const GOLDEN_PATH = path.join(__dirname, 'golden-output.json');
 const FIXTURES = {
   typical: fx.typicalSubscription,
   provider: fx.providerSubscription,
+  providerRegion: fx.providerRegionSubscription,
   minimal: fx.minimalSubscription,
   hostsMapped: fx.hostsMappedSubscription,
 };

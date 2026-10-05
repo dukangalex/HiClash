@@ -45,6 +45,7 @@ const customOptionsSchema = Object.freeze({
     过滤非地区节点: { category: '其他', type: 'boolean', default: true },
     屏蔽国外QUIC: { category: '安全', type: 'boolean', default: true },
     屏蔽WebRTC: { category: '安全', type: 'boolean', default: true },
+    强制TUN: { category: '网络', type: 'boolean', default: true },
     代理IPV4优先: { category: '网络', type: 'boolean', default: false },
     代理IPV6优先: { category: '网络', type: 'boolean', default: false },
     链式代理: { category: '链式代理', type: 'boolean', default: false },

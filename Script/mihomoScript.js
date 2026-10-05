@@ -59,6 +59,7 @@ const ruleOptionsEnable = {
   过滤非地区节点: true, // 是否过滤非地区节点
   屏蔽国外QUIC: true, // 是否屏蔽国外QUIC流量
   屏蔽WebRTC: true, // 是否屏蔽 WebRTC STUN 端口；关闭后 Zoom/Teams/Discord 等通话可 UDP 直连，但可能暴露真实 IP
+  强制TUN: true, // 是否强制开启 TUN（含 strict-route / auto-redirect）；关闭后保留订阅或客户端自带的 tun 配置，适用于无管理员权限、Linux 缺少 iptables/nftables 或自行管理 TUN 的环境
   代理IPV4优先: false, // 是否将订阅节点统一为 IPv4 优先（与“代理IPV6优先”同时开启时不生效）
   代理IPV6优先: false, // 是否将订阅节点统一为 IPv6 优先（与“代理IPV4优先”同时开启时不生效）
   链式代理: false, // 是否启用链式代理（自定义节点作为落地节点，经“链式中转”策略组中转）
@@ -168,7 +169,7 @@ const blockWebRtcStun = [
 
 // @shared:begin blockForeignQuic — 由 Script/shared/blockForeignQuic.js 同步，请勿在此直接修改
 const blockForeignQuic = [
-  'AND,((NETWORK,UDP),(DST-PORT,443),(NOT,((OR,((RULE-SET,cn),(RULE-SET,cn_additional),(RULE-SET,cn_ip,no-resolve)))))),REJECT',
+  'AND,((NETWORK,UDP),(DST-PORT,443),(NOT,((OR,((RULE-SET,cn),(RULE-SET,cn_ip,no-resolve)))))),REJECT',
 ];
 // @shared:end blockForeignQuic
 
@@ -1073,13 +1074,6 @@ const baseRuleProviders = {
     path: './ruleset/cn.mrs',
     'path-in-bundle': 'geo/geosite/cn.mrs',
   },
-  // 自托管补充名单：国内运营、但落在通用顶级域上而官方 cn 未收录的站点（见 Rules/）。
-  // 与 cn 内容不同，不是重复下载；仓库内没有对应的内置副本，所以不设置 path-in-bundle。
-  cn_additional: {
-    ...ruleProviderCommonDomain,
-    url: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Rules/cn-additional-list.mrs',
-    path: './ruleset/cn-additional.mrs',
-  },
   bilibili: {
     ...ruleProviderCommonDomain,
     url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/bilibili.mrs',
@@ -1590,14 +1584,19 @@ for (const [trad, simp] of Object.entries(traditionalToSimplified)) {
   simplifiedToTraditional[simp] = (simplifiedToTraditional[simp] || simp) + trad;
 }
 const simplifiedRegex = new RegExp('[' + Object.keys(simplifiedToTraditional).join('') + ']', 'g');
+// @shared:begin expandTraditional — 由 Script/shared/expandTraditional.js 同步，请勿在此直接修改
 function expandTraditional(source) {
   return source.replace(simplifiedRegex, (ch) => '[' + simplifiedToTraditional[ch] + ']');
 }
+// @shared:end expandTraditional
+// @shared:begin foldTraditional — 由 Script/shared/foldTraditional.js 同步，请勿在此直接修改
 function foldTraditional(text) {
   return String(text).replace(traditionalRegex, (ch) => traditionalToSimplified[ch]);
 }
+// @shared:end foldTraditional
 
 const regionMatchCache = new Map();
+// @shared:begin getMatchedRegions — 由 Script/shared/getMatchedRegions.js 同步，请勿在此直接修改
 function getMatchedRegions(proxyName) {
   if (regionMatchCache.has(proxyName)) {
     return regionMatchCache.get(proxyName);
@@ -1621,11 +1620,13 @@ function getMatchedRegions(proxyName) {
 
   return result;
 }
+// @shared:end getMatchedRegions
 
 /**
  * 标准化节点名称：补全地区国旗、折叠多余空格，并预缓存匹配结果
  */
 const flagRegex = /[\u{1F1E6}-\u{1F1FF}]{2}/u;
+// @shared:begin normalizeProxyName — 由 Script/shared/normalizeProxyName.js 同步，请勿在此直接修改
 function normalizeProxyName(proxy) {
   const originalName = proxy.name;
 
@@ -1646,7 +1647,9 @@ function normalizeProxyName(proxy) {
   const renamed = normalizedName === originalName ? proxy : { ...proxy, name: normalizedName };
   return applyKernelProxyDefaults(renamed);
 }
+// @shared:end normalizeProxyName
 
+// @shared:begin applyKernelProxyDefaults — 由 Script/shared/applyKernelProxyDefaults.js 同步，请勿在此直接修改
 /**
  * Mihomo v1.19.32 起 vmess.cipher 没有 omitempty，缺字段会让整份配置解析失败。
  * 机场订阅经常省略它；Clash 历史默认值是 auto。这里只补缺失字段，不改已有值。
@@ -1659,7 +1662,9 @@ function applyKernelProxyDefaults(proxy) {
   }
   return proxy;
 }
+// @shared:end applyKernelProxyDefaults
 
+// @shared:begin fixDialerProxy — 由 Script/shared/fixDialerProxy.js 同步，请勿在此直接修改
 /**
  * 修复 dialer-proxy 引用：目标被重命名则更新，被移除或不存在则删除引用
  */
@@ -1679,7 +1684,9 @@ function fixDialerProxy(proxy, renameMap, normalizedProxyNames) {
   delete copy['dialer-proxy'];
   return copy;
 }
+// @shared:end fixDialerProxy
 
+// @shared:begin getIpVersionPreference — 由 Script/shared/getIpVersionPreference.js 同步，请勿在此直接修改
 /**
  * 读取代理 IP 版本偏好：仅其中一个开关开启时返回对应偏好，
  * 同时开启或同时关闭时返回 null（不应用任何偏好，节点保持原样）
@@ -1692,9 +1699,11 @@ function getIpVersionPreference() {
   if (ipv6PreferEnabled && !ipv4PreferEnabled) return 'ipv6-prefer';
   return null;
 }
+// @shared:end getIpVersionPreference
 
+// @shared:begin getReservedProxyNames — 由 Script/shared/getReservedProxyNames.js 同步，请勿在此直接修改
 /**
- * 过滤并标准化节点：剔除内置/信息节点、按配置过滤、去重、修复 dialer-proxy 引用，空列表时抛错
+ * 保留名：策略组、地区组、内置节点等名称。节点或自定义节点与之重名会让内核拒绝配置，需要改名避开。
  */
 function getReservedProxyNames() {
   const names = new Set([
@@ -1718,7 +1727,12 @@ function getReservedProxyNames() {
   for (const region of allRegionDefinitions) names.add(region.name + '-自动选择');
   return names;
 }
+// @shared:end getReservedProxyNames
 
+// @shared:begin reserveProxyName — 由 Script/shared/reserveProxyName.js 同步，请勿在此直接修改
+/**
+ * 若 name 与保留名冲突，返回「节点-<name>」形式且未被占用的安全名称；否则原样返回。
+ */
 function reserveProxyName(name, reservedNames, usedNames) {
   if (!reservedNames.has(name)) return name;
   let candidate = '节点-' + name;
@@ -1728,7 +1742,12 @@ function reserveProxyName(name, reservedNames, usedNames) {
   }
   return candidate;
 }
+// @shared:end reserveProxyName
 
+// @shared:begin filterAndNormalizeProxies — 由 Script/shared/filterAndNormalizeProxies.js 同步，请勿在此直接修改
+/**
+ * 过滤并标准化节点：剔除内置/信息节点、按配置过滤、去重、修复 dialer-proxy 引用，空列表时抛错
+ */
 function filterAndNormalizeProxies(config) {
   regionMatchCache.clear();
 
@@ -1795,7 +1814,9 @@ function filterAndNormalizeProxies(config) {
 
   return filteredProxies;
 }
+// @shared:end filterAndNormalizeProxies
 
+// @shared:begin filterProviderVisibleProxies — 由 Script/shared/filterProviderVisibleProxies.js 同步，请勿在此直接修改
 function filterProviderVisibleProxies(config) {
   // provider 节点本体由 mihomo 在脚本执行后加载；脚本阶段只能使用配置中已经可见的
   // proxies 判断哪些地区真实存在。这里沿用原有过滤条件，但绝不标准化/改名，
@@ -1842,9 +1863,11 @@ function filterProviderVisibleProxies(config) {
 
   return visible;
 }
+// @shared:end filterProviderVisibleProxies
 
 // ---构建地区组和倍率组---
 
+// @shared:begin createRegionGroup — 由 Script/shared/createRegionGroup.js 同步，请勿在此直接修改
 /**
  * 构建地区策略组，可附带自动选择组
  */
@@ -1879,7 +1902,9 @@ function createRegionGroup(name, icon, proxies) {
     },
   ];
 }
+// @shared:end createRegionGroup
 
+// @shared:begin buildRegionGroups — 由 Script/shared/buildRegionGroups.js 同步，请勿在此直接修改
 /**
  * 将节点按地区/倍率归类，构建地区策略组、倍率策略组与“其他节点”组
  */
@@ -1917,6 +1942,7 @@ function buildRegionGroups(filteredProxies, customProxies) {
 
   return generatedRegionGroups;
 }
+// @shared:end buildRegionGroups
 
 // ---构建自定义节点组---
 
@@ -2219,6 +2245,7 @@ const foreignDNS = ['https://cloudflare-dns.com/dns-query#默认代理', 'https:
 const defaultDNS = ['tls://223.5.5.5#DIRECT', 'https://1.12.12.12/dns-query#DIRECT'];
 const proxyServerDNS = ['tls://223.5.5.5#DIRECT', 'https://doh.pub/dns-query#DIRECT'];
 
+// @shared:begin hostSpecificity — 由 Script/shared/hostSpecificity.js 同步，请勿在此直接修改
 /**
  * hosts 匹配优先级：精确 > +. > . > *（同级按出现顺序）
  */
@@ -2228,7 +2255,9 @@ function hostSpecificity(pattern) {
   if (pattern.includes('*')) return 0;
   return 3;
 }
+// @shared:end hostSpecificity
 
+// @shared:begin matchDomainPattern — 由 Script/shared/matchDomainPattern.js 同步，请勿在此直接修改
 /**
  * 判断域名规则（精确/通配）是否匹配节点域名集合，忽略大小写
  */
@@ -2266,7 +2295,9 @@ function matchDomainPattern(pattern, domains) {
     );
   });
 }
+// @shared:end matchDomainPattern
 
+// @shared:begin applyHostsToProxies — 由 Script/shared/applyHostsToProxies.js 同步，请勿在此直接修改
 /**
  * 根据订阅 hosts 映射改写节点 server，改写后无需再复制 hosts 进新配置。
  * 支持链式映射（如 a: b、b: c 时节点 a 改写为 c）；
@@ -2314,7 +2345,9 @@ function applyHostsToProxies(proxies, hosts) {
     return server === proxy.server ? proxy : { ...proxy, server };
   });
 }
+// @shared:end applyHostsToProxies
 
+// @shared:begin stripDnsSuffix — 由 Script/shared/stripDnsSuffix.js 同步，请勿在此直接修改
 /**
  * 剥离 DNS 地址的 # 策略组后缀；
  * 参数包含 direct 或 直连 时，强制改为 #DIRECT
@@ -2335,14 +2368,18 @@ function stripDnsSuffix(dns) {
 
   return prefix;
 }
+// @shared:end stripDnsSuffix
 
+// @shared:begin isIpAddress — 由 Script/shared/isIpAddress.js 同步，请勿在此直接修改
 /**
  * 判断节点 server 是否为 IP 地址（IPv4 / IPv6），用于从节点域名集合中排除 IP 类型的 server
  */
 function isIpAddress(server) {
   return /^\d{1,3}(\.\d{1,3}){3}$/.test(server) || server.includes(':');
 }
+// @shared:end isIpAddress
 
+// @shared:begin simplifyDomainPolicy — 由 Script/shared/simplifyDomainPolicy.js 同步，请勿在此直接修改
 /**
  * 简化节点域名策略：将相同 DNS 的节点域名按后缀归类，至少三段的域名可合并为 +. 后缀形式
  */
@@ -2390,6 +2427,7 @@ function simplifyDomainPolicy(policy) {
 
   return result;
 }
+// @shared:end simplifyDomainPolicy
 
 /**
  * 构建 DNS 与 hosts：保留私有 DNS、节点域名 policy/fake-ip-filter，并按 hosts 改写节点 server
@@ -2729,6 +2767,7 @@ const securityHosts = {
 
 // --- proxy-providers 兼容：保留节点信息，脚本接管其余配置 ---
 
+// @shared:begin hasProxyProviders — 由 Script/shared/hasProxyProviders.js 同步，请勿在此直接修改
 /**
  * 判断输入是否包含 proxy-providers。
  * provider 模式下不尝试在脚本运行期展开远端订阅，而是直接让 Mihomo
@@ -2743,7 +2782,9 @@ function hasProxyProviders(config) {
     Object.keys(config['proxy-providers']).length > 0
   );
 }
+// @shared:end hasProxyProviders
 
+// @shared:begin getProviderRegionFilter — 由 Script/shared/getProviderRegionFilter.js 同步，请勿在此直接修改
 /**
  * provider 模式的地区组。
  * Mihomo 会在运行期从 proxy-providers 中加载节点，因此这里使用 use + filter，
@@ -2762,7 +2803,31 @@ function getProviderRegionFilter(region) {
 
   return '(?i)' + expandTraditional(region.regex.source);
 }
+// @shared:end getProviderRegionFilter
 
+// @shared:begin getProviderExcludeFilter — 由 Script/shared/getProviderExcludeFilter.js 同步，请勿在此直接修改
+/**
+ * provider 模式下 exclude-filter 的取值。节点名只有内核运行时才可见，脚本无法逐个判断，
+ * 因此把普通模式的规则「强信息词一律排除；弱词只在节点没有地区特征时才排除」翻译成正则。
+ * Mihomo 使用 regexp2（支持否定前瞻），所以两种范围都能精确还原：
+ *  - 'region'：地区组。节点已被地区正则选中，只需排除强信息词
+ *    （「日本 支持 Netflix」保留，「剩余流量 120 GB」排除）；
+ *  - 'all'：收纳全部节点的基础组 / 链式组。排除 = 强信息词，或「不含任何地区特征且含弱词」
+ *    （「香港 备用 01」保留，「备用域名」「使用说明」排除）。
+ * 关闭「过滤非地区节点」时返回空串（不下发 exclude-filter），与普通模式不做过滤一致。
+ */
+function getProviderExcludeFilter(scope) {
+  if (!activeRuleOptions.过滤非地区节点) return '';
+  const strong = strongExcludeFilter.source;
+  if (scope === 'region') return '(?i)' + strong;
+  const anyRegion = allRegionDefinitions
+    .map((region) => getProviderRegionFilter(region).replace(/^\(\?i\)/, ''))
+    .join('|');
+  return '(?i)' + strong + '|^(?!.*(?:' + anyRegion + ')).*(?:' + excludeFilter.source + ')';
+}
+// @shared:end getProviderExcludeFilter
+
+// @shared:begin buildProviderRegionGroups — 由 Script/shared/buildProviderRegionGroups.js 同步，请勿在此直接修改
 function buildProviderRegionGroups(filteredProxies, customProxies, providerNames) {
   // Provider 本身的远程节点在脚本执行阶段不可见，因此严格沿用原有
   // getMatchedRegions() + buildRegionGroups() 逻辑：只有当前脚本实际可见的
@@ -2777,13 +2842,16 @@ function buildProviderRegionGroups(filteredProxies, customProxies, providerNames
 
     group.use = [...providerNames];
     group.filter = getProviderRegionFilter(region);
-    group['exclude-filter'] = excludeFilter.source;
+    const exclude = getProviderExcludeFilter('region');
+    if (exclude) group['exclude-filter'] = exclude;
     group['exclude-type'] = 'DIRECT|REJECT|REJECT-DROP|PASS';
   }
 
   return groups;
 }
+// @shared:end buildProviderRegionGroups
 
+// @shared:begin enableProviderSources — 由 Script/shared/enableProviderSources.js 同步，请勿在此直接修改
 /**
  * provider 模式下让原有基础组直接消费 provider 节点。
  * 仅补充节点来源，不删除原有规则、组结构或功能。
@@ -2793,30 +2861,37 @@ function enableProviderSources(groups, chainGroup, providerNames) {
   for (const group of groups) {
     if (!group || (!baseNames.has(group.name) && group.name !== '默认代理')) continue;
     group.use = [...providerNames];
-    group['exclude-filter'] = excludeFilter.source;
+    const exclude = getProviderExcludeFilter('all');
+    if (exclude) group['exclude-filter'] = exclude;
     group['exclude-type'] = 'DIRECT|REJECT|REJECT-DROP|PASS';
   }
 
   if (chainGroup) {
     chainGroup.use = [...providerNames];
-    chainGroup['exclude-filter'] = excludeFilter.source;
+    const chainExclude = getProviderExcludeFilter('all');
+    if (chainExclude) chainGroup['exclude-filter'] = chainExclude;
     chainGroup['exclude-type'] = 'DIRECT|REJECT|REJECT-DROP|PASS';
   }
 }
+// @shared:end enableProviderSources
 
 // --- 主入口 ---
 
 // 客户端（Clash Verge Rev / Mihomo Party / FlClash 等）会注入自己的端口与控制器地址。
 // 仅当端口合法、控制器为回环地址时才保留；非回环地址一律回落到安全基线，不放宽安全边界。
+// @shared:begin isValidPort — 由 Script/shared/isValidPort.js 同步，请勿在此直接修改
 function isValidPort(value) {
   return Number.isInteger(value) && value >= 1 && value <= 65535;
 }
+// @shared:end isValidPort
 
+// @shared:begin isLoopbackController — 由 Script/shared/isLoopbackController.js 同步，请勿在此直接修改
 function isLoopbackController(value) {
   if (typeof value !== 'string') return false;
   const match = /^(127\.0\.0\.1|localhost|\[::1\]):(\d{1,5})$/i.exec(value.trim());
   return Boolean(match) && isValidPort(Number(match[2]));
 }
+// @shared:end isLoopbackController
 
 /**
  * 主入口：覆写机场订阅配置，生成完整 mihomo 配置
@@ -2866,7 +2941,7 @@ function main(config, context) {
   }
   newConfig['sniffer'] = securitySniffer;
 
-  newConfig['tun'] = {
+  const tunConfig = {
     enable: true,
     // v1.19.32 默认栈是 mips；congestion-controller 只在 mips 上生效。
     stack: 'mips',
@@ -2880,6 +2955,12 @@ function main(config, context) {
     // 排除本机，避免 127.0.0.1:25500 这类订阅转换器被 TUN 收走后规则集更新 EOF。
     'route-exclude-address': ['127.0.0.0/8', '::1/128'],
   };
+  if (activeRuleOptions.强制TUN) {
+    newConfig['tun'] = tunConfig;
+  } else if (config.tun && typeof config.tun === 'object' && !Array.isArray(config.tun)) {
+    // 关闭「强制TUN」时不接管 TUN：原样保留订阅/客户端自带的设置；没有则不输出 tun，由内核默认（关闭）。
+    newConfig['tun'] = config.tun;
+  }
 
   // 节点信息是唯一不由脚本覆盖的部分：
   // - 原始 proxies 原样保留；
@@ -2901,8 +2982,6 @@ function main(config, context) {
     directGroup,
     ...generatedRegionGroups,
   ];
-  // cn_additional 只服务于 QUIC 放行规则；关闭「屏蔽国外QUIC」时不必下载。
-  if (!activeRuleOptions.屏蔽国外QUIC) delete finalRuleProviders.cn_additional;
   newConfig['rule-providers'] = finalRuleProviders;
 
   newConfig['rules'] = [
