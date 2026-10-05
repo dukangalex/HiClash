@@ -76,7 +76,7 @@ jobs:
           node-version: '24'
 
       - name: install dependencies
-        run: npm --prefix Test install
+        run: npm --prefix Test ci
 
       - name: run dashboard integration tests
         run: node Test/dashboard.test.js
@@ -84,11 +84,32 @@ jobs:
       - name: run server integration tests
         run: node Test/server.test.js
 
+      - name: run server hardening tests
+        run: node Test/server-hardening.test.js
+
       - name: run universal core tests
         run: node Test/universal-core.test.js
 
       - name: run custom options regression tests
         run: node Test/custom-options-script.test.js
+
+      - name: check shared script blocks are in sync
+        run: node Test/shared-blocks.test.js
+
+      - name: run golden output tests
+        run: node Test/golden-output.test.js
+
+      - name: run asset tag tests
+        run: node Test/asset-tag.test.js
+
+      - name: run pinned resource tests
+        run: node Test/pinned-resources.test.js
+
+      - name: run provider filter tests
+        run: node Test/provider-filters.test.js
+
+      - name: run provider compatibility tests
+        run: node Test/providerCompat.test.js
 
       - name: run existing regression tests
         run: node Test/run-tests.js
@@ -110,3 +131,8 @@ jobs:
         env:
           MIHOMO_BIN: /tmp/mihomo
         run: node Test/mihomo-runtime.test.js
+
+      - name: run mihomo provider behavior test
+        env:
+          MIHOMO_BIN: /tmp/mihomo
+        run: node Test/mihomo-provider-behavior.test.js

@@ -1,0 +1,39 @@
+name: rules_canary
+
+# 每天下载并解码官方 meta-rules-dat 规则集，检查数量波动与标志性域名/IP 分类。
+# 退出码 1 = 规则内容异常（告警）；2 = 网络/环境问题（不代表规则有问题）。
+on:
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+
+jobs:
+  canary:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v6
+
+      - name: setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+
+      - name: download mihomo v1.19.32
+        run: |
+          curl -fL --retry 3 --retry-all-errors \
+            -o /tmp/mihomo-v1.19.32.gz \
+            https://github.com/MetaCubeX/mihomo/releases/download/v1.19.32/mihomo-linux-amd64-v1.19.32.gz
+          echo "8451100836c9eda194331c2babfad490b2faf30cebc1a04b0e76fd8ac2d35d10  /tmp/mihomo-v1.19.32.gz" > /tmp/mihomo.sha256
+          if ! sha256sum -c /tmp/mihomo.sha256; then
+            echo "Pinned SHA256 verification failed; refresh the official release checksum."
+            exit 1
+          fi
+          gunzip -c /tmp/mihomo-v1.19.32.gz > /tmp/mihomo
+          chmod +x /tmp/mihomo
+
+      - name: run rules canary
+        env:
+          MIHOMO_BIN: /tmp/mihomo
+        run: node Test/rules-canary.test.js
