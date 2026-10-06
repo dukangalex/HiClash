@@ -165,6 +165,22 @@ function providerSubscription() {
   };
 }
 
+/**
+ * provider + 可见的地区节点并存：只有「脚本可见节点能证明某地区存在」时才会生成地区组，
+ * 因此用它来覆盖 provider 模式下地区组（use + filter + exclude-filter）这条路径。
+ */
+function providerRegionSubscription() {
+  const node = (name, server) => ({ name, type: 'ss', server, port: 443, cipher: 'aes-256-gcm', password: 'x' });
+  return {
+    proxies: [node('🇭🇰 香港 01', 'hk.example.com'), node('🇯🇵 日本 支持 Netflix', 'jp.example.com')],
+    'proxy-providers': {
+      provider1: { type: 'http', url: 'https://example.com/sub', path: './proxy_providers/provider1.yaml' },
+    },
+    'proxy-groups': [{ name: '原始代理组', type: 'select', proxies: ['🇭🇰 香港 01'] }],
+    rules: ['MATCH,原始代理组'],
+  };
+}
+
 /** 空节点列表 */
 function emptySubscription() {
   return { proxies: [] };
@@ -210,6 +226,7 @@ function hostsMappedSubscription() {
 module.exports = {
   typicalSubscription,
   providerSubscription,
+  providerRegionSubscription,
   minimalSubscription,
   emptySubscription,
   allFilteredSubscription,

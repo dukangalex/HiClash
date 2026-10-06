@@ -343,3 +343,28 @@ test('traditional-Chinese and city names are recognised as their region', () => 
     }
   }
 });
+
+test('强制TUN defaults to on and, when off, leaves the subscription/client tun block alone', () => {
+  const customTun = { enable: false, stack: 'system', 'auto-route': false };
+  const withTun = () => ({ ...baseConfig(), tun: customTun });
+
+  // 全量版：通过运行时 customOptions 切换。
+  const main = loadMain();
+  const on = main(withTun());
+  assert.equal(on.tun.enable, true, 'forced on by default');
+  assert.equal(on.tun['auto-redirect'], true);
+  assert.equal(on.tun.stack, 'mips');
+
+  const off = main(withTun(), { customOptions: { 强制TUN: false } });
+  assert.deepEqual(off.tun, customTun, 'client/subscription tun must be preserved verbatim');
+
+  assert.equal('tun' in main(baseConfig(), { customOptions: { 强制TUN: false } }), false, 'no tun block invented');
+  assert.equal(main(baseConfig(), { customOptions: { 强制TUN: true } }).tun.enable, true);
+
+  // 精简版没有运行时 context，选项在脚本头部：通过 loader 暴露的 ruleOptionsEnable 切换。
+  const lite = require('./lib/loader').loadScript('Script/Script.js');
+  assert.equal(lite.main(withTun()).tun.enable, true);
+  lite.ruleOptionsEnable.强制TUN = false;
+  assert.deepEqual(lite.main(withTun()).tun, customTun);
+  assert.equal('tun' in lite.main(baseConfig()), false);
+});

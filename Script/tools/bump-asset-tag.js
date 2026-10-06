@@ -2,13 +2,13 @@
 'use strict';
 
 /**
- * 本仓库的 Icons/ 与 Rules/ 经 jsDelivr 以版本 tag 引用（`dukangalex/HiClash@assets-vN/...`），
+ * 本仓库的 Icons/ 经 jsDelivr 以版本 tag 引用（`dukangalex/HiClash@assets-vN/...`），
  * 而不是 `@main`，这样合并到 main 不会立即影响所有用户。
  *
  * jsDelivr 会永久缓存版本 tag 的内容：**不要移动或复用已有 tag**，发布新资源必须用新 tag。
  *
  * 发布流程：
- *   1. 修改 Icons/ 或 Rules/ 并提交；
+ *   1. 修改 Icons/ 并提交；
  *   2. 在该提交上创建新 tag，例如 assets-v2 并推送；
  *   3. node Script/tools/bump-asset-tag.js assets-v2   # 统一改写所有引用（含 Script/shared）
  *      然后 node Script/tools/sync-shared.js 应无漂移；切勿用 --write 反向覆盖

@@ -42,6 +42,7 @@ function run() {
     过滤非地区节点: true,
     屏蔽国外QUIC: true,
     屏蔽WebRTC: true,
+    强制TUN: true,
     代理IPV4优先: false,
     代理IPV6优先: false,
     链式代理: false,

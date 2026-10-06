@@ -19,7 +19,6 @@ const MIHOMO_BIN = process.env.MIHOMO_BIN;
 const BASE = 'https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/';
 const BASELINE_PATH = path.join(__dirname, 'rules-canary-baseline.json');
 const TOLERANCE = 0.25; // 相对基线允许的数量波动
-const repoRoot = path.join(__dirname, '..');
 
 function envFail(message) {
   console.error('[canary:env] ' + message);
@@ -155,15 +154,6 @@ async function main() {
     console.log(`cn ∩ !cn (domain level): ${overlap} (${(overlapRatio * 100).toFixed(2)}% of cn)`);
     if (overlapRatio > 0.05)
       alarm(`cn / geolocation-!cn overlap is ${(overlapRatio * 100).toFixed(1)}% (>5%): lists look inconsistent`);
-
-    // 5. 自托管补充名单（本仓库）必须仍是合法的 mrs，且条目数与源文件一致。
-    const own = decode('domain', path.join(repoRoot, 'Rules', 'cn-additional-list.mrs'), path.join(dir, 'own.txt'));
-    const ownSource = fs
-      .readFileSync(path.join(repoRoot, 'Rules', 'cn-additional-list.txt'), 'utf8')
-      .split('\n')
-      .filter(Boolean);
-    if (own.length !== ownSource.length)
-      alarm(`cn-additional-list.mrs has ${own.length} entries but .txt has ${ownSource.length}`);
 
     console.log('Rules canary passed');
   } finally {
