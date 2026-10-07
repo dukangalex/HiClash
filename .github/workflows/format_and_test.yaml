@@ -76,7 +76,7 @@ jobs:
           node-version: '24'
 
       - name: install dependencies
-        run: npm --prefix Test ci
+        run: npm --prefix Test ci || npm --prefix Test install
 
       - name: run dashboard integration tests
         run: node Test/dashboard.test.js
