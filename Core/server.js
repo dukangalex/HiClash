@@ -26,7 +26,8 @@ function isLoopbackHost(req, opts) {
   const host = String(req.headers.host || '').toLowerCase();
   const name = host.startsWith('[') ? host.slice(0, host.indexOf(']') + 1) : host.split(':')[0];
   if (name === '127.0.0.1' || name === 'localhost' || name === '[::1]') return true;
-  if (name.endsWith('.run.app') || name.endsWith('.google.internal') || name.endsWith('.googleusercontent.com')) return true;
+  if (name.endsWith('.run.app') || name.endsWith('.google.internal') || name.endsWith('.googleusercontent.com'))
+    return true;
   return false;
 }
 
