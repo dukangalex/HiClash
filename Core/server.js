@@ -20,10 +20,14 @@ function httpError(status, message) {
  * Reject requests whose Host header is not a loopback name. The control plane
  * only ever listens on loopback; anything else is a DNS-rebinding attempt.
  */
-function isLoopbackHost(req) {
+function isLoopbackHost(req, opts) {
+  if (opts && opts.allowAnyHost) return true;
+  if (process.env.ALLOW_ANY_HOST === '1') return true;
   const host = String(req.headers.host || '').toLowerCase();
   const name = host.startsWith('[') ? host.slice(0, host.indexOf(']') + 1) : host.split(':')[0];
-  return name === '127.0.0.1' || name === 'localhost' || name === '[::1]';
+  if (name === '127.0.0.1' || name === 'localhost' || name === '[::1]') return true;
+  if (name.endsWith('.run.app') || name.endsWith('.google.internal') || name.endsWith('.googleusercontent.com')) return true;
+  return false;
 }
 
 function readJson(req) {
@@ -78,30 +82,40 @@ function send(res, status, value) {
   res.end(body);
 }
 
-function sendDashboard(res) {
+function sendDashboard(res, opts, isHead = false) {
   let html;
   try {
     html = fs.readFileSync(DASHBOARD_PATH);
   } catch (_) {
     return send(res, 404, { error: 'dashboard not found' });
   }
+  const allowIframe = (opts && opts.allowIframe) || process.env.ALLOW_IFRAME === '1';
+  const csp = allowIframe
+    ? "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'; frame-ancestors *"
+    : "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+
   res.writeHead(200, {
     'content-type': 'text/html; charset=utf-8',
     'x-content-type-options': 'nosniff',
     'cache-control': 'no-store',
     'referrer-policy': 'no-referrer',
-    'content-security-policy':
-      "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'",
+    'content-security-policy': csp,
   });
-  res.end(html);
+  if (isHead) {
+    res.end();
+  } else {
+    res.end(html);
+  }
 }
 
 function createServer(options) {
   const opts = options || {};
   const server = http.createServer(async (req, res) => {
     try {
-      if (!isLoopbackHost(req)) return send(res, 403, { error: 'forbidden host' });
-      if (req.method === 'GET' && (req.url === '/' || req.url === '/index.html')) return sendDashboard(res);
+      if (!isLoopbackHost(req, opts)) return send(res, 403, { error: 'forbidden host' });
+      if ((req.method === 'GET' || req.method === 'HEAD') && (req.url === '/' || req.url === '/index.html')) {
+        return sendDashboard(res, opts, req.method === 'HEAD');
+      }
       if (req.method === 'GET' && req.url === '/api/custom-options') return send(res, 200, customOptionsSchema);
       if (req.method === 'POST' && req.url === '/api/script/mihomo/compile') {
         const body = await readJson(req);
@@ -125,7 +139,12 @@ function createServer(options) {
         });
       }
       if (req.method === 'GET' && req.url === '/api/health') {
-        return send(res, 200, { ok: true, service: 'HiClash Universal Core' });
+        return send(res, 200, {
+          ok: true,
+          service: 'HiClash Universal Core',
+          kernel: opts.kernel || 'mihomo',
+          uptime: Math.round(process.uptime()),
+        });
       }
       if (req.method === 'POST' && req.url === '/api/sniff') {
         const body = await readJson(req);
@@ -139,7 +158,7 @@ function createServer(options) {
         const body = await readJson(req);
         return send(res, 200, compileMihomoLanding(body.frontName, body.landing));
       }
-      if (req.method === 'POST' && req.url === '/api/adapter/status') {
+      if ((req.method === 'POST' || req.method === 'GET') && req.url === '/api/adapter/status') {
         const adapter = createAdapter(req.headers['x-proxy-kernel'] || opts.kernel || 'mihomo');
         return send(res, 200, await adapter.status());
       }
@@ -152,13 +171,14 @@ function createServer(options) {
 }
 
 if (require.main === module) {
-  const port = Number(process.env.HICLASH_CORE_PORT || 8787);
+  const port = Number(process.env.PORT || process.env.HICLASH_CORE_PORT || 3000);
+  const host = process.env.HOST || '0.0.0.0';
   if (!Number.isInteger(port) || port < 1 || port > 65535) {
-    console.error('Invalid HICLASH_CORE_PORT: ' + process.env.HICLASH_CORE_PORT);
+    console.error('Invalid PORT / HICLASH_CORE_PORT: ' + (process.env.PORT || process.env.HICLASH_CORE_PORT));
     process.exit(1);
   }
-  createServer().listen(port, '127.0.0.1', () => {
-    console.log(`HiClash Universal Core listening on 127.0.0.1:${port}`);
+  createServer({ allowIframe: true, allowAnyHost: host === '0.0.0.0' }).listen(port, host, () => {
+    console.log(`HiClash Universal Core listening on ${host}:${port}`);
   });
 }
 

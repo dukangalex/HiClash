@@ -1,0 +1,9 @@
+{
+  "name": "HiClash Universal Console",
+  "description": "HiClash 统一控制面：内核识别、链式编译、网络上下文与安全状态。",
+  "prompt": "HiClash Universal Console",
+  "permissions": [],
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

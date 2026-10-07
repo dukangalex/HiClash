@@ -6,7 +6,7 @@
  * Detection is intentionally conservative: ambiguous input is returned as unknown.
  */
 
-const LINK_SCHEMES = ['vmess:', 'vless:', 'trojan:', 'hysteria:', 'hysteria2:', 'hy2:', 'ss:', 'socks:'];
+const LINK_SCHEMES = ['vmess:', 'vless:', 'trojan:', 'hysteria:', 'hysteria2:', 'hy2:', 'ss:', 'socks:', 'tuic:', 'wireguard:', 'wg:'];
 
 function safeJson(text) {
   try {

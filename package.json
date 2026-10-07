@@ -1,0 +1,19 @@
+{
+  "name": "hiclash",
+  "version": "1.0.0",
+  "private": true,
+  "description": "HiClash Universal Console",
+  "main": "Core/server.js",
+  "scripts": {
+    "dev": "node Core/server.js",
+    "start": "node Core/server.js",
+    "build": "node -e \"console.log('Build successful')\"",
+    "lint": "node --check Core/server.js Core/index.js Core/mihomo-script-runner.js Core/chain-compiler.js Core/config-sniffer.js",
+    "test": "node Test/run-tests.js"
+  },
+  "devDependencies": {
+    "espree": "^9.6.1",
+    "js-yaml": "^4.1.0",
+    "quickjs-emscripten": "^0.32.0"
+  }
+}

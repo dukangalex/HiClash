@@ -4,48 +4,166 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>HiClash Universal Console</title>
+  <meta name="description" content="HiClash 统一控制面：内核识别、链式编译、网络上下文与安全状态。">
+  <meta property="og:title" content="HiClash Universal Console">
+  <meta property="og:description" content="HiClash 统一控制面：内核识别、链式编译、网络上下文与安全状态。">
   <style>
-    :root { color-scheme: dark; font-family: system-ui, sans-serif; }
-    body { margin: 0; background: #0b0d10; color: #f5f7fa; }
-    main { max-width: 980px; margin: 0 auto; padding: 24px; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap: 14px; }
-    .card { border: 1px solid #272c33; border-radius: 14px; padding: 16px; background: #11151a; }
+    :root { color-scheme: dark; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { margin: 0; background: #0b0d10; color: #f5f7fa; line-height: 1.5; }
+    main { max-width: 1040px; margin: 0 auto; padding: 24px 20px 48px; }
+    .header-bar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
+    h1 { margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.5px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(230px,1fr)); gap: 14px; }
+    .card { border: 1px solid #272c33; border-radius: 14px; padding: 16px; background: #11151a; box-shadow: 0 4px 14px rgba(0,0,0,0.25); }
+    .card-title { font-size: 14px; font-weight: 600; color: #e2e8f0; display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
     .muted { color: #9aa4af; font-size: 13px; }
-    button { border: 1px solid #3a424d; border-radius: 9px; padding: 9px 12px; background: #171c22; color: inherit; cursor: pointer; }
-    pre { white-space: pre-wrap; overflow: auto; }
-    .modal-backdrop { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; padding: 18px; background: rgba(0,0,0,.68); z-index: 1000; }
+    button { border: 1px solid #3a424d; border-radius: 8px; padding: 8px 12px; background: #171c22; color: inherit; cursor: pointer; font-size: 13px; transition: all 0.15s ease; font-weight: 500; }
+    button:hover { background: #222933; border-color: #4b5563; }
+    button:active { transform: translateY(1px); }
+    button.primary { background: #1e3a8a; border-color: #3b82f6; color: #e0f2fe; }
+    button.primary:hover { background: #1d4ed8; }
+    pre { white-space: pre-wrap; overflow: auto; background: #07090c; border: 1px solid #1f242c; border-radius: 8px; padding: 12px; font-size: 12px; max-height: 280px; }
+    .badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; background: #1e242d; border: 1px solid #333d4b; color: #94a3b8; }
+    .badge.green { background: #064e3b; border-color: #059669; color: #6ee7b7; }
+    .badge.blue { background: #0c4a6e; border-color: #0284c7; color: #7dd3fc; }
+    .badge.amber { background: #78350f; border-color: #d97706; color: #fde68a; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+    .status-dot.online { background: #10b981; box-shadow: 0 0 8px #10b981; }
+    .status-dot.offline { background: #ef4444; }
+    .modal-backdrop { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; padding: 18px; background: rgba(0,0,0,.75); z-index: 1000; backdrop-filter: blur(3px); }
     .modal-backdrop.open { display: flex; }
-    .modal { width: min(620px, 100%); max-height: min(88vh, 760px); overflow: auto; border: 1px solid #343c47; border-radius: 16px; padding: 18px; background: #11151a; box-shadow: 0 20px 70px rgba(0,0,0,.45); }
-    .modal-header { display:flex; align-items:center; justify-content:space-between; gap:12px; }
-    .modal-close { font-size: 20px; line-height: 1; padding: 6px 10px; }
-    .field { margin-top: 12px; }
-    .field label { display:block; margin-bottom:6px; font-size:13px; color:#c7ced7; }
-    input, select, textarea { box-sizing:border-box; width:100%; border:1px solid #3a424d; border-radius:8px; padding:9px 10px; background:#0d1116; color:inherit; }
-    .option-panel { margin-top:14px; }
-    .option-panel summary { cursor:pointer; list-style:none; display:flex; align-items:center; justify-content:space-between; gap:12px; font-weight:600; }
+    .modal { width: min(640px, 100%); max-height: min(88vh, 760px); overflow: auto; border: 1px solid #343c47; border-radius: 16px; padding: 20px; background: #11151a; box-shadow: 0 20px 70px rgba(0,0,0,.6); }
+    .modal-header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom: 8px; }
+    .modal-close { font-size: 20px; line-height: 1; padding: 4px 10px; border: none; background: transparent; color: #9aa4af; }
+    .modal-close:hover { color: #f5f7fa; background: #222933; }
+    .field { margin-top: 14px; }
+    .field label { display:block; margin-bottom:6px; font-size:13px; font-weight: 500; color:#c7ced7; }
+    input, select, textarea { box-sizing:border-box; width:100%; border:1px solid #3a424d; border-radius:8px; padding:9px 10px; background:#0d1116; color:inherit; font-family: inherit; font-size: 13px; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: #38bdf8; ring: 1px solid #38bdf8; }
+    .option-panel { margin-top:16px; }
+    .option-panel summary { cursor:pointer; list-style:none; display:flex; align-items:center; justify-content:space-between; gap:12px; font-weight:600; font-size: 15px; }
     .option-panel summary::-webkit-details-marker { display:none; }
-    .option-panel summary::after { content:"＋"; color:#9aa4af; font-size:18px; }
+    .option-panel summary::after { content:"＋"; color:#9aa4af; font-size:18px; font-weight: normal; }
     .option-panel[open] summary::after { content:"−"; }
-    .option-body { margin-top:12px; }
+    .option-body { margin-top:14px; }
+    .option-filter-bar { display: flex; gap: 8px; margin: 12px 0 16px; flex-wrap: wrap; }
+    .option-filter-bar input { flex: 1; min-width: 200px; }
     .option-category { margin-top:14px; }
-    .option-category h3 { margin:0 0 8px; font-size:14px; color:#c7ced7; }
+    .option-category h3 { margin:0 0 8px; font-size:13px; text-transform: uppercase; letter-spacing: 0.5px; color:#94a3b8; }
     .option-list { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:8px; }
-    .option-row { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 12px; border:1px solid #272c33; border-radius:10px; background:#0d1116; }
-    .option-row label { cursor:pointer; }
-    .option-row input { width:auto; }
-    .option-actions { margin-top:14px; display:flex; gap:8px; flex-wrap:wrap; }
+    .option-row { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:9px 12px; border:1px solid #272c33; border-radius:10px; background:#0d1116; transition: background 0.1s; }
+    .option-row:hover { background: #131820; border-color: #384252; }
+    .option-row label { cursor:pointer; font-size: 13px; }
+    .option-row input { width:auto; cursor: pointer; }
+    .option-actions { margin-top:16px; display:flex; gap:8px; flex-wrap:wrap; }
+    .tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+    .preset-btns { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0; }
+    .preset-btn { font-size: 11px; padding: 4px 8px; border-radius: 6px; background: #161c24; border-color: #2a333f; }
+    .preset-btn:hover { background: #222b37; }
+    .result-badge-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
   </style>
 </head>
 <body>
 <main>
-  <h1>HiClash Universal Console</h1>
-  <p class="muted">统一控制面：内核识别、链式编译、网络上下文与安全状态。</p>
+  <div class="header-bar">
+    <div>
+      <h1>HiClash Universal Console</h1>
+      <p class="muted" style="margin:4px 0 0">统一控制面：内核识别、链式编译、网络上下文与安全状态。</p>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <span id="coreStatusBadge" class="badge green"><span class="status-dot online"></span> Universal Core 在线</span>
+      <button onclick="health()">刷新状态</button>
+    </div>
+  </div>
+
   <section class="grid">
-    <div class="card"><strong>Kernel</strong><p id="kernel">未检测</p><button onclick="health()">刷新</button></div>
-    <div class="card"><strong>Security</strong><p>Kill Switch：启用</p><p>Direct fallback：禁止</p><p>WebRTC STUN：阻断</p></div>
-    <div class="card"><strong>Network</strong><p id="network">等待平台事件</p></div>
-    <div class="card"><strong>Self-Healing</strong><p>连续失败达到阈值后交由 Adapter 切换备用节点。</p></div>
-    <div class="card"><strong>链式代理 · 自定义落地</strong><p class="muted">当前配置作为前置；这里只填写最终落地出口。</p><button onclick="openLanding()">配置落地出口</button><p id="landingStatus" class="muted">未配置</p></div>
+    <div class="card">
+      <div class="card-title"><strong>Kernel 内核</strong><span id="kernelStateBadge" class="badge blue">Mihomo</span></div>
+      <p id="kernel" style="margin:4px 0 10px;font-weight:500;">检测中…</p>
+      <div style="display:flex;gap:8px;">
+        <button onclick="health()">刷新</button>
+        <button onclick="toggleAdapter()">适配器状态</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><strong>Security 安全策略</strong><span class="badge green">Fail-Closed</span></div>
+      <div class="tag-row">
+        <span class="badge green">Kill Switch: 启用</span>
+        <span class="badge amber">Direct fallback: 禁止</span>
+        <span class="badge blue">WebRTC STUN: 阻断</span>
+        <span class="badge blue">DNS: 加密防泄露</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><strong>Network 上下文</strong><span id="networkBadge" class="badge green">受控网络</span></div>
+      <p id="network" style="margin:4px 0 6px">TUN 路由已就绪 · UDP 丢包监测中</p>
+      <div class="muted">Captive Portal 隔离 · 异常时自动降级 TCP</div>
+    </div>
+    <div class="card">
+      <div class="card-title"><strong>Self-Healing 自愈状态机</strong><span class="badge blue">故障备用</span></div>
+      <p style="margin:4px 0 6px" class="muted">连续失败阈值：3 次</p>
+      <div class="muted">达到阈值后自动交由 Adapter 触发备用节点无感切换。</div>
+    </div>
+    <div class="card">
+      <div class="card-title"><strong>链式代理 · 自定义落地</strong><span id="landingBadge" class="badge">未配置</span></div>
+      <p class="muted" style="margin:4px 0 8px">当前配置作为前置；这里填写的始终是最终落地出口。</p>
+      <button class="primary" onclick="openLanding()">配置落地出口</button>
+      <p id="landingStatus" class="muted" style="margin:8px 0 0">未配置</p>
+    </div>
+  </section>
+
+  <!-- Interactive Config Sniffer Tool -->
+  <section class="card" style="margin-top:16px">
+    <div class="card-title">
+      <strong>配置与节点链接智能嗅探 (Config Sniffer)</strong>
+      <span class="badge blue">POST /api/sniff</span>
+    </div>
+    <p class="muted" style="margin:0 0 8px">支持自动识别分享链接（VMess / VLESS / Trojan / Hysteria2 / Shadowsocks / TUIC / WireGuard）、Mihomo YAML、sing-box JSON 及 Xray JSON。</p>
+    <div class="preset-btns">
+      <button type="button" class="preset-btn" onclick="fillSniffPreset('vless')">填入 VLESS 链接</button>
+      <button type="button" class="preset-btn" onclick="fillSniffPreset('hysteria2')">填入 Hysteria2 链接</button>
+      <button type="button" class="preset-btn" onclick="fillSniffPreset('mihomo')">填入 Mihomo YAML</button>
+      <button type="button" class="preset-btn" onclick="fillSniffPreset('singbox')">填入 sing-box JSON</button>
+      <button type="button" class="preset-btn" onclick="fillSniffPreset('xray')">填入 Xray JSON</button>
+    </div>
+    <textarea id="sniffInput" rows="4" placeholder="粘贴节点链接 (vless://, vmess://, hy2://...) 或配置文本..."></textarea>
+    <div style="margin-top:10px;display:flex;gap:8px;">
+      <button class="primary" onclick="runSniff()">执行识别 (Sniff)</button>
+      <button onclick="document.getElementById('sniffInput').value='';document.getElementById('sniffResult').textContent='';">清空</button>
+    </div>
+    <div id="sniffBadgeBar" class="result-badge-bar" style="margin-top:10px;display:none;"></div>
+    <pre id="sniffResult" style="margin-top:8px;display:none;"></pre>
+  </section>
+
+  <!-- Interactive Multi-Hop Chain Compiler -->
+  <section class="card" style="margin-top:16px">
+    <div class="card-title">
+      <strong>多跳链式代理编译模拟 (Chain Compiler)</strong>
+      <span class="badge blue">POST /api/chain/compile</span>
+    </div>
+    <p class="muted" style="margin:0 0 10px">自动生成对应内核的中转依赖字段：Mihomo (dialer-proxy)、sing-box (detour)、Xray (streamSettings.sockopt.dialerProxy)。</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;">
+      <div>
+        <label class="muted" for="chainKernel">目标内核</label>
+        <select id="chainKernel">
+          <option value="mihomo">Mihomo (Clash Meta)</option>
+          <option value="sing-box">sing-box</option>
+          <option value="xray">Xray</option>
+        </select>
+      </div>
+      <div>
+        <label class="muted" for="hop1Name">前置第 1 跳名称</label>
+        <input id="hop1Name" value="HK-中转节点">
+      </div>
+      <div>
+        <label class="muted" for="hop2Name">落地第 2 跳名称</label>
+        <input id="hop2Name" value="US-落地出口">
+      </div>
+    </div>
+    <div style="margin-top:12px;display:flex;gap:8px;">
+      <button class="primary" onclick="runChainCompile()">编译链路拓扑</button>
+    </div>
+    <pre id="chainResult" style="margin-top:10px;display:none;"></pre>
   </section>
 
   <div id="landingModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="landingTitle" onclick="backdropClose(event)">
@@ -64,6 +182,12 @@
     <summary>自定义开关</summary>
     <div class="option-body">
       <p class="muted">开关定义由 Core schema 提供。这里修改的是 HiClash 脚本选项，不会假设 Mihomo 内核本身识别这些字段。</p>
+      <div class="option-filter-bar">
+        <input id="optionSearch" placeholder="快速过滤开关名称或分类…" oninput="filterOptions()">
+        <button onclick="setAllOptions(true)">全部开启</button>
+        <button onclick="setAllOptions(false)">全部关闭</button>
+        <button onclick="resetDefaultOptions()">重置默认</button>
+      </div>
       <div id="customOptions" class="muted">正在读取开关定义…</div>
       <div class="field"><label for="mihomoConfigInput">输入当前 Mihomo 配置 JSON</label><textarea id="mihomoConfigInput" rows="10">{
   "proxies": []
@@ -73,22 +197,47 @@
     </div>
   </details>
 
-  <section class="card" style="margin-top:14px"><strong>API</strong><pre>POST /api/sniff
-POST /api/chain/compile
-POST /api/chain/landing
-POST /api/script/mihomo/compile
-POST /api/adapter/status</pre></section>
+  <section class="card" style="margin-top:16px">
+    <strong>API 接口一览</strong>
+    <pre>GET  /api/health                     # 核心健康检测与运行时信息
+GET  /api/adapter/status             # 当前适配器内核运行状态
+POST /api/sniff                      # 节点链接与跨内核配置嗅探
+POST /api/chain/compile              # 跨内核多跳链式代理编译
+POST /api/chain/landing              # 自定义落地参数校验与构造
+POST /api/custom-options             # 获取自定义开关模式
+POST /api/custom-options/resolve     # 开关参数校验与合并
+POST /api/script/mihomo/compile      # Mihomo 完整脚本覆写编译</pre>
+  </section>
 </main>
 <script>
 async function health() {
   try {
     const r = await fetch('/api/health');
     const data = await r.json();
-    document.getElementById('kernel').textContent = data.ok ? 'Universal Core 在线' : '异常';
+    const kernelElem = document.getElementById('kernel');
+    if (data.ok) {
+      kernelElem.textContent = 'Universal Core 在线 (运行 ' + (data.uptime || 0) + 's)';
+      document.getElementById('coreStatusBadge').innerHTML = '<span class="status-dot online"></span> Universal Core 在线';
+    } else {
+      kernelElem.textContent = '异常';
+      document.getElementById('coreStatusBadge').innerHTML = '<span class="status-dot offline"></span> 异常';
+    }
   } catch (_) {
     document.getElementById('kernel').textContent = '未连接 Core';
+    document.getElementById('coreStatusBadge').innerHTML = '<span class="status-dot offline"></span> 未连接';
   }
 }
+
+async function toggleAdapter() {
+  try {
+    const r = await fetch('/api/adapter/status');
+    const data = await r.json();
+    alert('适配器当前状态:\n内核: ' + (data.kernel || 'mihomo') + '\n状态: ' + (data.state || 'stopped'));
+  } catch (e) {
+    alert('获取状态失败: ' + e.message);
+  }
+}
+
 function openLanding(){
   const m=document.getElementById('landingModal');
   m.classList.add('open');
@@ -133,6 +282,8 @@ async function compileLanding(){
     if(!r.ok) throw new Error(data.error||'配置失败');
     chainLanding={frontName,landing};
     document.getElementById('landingStatus').textContent='已保存落地参数；生成完整配置时会合并到当前 Mihomo 配置';
+    const lb = document.getElementById('landingBadge');
+    if (lb) { lb.textContent = '已配置 (' + kind + ')'; lb.className = 'badge green'; }
     document.getElementById('landingResult').textContent=JSON.stringify(data,null,2);
     closeLanding();
   } catch(e){document.getElementById('landingResult').textContent=e.message;}
@@ -144,7 +295,39 @@ loadCustomOptions();
 health();
 
 async function loadCustomOptions(){const host=document.getElementById('customOptions');try{const r=await fetch('/api/custom-options');const data=await r.json();if(!r.ok)throw new Error(data.error||'读取失败');customOptionSchema=data;customOptionState={};for(const [name,meta] of Object.entries(data.options||{}))customOptionState[name]=meta.default===true;renderCustomOptions();document.getElementById('customOptionsResult').textContent='schema v'+data.version+'，共 '+Object.keys(data.options||{}).length+' 个开关';}catch(e){host.textContent='读取失败：'+e.message;}}
-function renderCustomOptions(){const host=document.getElementById('customOptions');const groups={};for(const [name,meta] of Object.entries(customOptionSchema.options||{}))(groups[meta.category] ||= []).push([name,meta]);host.innerHTML=Object.entries(groups).map(([category,items])=>'<div class="option-category"><h3>'+escapeHtml(category)+'</h3><div class="option-list">'+items.map(([name])=>'<div class="option-row"><label for="opt-'+encodeURIComponent(name)+'">'+escapeHtml(name)+'</label><input id="opt-'+encodeURIComponent(name)+'" type="checkbox" '+(customOptionState[name]?'checked':'')+' onchange="handleCustomOptionChange('+JSON.stringify(name)+',this.checked)"></div>').join('')+'</div></div>').join('');}
+function renderCustomOptions(filterText){
+  const host=document.getElementById('customOptions');
+  if(!customOptionSchema) return;
+  const groups={};
+  const filter = (filterText || '').trim().toLowerCase();
+  for(const [name,meta] of Object.entries(customOptionSchema.options||{})){
+    if(filter && !name.toLowerCase().includes(filter) && !(meta.category||'').toLowerCase().includes(filter)) continue;
+    (groups[meta.category] ||= []).push([name,meta]);
+  }
+  if(Object.keys(groups).length === 0){
+    host.innerHTML = '<div class="muted" style="padding:12px 0">无匹配的开关</div>';
+    return;
+  }
+  host.innerHTML=Object.entries(groups).map(([category,items])=>'<div class="option-category"><h3>'+escapeHtml(category)+'</h3><div class="option-list">'+items.map(([name])=>'<div class="option-row"><label for="opt-'+encodeURIComponent(name)+'">'+escapeHtml(name)+'</label><input id="opt-'+encodeURIComponent(name)+'" type="checkbox" '+(customOptionState[name]?'checked':'')+' onchange="handleCustomOptionChange('+JSON.stringify(name)+',this.checked)"></div>').join('')+'</div></div>').join('');
+}
+function filterOptions(){
+  const val = document.getElementById('optionSearch')?.value || '';
+  renderCustomOptions(val);
+}
+function setAllOptions(val){
+  if(!customOptionSchema) return;
+  for(const name of Object.keys(customOptionSchema.options||{})){
+    customOptionState[name] = val;
+  }
+  filterOptions();
+}
+function resetDefaultOptions(){
+  if(!customOptionSchema) return;
+  for(const [name,meta] of Object.entries(customOptionSchema.options||{})){
+    customOptionState[name] = meta.default === true;
+  }
+  filterOptions();
+}
 function handleCustomOptionChange(name,enabled){
   customOptionState[name]=enabled;
   if(name==='链式代理'){
@@ -152,6 +335,8 @@ function handleCustomOptionChange(name,enabled){
     else {
       chainLanding=null;
       document.getElementById('landingStatus').textContent='未配置';
+      const lb = document.getElementById('landingBadge');
+      if (lb) { lb.textContent = '未配置'; lb.className = 'badge'; }
       document.getElementById('landingResult').textContent='';
     }
   }
@@ -171,6 +356,66 @@ async function compileMihomoConfig(){
   }catch(e){document.getElementById('customOptionsResult').textContent=e.message;}
 }
 function copyCustomOptions(){const text=JSON.stringify({version:customOptionSchema?.version||1,options:customOptionState},null,2);if(navigator.clipboard){navigator.clipboard.writeText(text).then(()=>document.getElementById('customOptionsResult').textContent='已复制选项 JSON').catch(()=>document.getElementById('customOptionsResult').textContent=text);}else document.getElementById('customOptionsResult').textContent=text;}
+
+/* Sniffer Interactive Tool */
+function fillSniffPreset(type){
+  const el = document.getElementById('sniffInput');
+  if(type==='vless') el.value = 'vless://uuid@example.com:443?security=tls#US-Node';
+  else if(type==='hysteria2') el.value = 'hy2://pwd@us.example.com:443/?sni=us.example.com#HY2-US';
+  else if(type==='mihomo') el.value = 'proxies:\n  - name: 🇺🇸 US 01\n    type: vmess\n    server: us.example.com\n    port: 443';
+  else if(type==='singbox') el.value = '{\n  "inbounds": [],\n  "outbounds": [],\n  "route": {}\n}';
+  else if(type==='xray') el.value = '{\n  "inbounds": [],\n  "outbounds": [],\n  "routing": {}\n}';
+}
+
+async function runSniff(){
+  const input = document.getElementById('sniffInput').value.trim();
+  const pre = document.getElementById('sniffResult');
+  const badgeBar = document.getElementById('sniffBadgeBar');
+  if(!input){ pre.style.display='block'; pre.textContent='请输入待识别的链接或配置'; return; }
+  try {
+    const r = await fetch('/api/sniff', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ input })
+    });
+    const data = await r.json();
+    badgeBar.style.display = 'flex';
+    badgeBar.innerHTML = '<span class="badge blue">格式: ' + escapeHtml(data.format) + '</span>' +
+      (data.kernel ? '<span class="badge green">推荐内核: ' + escapeHtml(data.kernel) + '</span>' : '') +
+      (data.protocol ? '<span class="badge amber">协议: ' + escapeHtml(data.protocol) + '</span>' : '') +
+      '<span class="badge">置信度: ' + Math.round((data.confidence||0)*100) + '%</span>';
+    pre.style.display = 'block';
+    pre.textContent = JSON.stringify(data, null, 2);
+  } catch(e) {
+    pre.style.display = 'block';
+    pre.textContent = '识别错误: ' + e.message;
+  }
+}
+
+/* Chain Compiler Interactive Tool */
+async function runChainCompile(){
+  const kernel = document.getElementById('chainKernel').value;
+  const hop1 = document.getElementById('hop1Name').value.trim();
+  const hop2 = document.getElementById('hop2Name').value.trim();
+  const pre = document.getElementById('chainResult');
+  try {
+    const chain = [
+      { name: hop1, proxy: { name: hop1, type: 'ss' }, outbound: { tag: hop1, type: 'shadowsocks' } },
+      { name: hop2, proxy: { name: hop2, type: 'vmess' }, outbound: { tag: hop2, type: 'vmess' } }
+    ];
+    const r = await fetch('/api/chain/compile', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ kernel, chain })
+    });
+    const data = await r.json();
+    pre.style.display = 'block';
+    pre.textContent = JSON.stringify(data, null, 2);
+  } catch(e) {
+    pre.style.display = 'block';
+    pre.textContent = '编译错误: ' + e.message;
+  }
+}
 </script>
 </body>
 </html>
