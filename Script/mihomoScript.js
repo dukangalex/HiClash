@@ -1501,7 +1501,7 @@ const serviceConfigs = [
   {
     name: '远控工具',
     baseOption: selectBaseOption,
-    fixedProxies: ['REJECT-DROP', '默认代理', '直连'],
+    fixedProxies: ['默认代理', 'REJECT-DROP', '直连'],
     icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Remote.svg',
     rules: [
       'PROCESS-NAME-WILDCARD,*AnyDesk*,远控工具',

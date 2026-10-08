@@ -26,7 +26,12 @@ function isLoopbackHost(req, opts) {
   const host = String(req.headers.host || '').toLowerCase();
   const name = host.startsWith('[') ? host.slice(0, host.indexOf(']') + 1) : host.split(':')[0];
   if (name === '127.0.0.1' || name === 'localhost' || name === '[::1]') return true;
-  if (name.endsWith('.run.app') || name.endsWith('.google.internal') || name.endsWith('.googleusercontent.com'))
+  // 托管平台域名只在托管模式（allowCloudHosts）下放行；本机运行时一律拒绝，避免被当作重绑定跳板。
+  if (
+    opts &&
+    opts.allowCloudHosts &&
+    (name.endsWith('.run.app') || name.endsWith('.google.internal') || name.endsWith('.googleusercontent.com'))
+  )
     return true;
   return false;
 }
@@ -194,6 +199,7 @@ function resolveListenOptions(env) {
     host,
     allowAnyHost: e.ALLOW_ANY_HOST === '1' || (managed && !loopback),
     allowIframe: e.ALLOW_IFRAME === '1' || managed,
+    allowCloudHosts: managed,
   };
 }
 
@@ -210,13 +216,13 @@ if (require.main === module) {
       'Warning: listening on a non-loopback address while Host validation stays on; set ALLOW_ANY_HOST=1 if needed.',
     );
   }
-  createServer({ allowIframe: listen.allowIframe, allowAnyHost: listen.allowAnyHost }).listen(
-    listen.port,
-    listen.host,
-    () => {
-      console.log(`HiClash Universal Core listening on ${listen.host}:${listen.port}`);
-    },
-  );
+  createServer({
+    allowIframe: listen.allowIframe,
+    allowAnyHost: listen.allowAnyHost,
+    allowCloudHosts: listen.allowCloudHosts,
+  }).listen(listen.port, listen.host, () => {
+    console.log(`HiClash Universal Core listening on ${listen.host}:${listen.port}`);
+  });
 }
 
 module.exports = { createServer, resolveListenOptions };

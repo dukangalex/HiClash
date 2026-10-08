@@ -33,6 +33,9 @@ async function run() {
 
   try {
     // 1. Non-loopback Host header (DNS rebinding) is refused.
+    // 本机模式下托管平台域名同样拒绝。
+    const cloud = await raw(port, { path: '/api/health', headers: { host: 'x.run.app' } });
+    assert.equal(cloud.status, 403);
     const rebinding = await raw(port, { path: '/api/health', headers: { host: 'evil.example.com' } });
     assert.equal(rebinding.status, 403);
 
@@ -101,6 +104,7 @@ function checkListenDefaults() {
     host: '127.0.0.1',
     allowAnyHost: false,
     allowIframe: false,
+    allowCloudHosts: false,
   });
   assert.equal(resolveListenOptions({ HICLASH_CORE_PORT: '9000' }).host, '127.0.0.1');
   // 托管容器（平台注入 PORT）：沿用部署行为。
@@ -109,6 +113,7 @@ function checkListenDefaults() {
     host: '0.0.0.0',
     allowAnyHost: true,
     allowIframe: true,
+    allowCloudHosts: true,
   });
   assert.equal(resolveListenOptions({ PORT: '3000', HOST: '127.0.0.1' }).allowAnyHost, false);
   assert.equal(resolveListenOptions({ ALLOW_ANY_HOST: '1' }).allowAnyHost, true);
@@ -125,3 +130,17 @@ run().then(
     process.exit(1);
   },
 );
+
+(async () => {
+  const managed = createServer({ allowCloudHosts: true });
+  await new Promise((resolve) => managed.listen(0, '127.0.0.1', resolve));
+  try {
+    const res = await raw(managed.address().port, { path: '/api/health', headers: { host: 'x.run.app' } });
+    assert.equal(res.status, 200);
+  } finally {
+    await new Promise((resolve) => managed.close(resolve));
+  }
+})().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

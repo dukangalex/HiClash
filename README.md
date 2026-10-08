@@ -144,7 +144,7 @@ HiClash 新增独立的「故障转移」策略组及「远控工具」分流。
 - natapp
 - nblink
 
-「远控工具」策略组默认提供 **REJECT-DROP / 默认代理 / 直连** 三种选择。规则使用 Mihomo 的 `PROCESS-NAME-WILDCARD`，因此 Android 上也可匹配包名。
+「远控工具」策略组提供 **默认代理 / REJECT-DROP / 直连** 三种选择，默认 **默认代理**：流量经代理出口，不暴露真实 IP，Tailscale、cloudflared、frpc 等组网/穿透工具仍可工作（Tailscale 会走 DERP 中继，延迟略高）。需要彻底禁止远控时切到 REJECT-DROP；直连会向对端暴露真实 IP，不建议。客户端开启 `store-selected` 时会保留你之前手动选过的项。规则使用 Mihomo 的 `PROCESS-NAME-WILDCARD`，因此 Android 上也可匹配包名。
 
 ### 🔁 故障转移
 

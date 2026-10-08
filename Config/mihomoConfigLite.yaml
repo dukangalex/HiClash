@@ -461,7 +461,7 @@ proxy-groups:
 
   - name: '远控工具'
     <<: *group_common_select
-    proxies: ['REJECT-DROP', '默认代理', '直连']
+    proxies: ['默认代理', 'REJECT-DROP', '直连']
     icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Remote.svg'
 
   - name: 'AdBlock'
@@ -587,7 +587,7 @@ rules:
   - RULE-SET,telegram_ip,Telegram,no-resolve
   - RULE-SET,steam,Steam
 
-  # 远控工具：默认先拒绝直连式泄漏路径，用户可在组内切换到默认代理或直连
+  # 远控工具：默认走代理（不暴露真实 IP，组网/穿透工具也能正常工作）；可在组内切到 REJECT-DROP 彻底阻断，直连会暴露真实 IP
   - PROCESS-NAME-WILDCARD,*AnyDesk*,远控工具
   - PROCESS-NAME-WILDCARD,*ToDesk*,远控工具
   - PROCESS-NAME-WILDCARD,*TeamViewer*,远控工具
