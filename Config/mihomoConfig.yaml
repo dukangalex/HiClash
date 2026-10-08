@@ -68,6 +68,8 @@ etag-support: true
 geodata-mode: false
 geodata-loader: memconservative
 external-controller: '127.0.0.1:19090'
+# 强烈建议设置控制器密钥（任意随机字符串），面板登录时填写；留空则本机任何程序/网页均可无鉴权控制内核
+secret: ''
 external-controller-cors:
   allow-origins:
     - 'http://127.0.0.1:19090'

@@ -171,16 +171,52 @@ function createServer(options) {
   return server;
 }
 
-if (require.main === module) {
-  const port = Number(process.env.PORT || process.env.HICLASH_CORE_PORT || 3000);
-  const host = process.env.HOST || '0.0.0.0';
+/**
+ * 解析监听参数。
+ * - 本机直接运行（未设置 PORT / K_SERVICE）：只监听 127.0.0.1，保留 Host 校验与禁止 iframe，
+ *   控制面没有鉴权，绝不能默认暴露到局域网。
+ * - 托管容器（Cloud Run / AI Studio 预览等会注入 PORT）：监听 0.0.0.0，放开 Host 校验与 iframe，
+ *   与之前的部署行为一致。
+ * HOST / ALLOW_ANY_HOST / ALLOW_IFRAME 可显式覆盖。
+ */
+function resolveListenOptions(env) {
+  const e = env || {};
+  const managed = Boolean(e.PORT || e.K_SERVICE);
+  const rawPort = e.PORT || e.HICLASH_CORE_PORT || (managed ? 3000 : 8787);
+  const port = Number(rawPort);
   if (!Number.isInteger(port) || port < 1 || port > 65535) {
-    console.error('Invalid PORT / HICLASH_CORE_PORT: ' + (process.env.PORT || process.env.HICLASH_CORE_PORT));
-    process.exit(1);
+    throw new Error('Invalid PORT / HICLASH_CORE_PORT: ' + rawPort);
   }
-  createServer({ allowIframe: true, allowAnyHost: host === '0.0.0.0' }).listen(port, host, () => {
-    console.log(`HiClash Universal Core listening on ${host}:${port}`);
-  });
+  const host = e.HOST || (managed ? '0.0.0.0' : '127.0.0.1');
+  const loopback = host === '127.0.0.1' || host === 'localhost' || host === '::1';
+  return {
+    port,
+    host,
+    allowAnyHost: e.ALLOW_ANY_HOST === '1' || (managed && !loopback),
+    allowIframe: e.ALLOW_IFRAME === '1' || managed,
+  };
 }
 
-module.exports = { createServer };
+if (require.main === module) {
+  let listen;
+  try {
+    listen = resolveListenOptions(process.env);
+  } catch (err) {
+    console.error(err.message);
+    process.exit(1);
+  }
+  if (!listen.allowAnyHost && listen.host !== '127.0.0.1' && listen.host !== 'localhost' && listen.host !== '::1') {
+    console.warn(
+      'Warning: listening on a non-loopback address while Host validation stays on; set ALLOW_ANY_HOST=1 if needed.',
+    );
+  }
+  createServer({ allowIframe: listen.allowIframe, allowAnyHost: listen.allowAnyHost }).listen(
+    listen.port,
+    listen.host,
+    () => {
+      console.log(`HiClash Universal Core listening on ${listen.host}:${listen.port}`);
+    },
+  );
+}
+
+module.exports = { createServer, resolveListenOptions };
