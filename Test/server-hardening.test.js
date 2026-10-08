@@ -2,7 +2,7 @@
 
 const assert = require('node:assert/strict');
 const http = require('node:http');
-const { createServer } = require('../Core/server');
+const { createServer, resolveListenOptions } = require('../Core/server');
 
 function raw(port, { method = 'GET', path = '/', headers = {}, chunks = [] }) {
   return new Promise((resolve, reject) => {
@@ -33,6 +33,9 @@ async function run() {
 
   try {
     // 1. Non-loopback Host header (DNS rebinding) is refused.
+    // 本机模式下托管平台域名同样拒绝。
+    const cloud = await raw(port, { path: '/api/health', headers: { host: 'x.run.app' } });
+    assert.equal(cloud.status, 403);
     const rebinding = await raw(port, { path: '/api/health', headers: { host: 'evil.example.com' } });
     assert.equal(rebinding.status, 403);
 
@@ -94,10 +97,50 @@ async function run() {
   }
 }
 
+function checkListenDefaults() {
+  // 本机直接运行：控制面无鉴权，必须默认只听回环、保留 Host 校验、禁止 iframe。
+  assert.deepEqual(resolveListenOptions({}), {
+    port: 8787,
+    host: '127.0.0.1',
+    allowAnyHost: false,
+    allowIframe: false,
+    allowCloudHosts: false,
+  });
+  assert.equal(resolveListenOptions({ HICLASH_CORE_PORT: '9000' }).host, '127.0.0.1');
+  // 托管容器（平台注入 PORT）：沿用部署行为。
+  assert.deepEqual(resolveListenOptions({ PORT: '3000' }), {
+    port: 3000,
+    host: '0.0.0.0',
+    allowAnyHost: true,
+    allowIframe: true,
+    allowCloudHosts: true,
+  });
+  assert.equal(resolveListenOptions({ PORT: '3000', HOST: '127.0.0.1' }).allowAnyHost, false);
+  assert.equal(resolveListenOptions({ ALLOW_ANY_HOST: '1' }).allowAnyHost, true);
+  assert.throws(() => resolveListenOptions({ PORT: '70000' }), /Invalid PORT/);
+}
+
 run().then(
-  () => console.log('Server hardening tests passed'),
+  () => {
+    checkListenDefaults();
+    console.log('Server hardening tests passed');
+  },
   (err) => {
     console.error(err);
     process.exit(1);
   },
 );
+
+(async () => {
+  const managed = createServer({ allowCloudHosts: true });
+  await new Promise((resolve) => managed.listen(0, '127.0.0.1', resolve));
+  try {
+    const res = await raw(managed.address().port, { path: '/api/health', headers: { host: 'x.run.app' } });
+    assert.equal(res.status, 200);
+  } finally {
+    await new Promise((resolve) => managed.close(resolve));
+  }
+})().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});
