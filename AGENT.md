@@ -7,14 +7,14 @@
 
 ## 0. 快速索引
 
-| 项                               | 位置 / 规则                                                                                                           |
-| -------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| 原始位图参考                     | `Icons/png/<Name>.png`                                                                                                |
-| 统一化矢量（对外提供的就是这套） | `Icons/svg/<Name>.svg`                                                                                                |
-| 命名                             | PascalCase、无下划线/连字符；png 与 svg **同名一一对应**（当前 37 对）                                                |
-| 引用格式                         | `https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/<Name>.svg`                                         |
-| 引用位置                         | `Script/mihomoScript.js`、`Script/Script.js`、`Config/mihomoConfig.yaml`、`Config/mihomoConfigLite.yaml`（共 116 处） |
-| 回归测试                         | `node Test/run-tests.js`（改过脚本必跑，当前 225 项）                                                                 |
+| 项                               | 位置 / 规则                                                                                                                                                                                        |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 原始位图参考                     | `Icons/png/<Name>.png`                                                                                                                                                                             |
+| 统一化矢量（对外提供的就是这套） | `Icons/svg/<Name>.svg`                                                                                                                                                                             |
+| 命名                             | PascalCase、无下划线/连字符；png 与 svg **同名一一对应**（当前 37 对）                                                                                                                             |
+| 引用格式                         | `https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-vN/Icons/svg/<Name>.svg`（当前 `assets-v1`，见 §4）                                                                                      |
+| 引用位置                         | `Script/mihomoScript.js`、`Script/Script.js`、`Config/mihomoConfig.yaml`、`Config/mihomoConfigLite.yaml`、`Script/mihomoScriptProvider.js`、`Script/shared/`（`node Test/asset-tag.test.js` 统计） |
+| 回归测试                         | `node Test/run-tests.js`（改过脚本必跑，当前 225 项）                                                                                                                                              |
 
 ---
 
@@ -209,14 +209,14 @@ vtracer.exe -i in.png -o out.svg --clustering color-cluster --hierarchical cutou
 | fcm / meta / pikpak | `Fcm` / `Meta` / `Pikpak` |
 | World_Map           | `WorldMap`                |
 
-- 引用格式（**CDN 前缀固定不变**）：
+- 引用格式（**按版本 tag 引用，不走 `@main`**）：
 
 ```
-https://fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/svg/<Name>.svg
+https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-vN/Icons/svg/<Name>.svg
 ```
 
-- 改完必须审计：4 个文件里所有 `fastly.jsdelivr.net/gh/dukangalex/HiClash@main/Icons/(svg|png)/...` 的目标文件都存在，且没有残留的第三方图标 CDN（Koolson / MiToverG422 / lige47）。
-- jsDelivr 走 `@main` 分支，**commit + push 之后**链接才生效。
+- 改完必须审计：4 个文件里所有 `fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-vN/Icons/(svg|png)/...` 的目标文件都存在（`node Test/asset-tag.test.js` 会校验），且没有残留的第三方图标 CDN（Koolson / MiToverG422 / lige47）。
+- jsDelivr 永久缓存版本 tag：**不要移动或复用已有 tag**。改了 `Icons/` 要发新 tag（如 `assets-v2`），再用 `node Script/tools/bump-asset-tag.js assets-v2` 统一改写引用，流程见该脚本头注释。
 - ⚠️ Windows 下仅大小写不同的改名（`fcm.png` → `Fcm.png`）git 可能不记录 → 必要时 `git rm --cached <旧名>` 再 `git add <新名>`，保证 index 里的文件名与 URL 逐字符一致。
 
 ---

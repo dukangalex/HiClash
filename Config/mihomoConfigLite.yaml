@@ -592,7 +592,6 @@ rules:
   - PROCESS-NAME-WILDCARD,*RustDesk*,远控工具
   - PROCESS-NAME-WILDCARD,*rustdesk*,远控工具
   - PROCESS-NAME-WILDCARD,*tailscale*,远控工具
-  - PROCESS-NAME-WILDCARD,*tailscaled*,远控工具
   - PROCESS-NAME-WILDCARD,*zerotier*,远控工具
   - PROCESS-NAME-WILDCARD,*ngrok*,远控工具
   - PROCESS-NAME-WILDCARD,*frpc*,远控工具

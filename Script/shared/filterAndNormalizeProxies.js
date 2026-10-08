@@ -34,10 +34,12 @@ function filterAndNormalizeProxies(config) {
   const renameMap = new Map();
   const normalizedProxies = [];
   const uniqueNames = new Set();
+  // 保留名集合与节点无关，循环外构建一次即可（逐节点重建在上千节点时占用大半耗时，QuickJS 下尤甚）。
+  const reservedNames = getReservedProxyNames();
 
   for (const rawProxy of filteredRawProxies) {
     const normalized = normalizeProxyName(rawProxy);
-    const safeName = reserveProxyName(normalized.name, getReservedProxyNames(), uniqueNames);
+    const safeName = reserveProxyName(normalized.name, reservedNames, uniqueNames);
     // 引用修复必须指向最终安全名称，而不仅是标准化后的中间名称。
     // 对重复原名只保留第一次映射，避免后续重复节点覆盖已有引用目标。
     if (!renameMap.has(rawProxy.name)) {

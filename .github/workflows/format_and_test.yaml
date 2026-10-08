@@ -4,7 +4,7 @@ on:
   push:
     branches: ['main']
     paths:
-      - 'Script/*'
+      - 'Script/**'
       - 'Core/**'
       - 'Dashboard/**'
       - 'Test/**'
@@ -13,8 +13,9 @@ on:
       - '.prettierrc*'
   pull_request:
     paths:
-      - 'Script/*'
+      - 'Script/**'
       - 'Core/**'
+      - 'Dashboard/**'
       - 'Test/**'
       - '**/*.yaml'
       - '**/*.yml'
@@ -39,7 +40,8 @@ jobs:
           node-version: '24'
 
       - name: install tools
-        run: npm install -g prettier
+        # 固定版本：prettier 新版本调整格式规则时不应让无关 PR 突然失败
+        run: npm install -g prettier@3.9.9
 
       - name: check dashboard script syntax
         run: |
@@ -104,6 +106,9 @@ jobs:
 
       - name: run pinned resource tests
         run: node Test/pinned-resources.test.js
+
+      - name: run perf guard tests
+        run: node Test/perf-guard.test.js
 
       - name: run provider filter tests
         run: node Test/provider-filters.test.js
