@@ -170,7 +170,7 @@ rule_providers_common:
       behavior: domain,
       format: mrs,
       interval: 86400,
-      proxy: DIRECT,
+      proxy: 默认代理,
       header: { User-Agent: ['mihomo/1.19.32'] },
     }
   rule_providers_ip:
@@ -179,7 +179,7 @@ rule_providers_common:
       behavior: ipcidr,
       format: mrs,
       interval: 86400,
-      proxy: DIRECT,
+      proxy: 默认代理,
       header: { User-Agent: ['mihomo/1.19.32'] },
     }
 
@@ -202,11 +202,6 @@ rule-providers:
     url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/category-games@cn.mrs'
     path: './ruleset/category-games@cn.mrs'
     path-in-bundle: 'geo/geosite/category-games@cn.mrs'
-  epicgames:
-    <<: *rule_providers_domain
-    url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/epicgames.mrs'
-    path: './ruleset/epicgames.mrs'
-    path-in-bundle: 'geo/geosite/epicgames.mrs'
   apple_cn:
     <<: *rule_providers_domain
     url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/apple@cn.mrs'
@@ -293,11 +288,6 @@ rule-providers:
     url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/biliintl.mrs'
     path: './ruleset/biliintl.mrs'
     path-in-bundle: 'geo/geosite/biliintl.mrs'
-  onedrive:
-    <<: *rule_providers_domain
-    url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/onedrive.mrs'
-    path: './ruleset/onedrive.mrs'
-    path-in-bundle: 'geo/geosite/onedrive.mrs'
   disney:
     <<: *rule_providers_domain
     url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/disney.mrs'
@@ -364,7 +354,6 @@ proxies_common:
           '手动选择',
           '自动选择',
           '故障转移',
-          '直连',
           '香港',
           '日本',
           '美国',
@@ -466,7 +455,7 @@ proxy-groups:
 
   - name: '远控工具'
     <<: *group_common_select
-    proxies: ['默认代理', 'REJECT-DROP', '直连']
+    proxies: ['默认代理', 'REJECT-DROP']
     icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Remote.svg'
 
   - name: 'AdBlock'
@@ -475,7 +464,7 @@ proxy-groups:
 
   - name: '漏网之鱼'
     <<: *group_common_select
-    proxies: ['默认代理', '故障转移', '直连']
+    proxies: ['默认代理', '故障转移']
     icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Stack.svg'
 
   - name: '直连'
@@ -561,13 +550,10 @@ rules:
   # 国内直连
   - RULE-SET,geolocation-cn,直连
   - RULE-SET,games_cn,直连 # 已包含 steam 下载域名
-  - RULE-SET,epicgames,直连
   - RULE-SET,apple_cn,直连
   - RULE-SET,microsoft_cn,直连
   - RULE-SET,bilibili,直连
-  - RULE-SET,onedrive,直连
   - DOMAIN,fsend.cn,直连
-  - DOMAIN,international-gfe.download.nvidia.com,直连
   - RULE-SET,biliintl,默认代理
   - RULE-SET,disney,默认代理
 
@@ -587,7 +573,7 @@ rules:
   # 代理规则
   - RULE-SET,google,Google
   - RULE-SET,google_ip,Google,no-resolve
-  # Claude：只收自有域名和 AS399358。默认美国节点，组内可改直连。不收 sentry/intercom/datadog 关键字。
+  # Claude：只收自有域名和 AS399358。默认美国节点，不提供直连。不收 sentry/intercom/datadog 关键字。
   - DOMAIN-SUFFIX,anthropic.com,Claude
   - DOMAIN-SUFFIX,claude.ai,Claude
   - DOMAIN-SUFFIX,claude.com,Claude
@@ -608,7 +594,7 @@ rules:
   - RULE-SET,telegram_ip,Telegram,no-resolve
   - RULE-SET,steam,Steam
 
-  # 远控工具：默认走代理（不暴露真实 IP，组网/穿透工具也能正常工作）；可在组内切到 REJECT-DROP 彻底阻断，直连会暴露真实 IP
+  # 远控工具：默认走代理（不暴露真实 IP，组网/穿透工具也能正常工作）；可在组内切到 REJECT-DROP 彻底阻断，不提供直连
   - PROCESS-NAME-WILDCARD,*AnyDesk*,远控工具
   - PROCESS-NAME-WILDCARD,*ToDesk*,远控工具
   - PROCESS-NAME-WILDCARD,*TeamViewer*,远控工具

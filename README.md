@@ -87,14 +87,14 @@ GitHub：
 按社区里反复出现的问题，在官方集合上做了这些取舍：
 
 - **B 站本体直连、国际版走默认代理**，减轻国内视频被送去代理后的卡顿。
-- **OneDrive 直连**，避免和微软国内服务抢路由导致同步失败。
+- **非中国流量绝对不直连**：直连只用于本机回环、私有网络和中国规则集（`geolocation-cn`、`cn_ip`、`*_cn`、B 站等）。除隐藏的「直连」组本身外，任何策略组（含 GLOBAL、漏网之鱼、FCM、Claude、Steam、Microsoft、Apple、远控工具）都不提供直连选项；Epic、OneDrive、NVIDIA 国际下载改走代理；规则集经「默认代理」下载，不向 jsDelivr 暴露真实 IP。唯一例外是订阅（proxy-provider）本身：节点尚未就绪时只能直连拉取。
 - **Disney+ 走默认代理**，用官方 `disney` 域名集，不另开策略组。
 - **广告**改用官方 `category-ads-all`。它比第三方大列表更瘦，误杀更少，拦截面也更小。
 - **STUN** 用官方 `category-stun` 做 fake-ip 例外，减少通话和网页拿不到真实地址或连不上的情况。
 - **国内 QUIC 放行**复用官方 `cn`，不再为同一份 `cn.mrs` 建第二个 provider。Bettbox 会按 URL 重写 `path`，两个 provider 共用一个文件时会互相覆盖。
 - 官方没有发布的 IP 集（Microsoft / Apple / Steam / TikTok / Spotify）已去掉，只保留有域名集、以及官方确实提供的 IP 集（Google、Telegram、Twitter、Netflix、Facebook）。
 - Emby 改为官方 `category-emby`，客户端进程名规则仍保留。
-- **Claude** 单独成组，排在 AI 前面。默认美国节点（大陆直连打不开），组内可改直连，给家宽防封用。只收 Anthropic 自己的域名、`160.79.104.0/21`、两条已宣告的 IPv6 `/48`，以及 `IP-ASN,399358`。原帖里的 `http://`、`FINAL`，还有 `datadog` / `sift` / `sentry.io` / `intercom` 这类会误伤其他网站的规则没有收。
+- **Claude** 单独成组，排在 AI 前面。默认美国节点，不提供直连（境外流量一律走代理）。只收 Anthropic 自己的域名、`160.79.104.0/21`、两条已宣告的 IPv6 `/48`，以及 `IP-ASN,399358`。原帖里的 `http://`、`FINAL`，还有 `datadog` / `sift` / `sentry.io` / `intercom` 这类会误伤其他网站的规则没有收。
 
 ## 🌐 DNS / Hosts 优化
 
@@ -145,7 +145,7 @@ HiClash 新增独立的「故障转移」策略组及「远控工具」分流。
 - natapp
 - nblink
 
-「远控工具」策略组提供 **默认代理 / REJECT-DROP / 直连** 三种选择，默认 **默认代理**：流量经代理出口，不暴露真实 IP，Tailscale、cloudflared、frpc 等组网/穿透工具仍可工作（Tailscale 会走 DERP 中继，延迟略高）。需要彻底禁止远控时切到 REJECT-DROP；直连会向对端暴露真实 IP，不建议。客户端开启 `store-selected` 时会保留你之前手动选过的项。规则使用 Mihomo 的 `PROCESS-NAME-WILDCARD`，因此 Android 上也可匹配包名。
+「远控工具」策略组提供 **默认代理 / REJECT-DROP** 两种选择，默认 **默认代理**：流量经代理出口，不暴露真实 IP，Tailscale、cloudflared、frpc 等组网/穿透工具仍可工作（Tailscale 会走 DERP 中继，延迟略高）。需要彻底禁止远控时切到 REJECT-DROP；不提供直连。客户端开启 `store-selected` 时会保留你之前手动选过的项。规则使用 Mihomo 的 `PROCESS-NAME-WILDCARD`，因此 Android 上也可匹配包名。
 
 ### 🔁 故障转移
 
