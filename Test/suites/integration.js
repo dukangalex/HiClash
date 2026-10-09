@@ -156,15 +156,37 @@ function runIntegrationTests(h, api, meta, fx, loadScript, scriptFile) {
       h.assert(url.startsWith('https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/'), url);
       h.assert(!/bett-rules|217heidai|666OS|binaryu|353355|dukangalex/.test(url), url);
     }
-    h.assertEqual(providers.private.proxy, 'DIRECT', '规则集应直连下载，避免节点未就绪时更新失败');
+    h.assertEqual(providers.private.proxy, '默认代理', '规则集应经代理下载，不向 jsDelivr 暴露真实 IP');
     h.assert(providers.bilibili, '应包含官方 bilibili 规则集');
     h.assert(providers.disney, '应包含官方 disney 规则集');
     h.assert(!providers.microsoft_ip, '官方未提供的 IP 规则集不应保留');
     h.assert(!providers.emos, '第三方 Emby 规则集应移除');
     const rules = out.rules.join('\n');
     h.assert(rules.includes('RULE-SET,bilibili,直连'));
-    h.assert(rules.includes('RULE-SET,onedrive,直连'));
+    h.assert(!rules.includes('RULE-SET,onedrive,直连'), 'OneDrive 是境外服务，不应直连');
     h.assert(rules.includes('RULE-SET,disney,默认代理'));
+  });
+  h.test('非中国流量禁止直连：直连只留给本机、私网与中国规则集', () => {
+    const allowedDirect =
+      /^(IP-CIDR,127\.0\.0\.0\/8|IP-CIDR6,::1\/128|RULE-SET,(private|private_ip|geolocation-cn|games_cn|nvidia_cn|apple_cn|microsoft_cn|bilibili|cn_ip),|DOMAIN,fsend\.cn,)/;
+    for (const sub of [fx.typicalSubscription()]) {
+      const out = api.main(sub);
+      for (const rule of out.rules) {
+        const target =
+          rule.split(',')[rule.startsWith('AND') || rule.startsWith('OR') ? rule.split(',').length - 1 : 2];
+        if (/^(DIRECT|直连)$/.test(String(target).trim()))
+          h.assert(allowedDirect.test(rule), '非中国规则不应直连: ' + rule);
+      }
+      for (const group of out['proxy-groups']) {
+        if (group.name === '直连') continue;
+        h.assert(!(group.proxies || []).includes('直连'), group.name + ' 不应提供直连选项');
+        h.assert(!(group.proxies || []).includes('DIRECT'), group.name + ' 不应包含 DIRECT');
+        h.assert(group['default-selected'] !== '直连', group.name + ' 不应默认直连');
+      }
+      for (const [name, p] of Object.entries(out['rule-providers'] || {})) {
+        h.assert(p.proxy !== 'DIRECT', name + ' 规则集不应直连下载');
+      }
+    }
   });
   h.test('冷启动优化：记住策略选择与 fake-ip、懒测速、mips 栈', () => {
     const out = api.main(fx.typicalSubscription());
@@ -231,8 +253,9 @@ function runIntegrationTests(h, api, meta, fx, loadScript, scriptFile) {
     const out = api.main(fx.typicalSubscription());
     const global = groupByName(out['proxy-groups'], 'GLOBAL');
     h.assert(global, '缺少 GLOBAL 组');
+    h.assert(!global.proxies.includes('直连'), 'GLOBAL 不应提供直连，避免全局模式误选泄露真实 IP');
     for (const g of out['proxy-groups']) {
-      if (g.name !== 'GLOBAL') {
+      if (g.name !== 'GLOBAL' && g.name !== '直连') {
         h.assert(global.proxies.includes(g.name), `GLOBAL 缺少策略组 ${g.name}`);
       }
     }
@@ -831,7 +854,7 @@ function runIntegrationTests(h, api, meta, fx, loadScript, scriptFile) {
 
       // GLOBAL 聚合所有策略组（含链式中转与链式落地）
       for (const g of out['proxy-groups']) {
-        if (g.name !== 'GLOBAL') {
+        if (g.name !== 'GLOBAL' && g.name !== '直连') {
           h.assert(global.proxies.includes(g.name), `GLOBAL 应包含策略组 ${g.name}`);
         }
       }

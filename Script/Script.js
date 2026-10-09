@@ -23,7 +23,7 @@ const ruleOptionsEnable = {
 
   // 以下为分流策略配置
   Google: true, // Google服务
-  Claude: true, // Claude / Anthropic。默认美国节点，组内可切手动直连
+  Claude: true, // Claude / Anthropic。默认美国节点，不提供直连（境外流量一律走代理）
   AI: true, // 国外AI服务
   Telegram: true, // Telegram通讯软件
   Steam: true, // Steam游戏平台
@@ -61,13 +61,10 @@ const prefixRules = [
   // 国内直连
   'RULE-SET,geolocation-cn,直连',
   'RULE-SET,games_cn,直连', // 已包含 steam 下载域名
-  'RULE-SET,epicgames,直连',
   'RULE-SET,apple_cn,直连',
   'RULE-SET,microsoft_cn,直连',
   'RULE-SET,bilibili,直连',
-  'RULE-SET,onedrive,直连',
   'DOMAIN,fsend.cn,直连',
-  'DOMAIN,international-gfe.download.nvidia.com,直连',
   'RULE-SET,biliintl,默认代理',
   'RULE-SET,disney,默认代理',
 ];
@@ -925,7 +922,7 @@ const ruleProviderCommonDomain = {
   behavior: 'domain',
   format: 'mrs',
   interval: 86400,
-  proxy: 'DIRECT',
+  proxy: '默认代理', // 规则集经代理下载，不向 jsDelivr 暴露真实 IP
   header: {
     'User-Agent': ['mihomo/1.19.32'],
   },
@@ -937,7 +934,7 @@ const ruleProviderCommonIpcidr = {
   behavior: 'ipcidr',
   format: 'mrs',
   interval: 86400,
-  proxy: 'DIRECT',
+  proxy: '默认代理', // 规则集经代理下载，不向 jsDelivr 暴露真实 IP
   header: {
     'User-Agent': ['mihomo/1.19.32'],
   },
@@ -965,12 +962,6 @@ const baseRuleProviders = {
     url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/category-games@cn.mrs',
     path: './ruleset/category-games@cn.mrs',
     'path-in-bundle': 'geo/geosite/category-games@cn.mrs',
-  },
-  epicgames: {
-    ...ruleProviderCommonDomain,
-    url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/epicgames.mrs',
-    path: './ruleset/epicgames.mrs',
-    'path-in-bundle': 'geo/geosite/epicgames.mrs',
   },
   apple_cn: {
     ...ruleProviderCommonDomain,
@@ -1031,12 +1022,6 @@ const baseRuleProviders = {
     url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/biliintl.mrs',
     path: './ruleset/biliintl.mrs',
     'path-in-bundle': 'geo/geosite/biliintl.mrs',
-  },
-  onedrive: {
-    ...ruleProviderCommonDomain,
-    url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/onedrive.mrs',
-    path: './ruleset/onedrive.mrs',
-    'path-in-bundle': 'geo/geosite/onedrive.mrs',
   },
   disney: {
     ...ruleProviderCommonDomain,
@@ -1131,8 +1116,7 @@ const serviceConfigs = [
   {
     name: 'Claude',
     baseOption: selectBaseOption,
-    // 默认仍走美国节点：大陆直连打不开 Claude。组里保留「直连」，家宽可手动切过去，避免机场 IP 触发风控。
-    direct: true,
+    // 默认走美国节点。境外流量一律不直连，组内不提供「直连」，避免暴露真实 IP。
     defaultSelected: '美国',
     icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Proxy.svg',
     rules: [
@@ -1195,7 +1179,6 @@ const serviceConfigs = [
   {
     name: 'Steam',
     baseOption: selectBaseOption,
-    direct: true,
     providers: {
       steam: {
         ...ruleProviderCommonDomain,
@@ -1210,7 +1193,7 @@ const serviceConfigs = [
   {
     name: '远控工具',
     baseOption: selectBaseOption,
-    fixedProxies: ['默认代理', 'REJECT-DROP', '直连'],
+    fixedProxies: ['默认代理', 'REJECT-DROP'],
     icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Remote.svg',
     rules: [
       'PROCESS-NAME-WILDCARD,*AnyDesk*,远控工具',
@@ -1757,7 +1740,7 @@ function buildFunctionalGroups(filteredProxies, generatedRegionGroups, customize
     const globalGroup = {
       ...selectBaseOption,
       name: 'GLOBAL',
-      proxies: ['默认代理', ...customGroupNames, ...(chainGroup ? [chainGroup.name] : []), '直连'],
+      proxies: ['默认代理', ...customGroupNames, ...(chainGroup ? [chainGroup.name] : [])],
       icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Global.svg',
     };
     return {
@@ -1800,15 +1783,8 @@ function buildFunctionalGroups(filteredProxies, generatedRegionGroups, customize
       groupProxies = ['REJECT', 'REJECT-DROP', 'PASS'];
     } else {
       groupProxies = !addAllNodesToServiceGroupsEnabled
-        ? ['默认代理', ...customGroupNames, ...baseGroupNames, ...groupNamesOfSelect, ...(svc.direct ? ['直连'] : [])]
-        : [
-            '默认代理',
-            ...customGroupNames,
-            ...baseGroupNames,
-            ...groupNamesOfSelect,
-            ...allProxiesNames,
-            ...(svc.direct ? ['直连'] : []),
-          ];
+        ? ['默认代理', ...customGroupNames, ...baseGroupNames, ...groupNamesOfSelect]
+        : ['默认代理', ...customGroupNames, ...baseGroupNames, ...groupNamesOfSelect, ...allProxiesNames];
     }
 
     functionalGroups.push({
@@ -1825,7 +1801,7 @@ function buildFunctionalGroups(filteredProxies, generatedRegionGroups, customize
   functionalGroups.push({
     ...selectBaseOption,
     name: '漏网之鱼',
-    proxies: ['默认代理', '直连', ...groupNamesOfSelect],
+    proxies: ['默认代理', ...groupNamesOfSelect],
     icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Stack.svg',
   });
 
@@ -1844,7 +1820,6 @@ function buildFunctionalGroups(filteredProxies, generatedRegionGroups, customize
       ...functionalGroups.map((g) => g.name),
       ...customGroupNames,
       ...(chainGroup ? [chainGroup.name] : []),
-      directGroup.name,
       ...generatedRegionGroups.map((g) => g.name),
     ],
     icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Global.svg',

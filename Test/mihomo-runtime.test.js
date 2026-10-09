@@ -64,8 +64,8 @@ function validateGeneratedConfig(config, label) {
     Array.isArray(remote.proxies) &&
       remote.proxies.includes('REJECT-DROP') &&
       remote.proxies.includes('默认代理') &&
-      remote.proxies.includes('直连'),
-    label + ': 远控工具 must retain its fixed proxy choices',
+      !remote.proxies.includes('直连'),
+    label + ': 远控工具 must offer proxy/REJECT-DROP only, never DIRECT',
   );
   assert(
     config.rules?.includes('PROCESS-NAME-WILDCARD,*AnyDesk*,远控工具') &&
@@ -79,7 +79,7 @@ function validateGeneratedConfig(config, label) {
   const claudeIndex = config['proxy-groups']?.findIndex((group) => group.name === 'Claude');
   assert(claude, label + ': Claude group missing');
   assert(claudeIndex >= 0 && aiIndex >= 0 && claudeIndex < aiIndex, label + ': Claude must precede AI');
-  assert(Array.isArray(claude.proxies) && claude.proxies.includes('直连'), label + ': Claude must offer DIRECT');
+  assert(Array.isArray(claude.proxies) && !claude.proxies.includes('直连'), label + ': Claude must not offer DIRECT');
   assert(claude['default-selected'] === '美国', label + ': Claude must default to a US node');
   const claudeRules = [
     'DOMAIN-SUFFIX,anthropic.com,Claude',
