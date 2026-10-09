@@ -1231,9 +1231,31 @@ const serviceConfigs = [
   {
     name: 'Claude',
     baseOption: selectBaseOption,
+    // 默认仍走美国节点：大陆直连打不开 Claude。组里保留「直连」，家宽可手动切过去，避免机场 IP 触发风控。
+    direct: true,
     defaultSelected: '美国',
     icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Proxy.svg',
-    rules: ['DOMAIN-SUFFIX,claude.ai,Claude', 'DOMAIN-SUFFIX,anthropic.com,Claude'],
+    rules: [
+      // 只收 Claude / Anthropic 自己的域名。DOMAIN 载荷不能带 http://。
+      // datadog/sift 关键字，以及 sentry.io、intercom、statsigapi.net 会被大量无关网站命中，不收。
+      'DOMAIN-SUFFIX,anthropic.com,Claude',
+      'DOMAIN-SUFFIX,claude.ai,Claude',
+      'DOMAIN-SUFFIX,claude.com,Claude',
+      'DOMAIN-SUFFIX,clau.de,Claude',
+      'DOMAIN-SUFFIX,claudemcpclient.com,Claude',
+      'DOMAIN-SUFFIX,claudeusercontent.com,Claude',
+      'DOMAIN,servd-anthropic-website.b-cdn.net,Claude',
+      'DOMAIN,anthropic.com.cdn.cloudflare.net,Claude',
+      'DOMAIN,anthropic.auth0.com,Claude',
+      'DOMAIN,anthropic-com.ghost.io,Claude',
+      'DOMAIN,browser-intake-us5-datadoghq.com,Claude',
+      // AS399358 / 160.79.104.0/21 属于 Anthropic。IPv6 只用已宣告的两条 /48，不用 /32。
+      // no-resolve：fake-ip 下不对每条连接做解析。
+      'IP-CIDR,160.79.104.0/21,Claude,no-resolve',
+      'IP-CIDR6,2607:6bc0::/48,Claude,no-resolve',
+      'IP-CIDR6,2607:6bc0:11::/48,Claude,no-resolve',
+      'IP-ASN,399358,Claude,no-resolve',
+    ],
   },
   {
     name: 'AI',
@@ -2622,10 +2644,10 @@ const securitySniffer = {
   // 仅用于域名识别，不把嗅探结果强制替换为实际目标；避免 fake-ip + override-destination 形成重解析/路由循环。
   'override-destination': false,
   sniff: {
-    // HTTP 保留显式覆盖：官方示例允许 HTTP 单独覆盖全局设置。
-    HTTP: { ports: [80, '8080-8880'], enable: true, 'override-destination': true },
-    TLS: { ports: [443, 8443], enable: true },
-    QUIC: { ports: [443, 8443], enable: true },
+    // ports 在 v1.19.32 是 []string；HTTP 可单独覆盖全局 override-destination。没有 enable 字段。
+    HTTP: { ports: ['80', '8080-8880'], 'override-destination': true },
+    TLS: { ports: ['443', '8443'] },
+    QUIC: { ports: ['443', '8443'] },
   },
   'force-domain': [
     '+.google.com',
@@ -2633,12 +2655,14 @@ const securitySniffer = {
     '+.telegram.org',
     '+.openai.com',
     '+.anthropic.com',
+    '+.claude.ai',
+    '+.claude.com',
+    '+.claudeusercontent.com',
     '+.twitter.com',
     '+.x.com',
     '+.googlevideo.com',
     '+.ytimg.com',
     '+.chatgpt.com',
-    '+.claude.ai',
   ],
   'skip-dst-address': [
     '91.105.192.0/23',
@@ -2951,7 +2975,9 @@ function main(config, context) {
     'strict-route': true,
     'auto-redirect': true,
     'auto-detect-interface': true,
-    'dns-hijack': ['any:53', 'tcp://any:53'],
+    // v1.19.32：dns-hijack 的 tcp:// 前缀会被丢掉，any 会改写成 0.0.0.0。
+    // 未指定地址 + 53 会同时劫持 TCP 与 UDP，一条即可，与官方示例一致。
+    'dns-hijack': ['0.0.0.0:53'],
     'udp-timeout': 300,
     // 排除本机，避免 127.0.0.1:25500 这类订阅转换器被 TUN 收走后规则集更新 EOF。
     'route-exclude-address': ['127.0.0.0/8', '::1/128'],

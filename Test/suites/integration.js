@@ -136,7 +136,11 @@ function runIntegrationTests(h, api, meta, fx, loadScript, scriptFile) {
     h.assertEqual(out['bind-address'], '127.0.0.1');
     h.assertEqual(out.tun['strict-route'], true);
     h.assertEqual(out.tun['auto-route'], true);
-    h.assertEqual(out.tun['dns-hijack'][0], 'any:53');
+    h.assertEqual(out.tun['dns-hijack'][0], '0.0.0.0:53');
+    h.assertEqual(out.tun['dns-hijack'].length, 1, 'dns-hijack 只需一条，TCP/UDP 都会被未指定地址命中');
+    h.assert(!('enable' in out.sniffer.sniff.HTTP), 'sniff.HTTP 没有 enable 字段');
+    h.assert(!('enable' in out.sniffer.sniff.TLS), 'sniff.TLS 没有 enable 字段');
+    h.assert(!('enable' in out.sniffer.sniff.QUIC), 'sniff.QUIC 没有 enable 字段');
     h.assertEqual(out.sniffer.enable, true);
     const rules = out.rules.join('\n');
     h.assert(rules.includes('DST-PORT,3478-3497'), '应拦截常见 WebRTC STUN 端口');

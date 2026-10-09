@@ -39,8 +39,8 @@ function validateGeneratedConfig(config, label) {
   assert(config.tun?.['auto-redirect'] === true, label + ': auto-redirect must be enabled');
   assert(config.tun?.['auto-detect-interface'] === true, label + ': auto-detect-interface must be enabled');
   assert(
-    JSON.stringify(config.tun?.['dns-hijack']) === JSON.stringify(['any:53', 'tcp://any:53']),
-    label + ': DNS hijack must retain both UDP/TCP 53 entries',
+    JSON.stringify(config.tun?.['dns-hijack']) === JSON.stringify(['0.0.0.0:53']),
+    label + ': DNS hijack must be a single unspecified :53 entry',
   );
   assert(config.dns?.enable === true, label + ': DNS must be enabled');
   assert(config.dns?.['enhanced-mode'] === 'fake-ip', label + ': fake-ip DNS must be enabled');
@@ -79,10 +79,25 @@ function validateGeneratedConfig(config, label) {
   const claudeIndex = config['proxy-groups']?.findIndex((group) => group.name === 'Claude');
   assert(claude, label + ': Claude group missing');
   assert(claudeIndex >= 0 && aiIndex >= 0 && claudeIndex < aiIndex, label + ': Claude must precede AI');
+  assert(Array.isArray(claude.proxies) && claude.proxies.includes('直连'), label + ': Claude must offer DIRECT');
+  assert(claude['default-selected'] === '美国', label + ': Claude must default to a US node');
+  const claudeRules = [
+    'DOMAIN-SUFFIX,anthropic.com,Claude',
+    'DOMAIN-SUFFIX,claude.ai,Claude',
+    'DOMAIN-SUFFIX,claude.com,Claude',
+    'DOMAIN-SUFFIX,claudeusercontent.com,Claude',
+    'DOMAIN,anthropic.auth0.com,Claude',
+    'DOMAIN,browser-intake-us5-datadoghq.com,Claude',
+    'IP-CIDR,160.79.104.0/21,Claude,no-resolve',
+    'IP-CIDR6,2607:6bc0::/48,Claude,no-resolve',
+    'IP-ASN,399358,Claude,no-resolve',
+  ];
+  for (const rule of claudeRules) {
+    assert(config.rules?.includes(rule), label + ': missing ' + rule);
+  }
   assert(
-    config.rules?.includes('DOMAIN-SUFFIX,claude.ai,Claude') &&
-      config.rules?.includes('DOMAIN-SUFFIX,anthropic.com,Claude'),
-    label + ': Claude rules missing',
+    !config.rules?.some((rule) => rule.includes('http://') || rule.includes('DOMAIN-KEYWORD,datadog')),
+    label + ': Claude rules must not keep Surge URLs or broad keywords',
   );
 }
 

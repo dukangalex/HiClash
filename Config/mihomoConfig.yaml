@@ -140,7 +140,7 @@ tun:
   strict-route: true
   auto-redirect: true
   auto-detect-interface: true
-  dns-hijack: ['any:53', 'tcp://any:53']
+  dns-hijack: ['0.0.0.0:53'] # 未指定地址同时劫持 TCP/UDP 53；v1.19.32 会丢弃 tcp:// 前缀
   udp-timeout: 300
   route-exclude-address: ['127.0.0.0/8', '::1/128']
 
@@ -571,6 +571,11 @@ proxy-groups:
     <<: [*group_common_select, *proxies_default]
     icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Google.svg'
 
+  - name: 'Claude'
+    <<: [*group_common_select, *proxies_direct]
+    default-selected: '美国'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Proxy.svg'
+
   - name: 'AI'
     <<: [*group_common_select, *proxies_default]
     default-selected: '美国'
@@ -761,6 +766,22 @@ rules:
   - RULE-SET,youtube,YouTube
   - RULE-SET,google,Google
   - RULE-SET,google_ip,Google,no-resolve
+  # Claude：只收自有域名和 AS399358。默认美国节点，组内可改直连。不收 sentry/intercom/datadog 关键字。
+  - DOMAIN-SUFFIX,anthropic.com,Claude
+  - DOMAIN-SUFFIX,claude.ai,Claude
+  - DOMAIN-SUFFIX,claude.com,Claude
+  - DOMAIN-SUFFIX,clau.de,Claude
+  - DOMAIN-SUFFIX,claudemcpclient.com,Claude
+  - DOMAIN-SUFFIX,claudeusercontent.com,Claude
+  - DOMAIN,servd-anthropic-website.b-cdn.net,Claude
+  - DOMAIN,anthropic.com.cdn.cloudflare.net,Claude
+  - DOMAIN,anthropic.auth0.com,Claude
+  - DOMAIN,anthropic-com.ghost.io,Claude
+  - DOMAIN,browser-intake-us5-datadoghq.com,Claude
+  - IP-CIDR,160.79.104.0/21,Claude,no-resolve
+  - IP-CIDR6,2607:6bc0::/48,Claude,no-resolve
+  - IP-CIDR6,2607:6bc0:11::/48,Claude,no-resolve
+  - IP-ASN,399358,Claude,no-resolve
   - RULE-SET,ai,AI
   - RULE-SET,github,默认代理
   - RULE-SET,microsoft,Microsoft

@@ -76,7 +76,7 @@ GitHub：
 | `dns.cache-algorithm: arc` + `prefer-h3: false`  | ARC 缓存；冷启动不做 HTTP/3 探测，避免 UDP 不通时卡住 |
 | `tun.stack: mips` + `congestion-controller: bbr` | v1.19.32 默认自研 IP 栈；`bbr` 只在 mips 上生效       |
 
-> `tun.stack: mips` 需要 **Mihomo ≥ v1.19.31**。v1.19.32 起这是默认栈，并支持 `congestion-controller`（`cubic` / `reno` / `bbr` / `bbr3`）。更早的内核请把栈改成 `mixed`。
+> `tun.stack: mips` 需要 **Mihomo ≥ v1.19.31**。v1.19.32 起这是默认栈，并支持 `congestion-controller`（`cubic` / `reno` / `bbr` / `bbr3`）。更早的内核请把栈改成 `mixed`。`dns-hijack` 写成一条 `0.0.0.0:53`：未指定地址会同时劫持 TCP 和 UDP 的 53 端口，`tcp://` 前缀会被这个版本丢掉。
 
 开启覆写后如果日志里还是 `ProxyMedia`、`GoogleCN`、`Telegram` 这类机场规则集，并且地址是 `http://127.0.0.1:25500/getruleset`，说明脚本结果没有被内核吃进去，订阅自带的 subconverter 规则集仍在跑。v1.19.32 会因为 vmess 缺少 `cipher` 拒绝整份配置。脚本现在会补上 `cipher: auto`，并整表替换 `rule-providers`，不再保留这些本机转换地址。本机 `127.0.0.0/8` 也会先走 `DIRECT`。
 
@@ -94,6 +94,7 @@ GitHub：
 - **国内 QUIC 放行**复用官方 `cn`，不再为同一份 `cn.mrs` 建第二个 provider。Bettbox 会按 URL 重写 `path`，两个 provider 共用一个文件时会互相覆盖。
 - 官方没有发布的 IP 集（Microsoft / Apple / Steam / TikTok / Spotify）已去掉，只保留有域名集、以及官方确实提供的 IP 集（Google、Telegram、Twitter、Netflix、Facebook）。
 - Emby 改为官方 `category-emby`，客户端进程名规则仍保留。
+- **Claude** 单独成组，排在 AI 前面。默认美国节点（大陆直连打不开），组内可改直连，给家宽防封用。只收 Anthropic 自己的域名、`160.79.104.0/21`、两条已宣告的 IPv6 `/48`，以及 `IP-ASN,399358`。原帖里的 `http://`、`FINAL`，还有 `datadog` / `sift` / `sentry.io` / `intercom` 这类会误伤其他网站的规则没有收。
 
 ## 🌐 DNS / Hosts 优化
 
