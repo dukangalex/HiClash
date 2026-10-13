@@ -235,6 +235,11 @@ rule-providers:
     url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/google.mrs'
     path: './ruleset/google_ip.mrs'
     path-in-bundle: 'geo/geoip/google.mrs'
+  anthropic:
+    <<: *rule_providers_domain
+    url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/anthropic.mrs'
+    path: './ruleset/anthropic.mrs'
+    path-in-bundle: 'geo/geosite/anthropic.mrs'
   ai:
     <<: *rule_providers_domain
     url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/category-ai-!cn.mrs'
@@ -573,17 +578,10 @@ rules:
   # 代理规则
   - RULE-SET,google,Google
   - RULE-SET,google_ip,Google,no-resolve
-  # Claude：只收自有域名和 AS399358。默认美国节点，不提供直连。不收 sentry/intercom/datadog 关键字。
-  - DOMAIN-SUFFIX,anthropic.com,Claude
-  - DOMAIN-SUFFIX,claude.ai,Claude
-  - DOMAIN-SUFFIX,claude.com,Claude
-  - DOMAIN-SUFFIX,clau.de,Claude
-  - DOMAIN-SUFFIX,claudemcpclient.com,Claude
-  - DOMAIN-SUFFIX,claudeusercontent.com,Claude
-  - DOMAIN,servd-anthropic-website.b-cdn.net,Claude
-  - DOMAIN,anthropic.com.cdn.cloudflare.net,Claude
+  # Claude：官方 geosite:anthropic，排在 AI 前面。默认美国节点，不提供直连。
+  - RULE-SET,anthropic,Claude
   - DOMAIN,anthropic.auth0.com,Claude
-  - DOMAIN,anthropic-com.ghost.io,Claude
+  - DOMAIN,anthropic.com.cdn.cloudflare.net,Claude
   - DOMAIN,browser-intake-us5-datadoghq.com,Claude
   - IP-CIDR,160.79.104.0/21,Claude,no-resolve
   - IP-CIDR6,2607:6bc0::/48,Claude,no-resolve

@@ -82,10 +82,7 @@ function validateGeneratedConfig(config, label) {
   assert(Array.isArray(claude.proxies) && !claude.proxies.includes('直连'), label + ': Claude must not offer DIRECT');
   assert(claude['default-selected'] === '美国', label + ': Claude must default to a US node');
   const claudeRules = [
-    'DOMAIN-SUFFIX,anthropic.com,Claude',
-    'DOMAIN-SUFFIX,claude.ai,Claude',
-    'DOMAIN-SUFFIX,claude.com,Claude',
-    'DOMAIN-SUFFIX,claudeusercontent.com,Claude',
+    'RULE-SET,anthropic,Claude',
     'DOMAIN,anthropic.auth0.com,Claude',
     'DOMAIN,browser-intake-us5-datadoghq.com,Claude',
     'IP-CIDR,160.79.104.0/21,Claude,no-resolve',
@@ -95,6 +92,13 @@ function validateGeneratedConfig(config, label) {
   for (const rule of claudeRules) {
     assert(config.rules?.includes(rule), label + ': missing ' + rule);
   }
+  const rules = config.rules || [];
+  const anthropicRule = rules.indexOf('RULE-SET,anthropic,Claude');
+  const aiRule = rules.indexOf('RULE-SET,ai,AI');
+  assert(
+    anthropicRule >= 0 && aiRule >= 0 && anthropicRule < aiRule,
+    label + ': official anthropic ruleset must be matched before the AI ruleset',
+  );
   assert(
     !config.rules?.some((rule) => rule.includes('http://') || rule.includes('DOMAIN-KEYWORD,datadog')),
     label + ': Claude rules must not keep Surge URLs or broad keywords',

@@ -94,7 +94,7 @@ GitHub：
 - **国内 QUIC 放行**复用官方 `cn`，不再为同一份 `cn.mrs` 建第二个 provider。Bettbox 会按 URL 重写 `path`，两个 provider 共用一个文件时会互相覆盖。
 - 官方没有发布的 IP 集（Microsoft / Apple / Steam / TikTok / Spotify）已去掉，只保留有域名集、以及官方确实提供的 IP 集（Google、Telegram、Twitter、Netflix、Facebook）。
 - Emby 改为官方 `category-emby`，客户端进程名规则仍保留。
-- **Claude** 单独成组，排在 AI 前面。默认美国节点，不提供直连（境外流量一律走代理）。只收 Anthropic 自己的域名、`160.79.104.0/21`、两条已宣告的 IPv6 `/48`，以及 `IP-ASN,399358`。原帖里的 `http://`、`FINAL`，还有 `datadog` / `sift` / `sentry.io` / `intercom` 这类会误伤其他网站的规则没有收。
+- **Claude** 单独成组，排在 AI 前面，用官方 `geosite:anthropic`（含 `claude.dev`、`claudemcpcontent.com`）。默认美国节点，不提供直连。官方名单没有的控制台登录 `anthropic.auth0.com`、`anthropic.com.cdn.cloudflare.net`、Anthropic 网段和 `IP-ASN,399358` 仍手写补上。`datadog` / `sift` / `sentry.io` / `intercom` 这类关键字没有收，只额外钉 `browser-intake-us5-datadoghq.com` 这一个接收端。
 
 ## 🌐 DNS / Hosts 优化
 

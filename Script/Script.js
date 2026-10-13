@@ -1118,23 +1118,24 @@ const serviceConfigs = [
     baseOption: selectBaseOption,
     // 默认走美国节点。境外流量一律不直连，组内不提供「直连」，避免暴露真实 IP。
     defaultSelected: '美国',
+    providers: {
+      anthropic: {
+        ...ruleProviderCommonDomain,
+        url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/anthropic.mrs',
+        path: './ruleset/anthropic.mrs',
+        'path-in-bundle': 'geo/geosite/anthropic.mrs',
+      },
+    },
     icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Proxy.svg',
     rules: [
-      // 只收 Claude / Anthropic 自己的域名。DOMAIN 载荷不能带 http://。
-      // datadog/sift 关键字，以及 sentry.io、intercom、statsigapi.net 会被大量无关网站命中，不收。
-      'DOMAIN-SUFFIX,anthropic.com,Claude',
-      'DOMAIN-SUFFIX,claude.ai,Claude',
-      'DOMAIN-SUFFIX,claude.com,Claude',
-      'DOMAIN-SUFFIX,clau.de,Claude',
-      'DOMAIN-SUFFIX,claudemcpclient.com,Claude',
-      'DOMAIN-SUFFIX,claudeusercontent.com,Claude',
-      'DOMAIN,servd-anthropic-website.b-cdn.net,Claude',
-      'DOMAIN,anthropic.com.cdn.cloudflare.net,Claude',
+      // 官方 geosite:anthropic：anthropic.com、claude.ai/com/dev、clau.de、mcp、usercontent。
+      'RULE-SET,anthropic,Claude',
+      // 控制台登录走 auth0，官方名单未收录。
       'DOMAIN,anthropic.auth0.com,Claude',
-      'DOMAIN,anthropic-com.ghost.io,Claude',
+      'DOMAIN,anthropic.com.cdn.cloudflare.net,Claude',
+      // 只钉这一个 Datadog 接收端，不用关键字，避免把别的网站拖进来。
       'DOMAIN,browser-intake-us5-datadoghq.com,Claude',
       // AS399358 / 160.79.104.0/21 属于 Anthropic。IPv6 只用已宣告的两条 /48，不用 /32。
-      // no-resolve：fake-ip 下不对每条连接做解析。
       'IP-CIDR,160.79.104.0/21,Claude,no-resolve',
       'IP-CIDR6,2607:6bc0::/48,Claude,no-resolve',
       'IP-CIDR6,2607:6bc0:11::/48,Claude,no-resolve',

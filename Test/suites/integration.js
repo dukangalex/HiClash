@@ -159,12 +159,18 @@ function runIntegrationTests(h, api, meta, fx, loadScript, scriptFile) {
     h.assertEqual(providers.private.proxy, '默认代理', '规则集应经代理下载，不向 jsDelivr 暴露真实 IP');
     h.assert(providers.bilibili, '应包含官方 bilibili 规则集');
     h.assert(providers.disney, '应包含官方 disney 规则集');
+    h.assert(providers.anthropic?.url?.endsWith('/geo/geosite/anthropic.mrs'), 'Claude 应改用官方 geosite:anthropic');
     h.assert(!providers.microsoft_ip, '官方未提供的 IP 规则集不应保留');
     h.assert(!providers.emos, '第三方 Emby 规则集应移除');
     const rules = out.rules.join('\n');
     h.assert(rules.includes('RULE-SET,bilibili,直连'));
     h.assert(!rules.includes('RULE-SET,onedrive,直连'), 'OneDrive 是境外服务，不应直连');
     h.assert(rules.includes('RULE-SET,disney,默认代理'));
+    h.assert(
+      rules.indexOf('RULE-SET,anthropic,Claude') >= 0 &&
+        rules.indexOf('RULE-SET,anthropic,Claude') < rules.indexOf('RULE-SET,ai,AI'),
+      '官方 anthropic 规则应排在 AI 前面，避免 Claude 掉进 AI 组',
+    );
   });
   h.test('非中国流量禁止直连：直连只留给本机、私网与中国规则集', () => {
     const allowedDirect =
