@@ -31,6 +31,7 @@ const ruleOptionsEnable = {
   YouTube: true, // YouTube视频平台
   Google: true, // Google服务
   AI: true, // 国外AI服务
+  GitHub: true, // GitHub代码托管平台
   Claude: true, // Claude / Anthropic 服务
   Microsoft: true, // Microsoft服务
   Apple: true, // Apple服务
@@ -53,6 +54,7 @@ const ruleOptionsEnable = {
   生成地区自动选择组: true, // 是否生成地区自动选择策略组
   隐藏地区手动选择组: false, // 是否隐藏地区手动选择策略组
   生成倍率组: true, // 是否生成低倍率/高倍率策略组
+  生成家宽节点组: true, // 是否生成家宽（住宅/原生 IP）节点策略组
   分流组添加所有节点: false, // 是否为分流策略组添加所有节点
   过滤低倍率节点: false, // 是否过滤低倍率节点
   过滤高倍率节点: false, // 是否过滤高倍率节点
@@ -960,8 +962,19 @@ const rateRegionDefinitions = [
 ];
 // @shared:end rateRegionDefinitions
 
-// 全部策略组定义（地区 + 倍率），统一用于节点匹配与归类
-const allRegionDefinitions = [...regionDefinitions, ...rateRegionDefinitions];
+// 定义家宽（住宅/原生 IP）节点策略组
+const homeRegionName = '家宽节点';
+
+const homeRegionDefinitions = [
+  {
+    name: homeRegionName,
+    regex: /家宽|住宅|原生\s*IP|家庭宽带|\bISP\b|\bRES\b|residential/i,
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Server.svg',
+  },
+];
+
+// 全部策略组定义（地区 + 倍率 + 家宽），统一用于节点匹配与归类
+const allRegionDefinitions = [...regionDefinitions, ...rateRegionDefinitions, ...homeRegionDefinitions];
 
 // Rule Providers 通用配置
 // @shared:begin ruleProviderCommonDomain — 由 Script/shared/ruleProviderCommonDomain.js 同步，请勿在此直接修改
@@ -1256,7 +1269,7 @@ const serviceConfigs = [
     rules: ['RULE-SET,ai,AI'],
   },
   {
-    name: 'Microsoft',
+    name: 'GitHub',
     baseOption: selectBaseOption,
     providers: {
       github: {
@@ -1265,6 +1278,14 @@ const serviceConfigs = [
         path: './ruleset/github.mrs',
         'path-in-bundle': 'geo/geosite/github.mrs',
       },
+    },
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/GitHub.svg',
+    rules: ['RULE-SET,github,GitHub'],
+  },
+  {
+    name: 'Microsoft',
+    baseOption: selectBaseOption,
+    providers: {
       microsoft: {
         ...ruleProviderCommonDomain,
         url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/microsoft.mrs',
@@ -1273,7 +1294,7 @@ const serviceConfigs = [
       },
     },
     icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Microsoft.svg',
-    rules: ['RULE-SET,github,默认代理', 'RULE-SET,microsoft,Microsoft'],
+    rules: ['RULE-SET,microsoft,Microsoft'],
   },
   {
     name: 'Apple',
@@ -1625,6 +1646,12 @@ function getMatchedRegions(proxyName) {
 const flagRegex = /[\u{1F1E6}-\u{1F1FF}]{2}/u;
 // @shared:begin normalizeProxyName — 由 Script/shared/normalizeProxyName.js 同步，请勿在此直接修改
 function normalizeProxyName(proxy) {
+  // 清理零宽/不可见字符，避免打断地区与倍率匹配（移植自上游）
+  const invisibleCharsRegex = /[\u00AD\u180E\u200B\u200E\u200F\u202A-\u202E\u2060-\u206F\uFEFF\u115F\u1160\u3164\uFFA0]/g;
+  if (typeof proxy.name === 'string') {
+    proxy = { ...proxy, name: proxy.name.replace(invisibleCharsRegex, '') };
+  }
+
   const originalName = proxy.name;
 
   const flag = originalName.match(flagRegex)?.[0];
@@ -1926,7 +1953,12 @@ function buildRegionGroups(filteredProxies, customProxies) {
     }
   }
   const generatedRegionGroups = allRegionDefinitions
-    .filter((r) => regionGroups[r.name].length > 0 && (generateRateGroupEnabled || !rateRegionDefinitions.includes(r)))
+    .filter((r) => {
+    if (regionGroups[r.name].length === 0) return false;
+    if (rateRegionDefinitions.includes(r) && !generateRateGroupEnabled) return false;
+    if (homeRegionDefinitions.includes(r) && !activeRuleOptions.生成家宽节点组) return false;
+    return true;
+  })
     .flatMap((r) => createRegionGroup(r.name, r.icon, regionGroups[r.name]));
 
   if (otherProxies.length > 0) {
