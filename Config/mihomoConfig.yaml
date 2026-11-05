@@ -103,7 +103,7 @@ dns:
   respect-rules: false
   fake-ip-range: 198.18.0.1/15
   fake-ip-range6: 2001:2::1/48
-  fake-ip-filter: ['rule-set:private', 'rule-set:fakeip_filter', 'rule-set:geolocation-cn', 'rule-set:googlefcm']
+  fake-ip-filter: ['rule-set:private', 'rule-set:fakeip_filter', 'rule-set:cn', 'rule-set:googlefcm']
   default-nameserver: *defaultDNS
   proxy-server-nameserver: *proxyServerDNS
   nameserver: *foreignDNS
