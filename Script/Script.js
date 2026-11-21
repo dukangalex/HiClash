@@ -174,7 +174,7 @@ const regionDefinitions = [
     name: '美国',
     flag: '🇺🇸',
     regex: new RegExp(
-      '🇺🇸|美国|(?:^|[^A-Za-z])US(?:$|[^A-Za-z])|(?:^|[^A-Za-z])USA(?:$|[^A-Za-z])|america|united[\\s_-]*states|los[\\s_-]*angeles|洛杉矶|san[\\s_-]*jose|圣何塞|纽约|new[\\s_-]*york|芝加哥|chicago|达拉斯|dallas|西雅图|seattle|硅谷|矽谷|silicon|迈阿密|miami|凤凰城|phoenix',
+      '🇺🇸|美国|(?:^|[^A-Za-z])US(?:$|[^A-Za-z])|(?:^|[^A-Za-z])USA(?:$|[^A-Za-z])|america|united[\\s_-]*states|los[\\s_-]*angeles|洛杉矶|san[\\s_-]*jose|圣何塞|纽约|new[\\s_-]*york|芝加哥|chicago|达拉斯|dallas|西雅图|seattle|硅谷|矽谷|silicon|迈阿密|miami|凤凰城|phoenix|南卡罗来纳|北卡罗来纳|卡罗来纳|德克萨斯|德州|宾夕法尼亚|宾州|佐治亚|加利福尼亚|加州|佛罗里达|佛州|弗吉尼亚|维吉尼亚|华盛顿|俄勒冈|内华达|亚利桑那|科罗拉多|犹他州|伊利诺伊|俄亥俄|密歇根|明尼苏达|威斯康星|田纳西|密苏里|印第安纳|阿拉巴马|路易斯安那|肯塔基|俄克拉荷马|阿肯色|密西西比|堪萨斯|内布拉斯加|新墨西哥|爱达荷|蒙大拿|怀俄明|达科他|阿拉斯加|夏威夷|马里兰|新泽西|康涅狄格|马萨诸塞|休斯顿|波士顿|丹佛|亚特兰大|波特兰|拉斯维加斯|盐湖城|奥斯汀|圣地亚哥|旧金山|萨克拉门托|夏洛特|纳什维尔|孟菲斯|哥伦布|底特律|密尔沃基|克利夫兰|匹兹堡|辛辛那提|圣路易斯|巴尔的摩|里士满|哈特福德|布法罗|罗利|檀香山|火奴鲁鲁|安克雷奇|texas|pennsylvania|carolina|georgia|florida|california|virginia|oregon|nevada|arizona|colorado|ohio|michigan|minnesota|wisconsin|tennessee|missouri|indiana|alabama|louisiana|kentucky|oklahoma|arkansas|mississippi|kansas|nebraska|idaho|montana|wyoming|dakota|alaska|hawaii|maryland|connecticut|massachusetts|houston|boston|denver|atlanta|portland|las[\\s_-]*vegas|salt[\\s_-]*lake|austin|san[\\s_-]*diego|san[\\s_-]*francisco|sacramento|charlotte|nashville|memphis|columbus|detroit|milwaukee|cleveland|pittsburgh|cincinnati|st[\\s._-]*louis|baltimore|richmond|hartford|buffalo|raleigh|honolulu|anchorage|new[\\s_-]*jersey|at&t|verizon|t[\\s_-]*mobile|comcast|xfinity|spectrum|windstream|frontier|centurylink|google[\\s_-]*fiber',
       'i',
     ),
     icon: '',
@@ -319,7 +319,7 @@ const regionDefinitions = [
   {
     name: '奥地利',
     flag: '🇦🇹',
-    regex: new RegExp('🇦🇹|奥地利|(?:^|[^A-Za-z])AT(?:$|[^A-Za-z])|austria|vienna|维也纳', 'i'),
+    regex: new RegExp('🇦🇹|奥地利|(?:^|[^A-Za-z])AT(?:$|[^A-Za-z&＆])|austria|vienna|维也纳', 'i'),
     icon: '',
   },
   {
