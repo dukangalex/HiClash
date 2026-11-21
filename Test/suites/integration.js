@@ -114,7 +114,7 @@ function runIntegrationTests(h, api, meta, fx, loadScript, scriptFile) {
       h.assertDeep(hk.use, ['provider1'], '香港组应接入 proxy-provider');
       h.assertDeep(hkAuto.use, ['provider1'], '香港自动组应接入 proxy-provider');
       h.assert(hk.proxies.includes('🇭🇰 Provider 香港 01'), '香港组应保留原始节点名称');
-      h.assertEqual(hkAuto.filter, '(?i)🇭🇰|香港|\\bHKG?\\b|hong[\\s_-]*kong', '香港自动组应使用地区识别过滤器');
+      h.assertEqual(hkAuto.filter, '(?i)🇭🇰|香港|\\bHKG?\\b|hong[\\s_-]*kong|pccw|hkt|九龙|kowloon', '香港自动组应使用地区识别过滤器');
     });
   }
 
