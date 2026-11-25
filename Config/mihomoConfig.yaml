@@ -421,7 +421,7 @@ group_common:
       tolerance: 50,
       include-all: true,
       exclude-type: 'DIRECT',
-      icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Auto.svg',
+      icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Auto.svg',
       hidden: true,
     }
 
@@ -437,7 +437,7 @@ group_common:
       strategy: 'sticky-sessions',
       include-all: true,
       exclude-type: 'DIRECT',
-      icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/RoundRobin.svg',
+      icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/RoundRobin.svg',
       hidden: true,
     }
 
@@ -526,13 +526,13 @@ proxy-groups:
         '故障转移',
         '其他节点',
       ]
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Proxy.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Proxy.svg'
 
   - name: '手动选择'
     <<: *group_common_select
     include-all: true
     exclude-type: 'DIRECT'
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Static.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Static.svg'
 
   - name: '自动选择'
     <<: *group_common_auto
@@ -550,114 +550,114 @@ proxy-groups:
     max-failed-times: 3
     empty-fallback: REJECT
     lazy: true
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Auto.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Auto.svg'
 
   - name: 'FCM'
     <<: [*group_common_select, *proxies_direct]
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Fcm.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Fcm.svg'
 
   - name: 'YouTube'
     <<: [*group_common_select, *proxies_default]
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/YouTube.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/YouTube.svg'
 
   - name: 'Google'
     <<: [*group_common_select, *proxies_default]
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Google.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Google.svg'
 
   - name: 'Claude'
     <<: [*group_common_select, *proxies_direct]
     default-selected: '美国'
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Proxy.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Proxy.svg'
 
   - name: 'AI'
     <<: [*group_common_select, *proxies_default]
     default-selected: '美国'
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/ChatGPT.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/ChatGPT.svg'
 
   - name: 'Microsoft'
     <<: [*group_common_select, *proxies_direct]
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Microsoft.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Microsoft.svg'
 
   - name: 'Apple'
     <<: [*group_common_select, *proxies_direct]
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Apple.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Apple.svg'
 
   - name: 'Telegram'
     <<: [*group_common_select, *proxies_default]
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Telegram.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Telegram.svg'
 
   - name: 'Steam'
     <<: [*group_common_select, *proxies_direct]
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Steam.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Steam.svg'
 
   - name: 'TikTok'
     default-selected: '日本'
     <<: [*group_common_select, *proxies_default]
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/TikTok.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/TikTok.svg'
 
   - name: 'Twitter'
     <<: [*group_common_select, *proxies_default]
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Twitter.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Twitter.svg'
 
   - name: 'Meta'
     <<: [*group_common_select, *proxies_default]
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Meta.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Meta.svg'
 
   - name: 'Line'
     <<: [*group_common_select, *proxies_default]
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Line.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Line.svg'
 
   - name: 'Netflix'
     <<: [*group_common_select, *proxies_default]
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Netflix.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Netflix.svg'
 
   - name: 'Emby'
     <<: [*group_common_select, *proxies_direct]
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Emby.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Emby.svg'
 
   - name: 'PikPak'
     <<: [*group_common_select, *proxies_direct]
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Pikpak.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Pikpak.svg'
 
   - name: 'Spotify'
     <<: [*group_common_select, *proxies_direct]
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Spotify.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Spotify.svg'
 
   - name: 'Crypto'
     default-selected: '日本'
     <<: [*group_common_select, *proxies_default]
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Bitcoin.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Bitcoin.svg'
 
   - name: 'EHentai'
     default-selected: '美国'
     <<: [*group_common_select, *proxies_direct]
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Ehentai.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Ehentai.svg'
 
   - name: '远控工具'
     <<: *group_common_select
     proxies: ['默认代理', 'REJECT-DROP']
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Remote.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Remote.svg'
 
   - name: 'AdBlock'
     <<: [*group_common_select, *proxies_reject]
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/AdBlock.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/AdBlock.svg'
 
   - name: '漏网之鱼'
     <<: *group_common_select
     proxies: ['默认代理']
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Stack.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Stack.svg'
 
   - name: '直连'
     <<: *group_common_select
     proxies: ['🇨🇳 直连 | 双栈', '🇨🇳 直连 | IPv4优先', '🇨🇳 直连 | IPv6优先', '🇨🇳 直连 | 仅IPv4', '🇨🇳 直连 | 仅IPv6']
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/China.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/China.svg'
 
   # 定义地区策略组
   - name: '香港'
     <<: [*group_common_select, *HK_filter]
     include-all: true
     proxies: ['香港-自动选择']
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/HongKong.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/HongKong.svg'
   - name: '香港-自动选择'
     <<: [*group_common_auto, *HK_filter]
 
@@ -665,7 +665,7 @@ proxy-groups:
     <<: [*group_common_select, *JP_filter]
     include-all: true
     proxies: ['日本-自动选择']
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Japan.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Japan.svg'
   - name: '日本-自动选择'
     <<: [*group_common_auto, *JP_filter]
 
@@ -673,7 +673,7 @@ proxy-groups:
     <<: [*group_common_select, *US_filter]
     include-all: true
     proxies: ['美国-自动选择']
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/America.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/America.svg'
   - name: '美国-自动选择'
     <<: [*group_common_auto, *US_filter]
 
@@ -681,7 +681,7 @@ proxy-groups:
     <<: [*group_common_select, *SG_filter]
     include-all: true
     proxies: ['新加坡-自动选择']
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Singapore.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Singapore.svg'
   - name: '新加坡-自动选择'
     <<: [*group_common_auto, *SG_filter]
 
@@ -689,7 +689,7 @@ proxy-groups:
     <<: [*group_common_select, *TW_filter]
     include-all: true
     proxies: ['台湾-自动选择']
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Taiwan.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Taiwan.svg'
   - name: '台湾-自动选择'
     <<: [*group_common_auto, *TW_filter]
 
@@ -697,7 +697,7 @@ proxy-groups:
     <<: [*group_common_select, *low_filter]
     include-all: true
     proxies: ['低倍率节点-自动选择']
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Available.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Available.svg'
   - name: '低倍率节点-自动选择'
     <<: [*group_common_auto, *low_filter]
 
@@ -705,7 +705,7 @@ proxy-groups:
     <<: [*group_common_select, *high_filter]
     include-all: true
     proxies: ['高倍率节点-自动选择']
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Airport.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Airport.svg'
   - name: '高倍率节点-自动选择'
     <<: [*group_common_auto, *high_filter]
 
@@ -713,7 +713,7 @@ proxy-groups:
     <<: [*group_common_select, *exclude_filter]
     include-all: true
     proxies: ['其他节点-自动选择']
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/WorldMap.svg'
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/WorldMap.svg'
   - name: '其他节点-自动选择'
     <<: [*group_common_auto, *exclude_filter]
 

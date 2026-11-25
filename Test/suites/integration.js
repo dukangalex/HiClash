@@ -114,7 +114,11 @@ function runIntegrationTests(h, api, meta, fx, loadScript, scriptFile) {
       h.assertDeep(hk.use, ['provider1'], '香港组应接入 proxy-provider');
       h.assertDeep(hkAuto.use, ['provider1'], '香港自动组应接入 proxy-provider');
       h.assert(hk.proxies.includes('🇭🇰 Provider 香港 01'), '香港组应保留原始节点名称');
-      h.assertEqual(hkAuto.filter, '(?i)🇭🇰|香港|\\bHKG?\\b|hong[\\s_-]*kong|pccw|hkt|九龙|kowloon', '香港自动组应使用地区识别过滤器');
+      h.assertEqual(
+        hkAuto.filter,
+        '(?i)🇭🇰|香港|\\bHKG?\\b|hong[\\s_-]*kong|pccw|hkt|九龙|kowloon',
+        '香港自动组应使用地区识别过滤器',
+      );
     });
   }
 
@@ -186,8 +190,20 @@ function runIntegrationTests(h, api, meta, fx, loadScript, scriptFile) {
       for (const group of out['proxy-groups']) {
         if (group.name === '直连') continue;
         h.assert(!(group.proxies || []).includes('直连'), group.name + ' 不应提供直连选项');
-        h.assert(!(group.proxies || []).includes('DIRECT'), group.name + ' 不应包含 DIRECT');
+        // 例外（T289，用户 2026-11-23 拍板）：远控工具组提供 DIRECT 备选（远控/Tailscale
+        // 打洞直连需求，顺序定版 默认代理/DIRECT/REJECT-DROP），默认仍为默认代理；
+        // 其余组维持非中国流量禁止包含 DIRECT。
+        if (group.name === '远控工具') {
+          h.assertEqual(
+            JSON.stringify(group.proxies),
+            JSON.stringify(['默认代理', 'DIRECT', 'REJECT-DROP']),
+            '远控工具选项应为 默认代理/DIRECT/REJECT-DROP（T289 定版顺序）',
+          );
+        } else {
+          h.assert(!(group.proxies || []).includes('DIRECT'), group.name + ' 不应包含 DIRECT');
+        }
         h.assert(group['default-selected'] !== '直连', group.name + ' 不应默认直连');
+        h.assert(group['default-selected'] !== 'DIRECT', group.name + ' 不应默认 DIRECT');
       }
       for (const [name, p] of Object.entries(out['rule-providers'] || {})) {
         h.assert(p.proxy !== 'DIRECT', name + ' 规则集不应直连下载');

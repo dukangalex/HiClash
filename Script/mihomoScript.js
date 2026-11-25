@@ -205,21 +205,48 @@ const directProxies = [
 // 定义地区策略组
 // @shared:begin regionDefinitions — 由 Script/shared/regionDefinitions.js 同步，请勿在此直接修改
 const regionDefinitions = [
-  { name: '香港', flag: '🇭🇰', regex: new RegExp('🇭🇰|香港|\\bHKG?\\b|hong[\\s_-]*kong|pccw|hkt|九龙|kowloon', 'i'), icon: '' },
+  {
+    name: '香港',
+    flag: '🇭🇰',
+    regex: new RegExp('🇭🇰|香港|\\bHKG?\\b|hong[\\s_-]*kong|pccw|hkt|九龙|kowloon', 'i'),
+    icon: '',
+  },
   {
     name: '台湾',
     flag: '🇹🇼',
-    regex: new RegExp('🇹🇼|(?:^|[^A-Za-z])TPE(?:$|[^A-Za-z])|台湾|台北|高雄|新北|桃园|新竹|\\bTWN?\\b|taiwan|taipei|hinet|台中|taichung|台南|tainan', 'i'),
+    regex: new RegExp(
+      '🇹🇼|(?:^|[^A-Za-z])TPE(?:$|[^A-Za-z])|台湾|台北|高雄|新北|桃园|新竹|\\bTWN?\\b|taiwan|taipei|hinet|台中|taichung|台南|tainan',
+      'i',
+    ),
     icon: '',
   },
-  { name: '日本', flag: '🇯🇵', regex: new RegExp('🇯🇵|日本|\\bJPN?\\b|japan|tokyo|osaka|东京|大阪|名古屋|nagoya|福冈|fukuoka|札幌|sapporo|成田|narita|softbank|(?:^|[^A-Za-z])NRT(?:$|[^A-Za-z])|(?:^|[^A-Za-z])HND(?:$|[^A-Za-z])', 'i'), icon: '' },
+  {
+    name: '日本',
+    flag: '🇯🇵',
+    regex: new RegExp(
+      '🇯🇵|日本|\\bJPN?\\b|japan|tokyo|osaka|东京|大阪|名古屋|nagoya|福冈|fukuoka|札幌|sapporo|成田|narita|softbank|(?:^|[^A-Za-z])NRT(?:$|[^A-Za-z])|(?:^|[^A-Za-z])HND(?:$|[^A-Za-z])',
+      'i',
+    ),
+    icon: '',
+  },
   {
     name: '韩国',
     flag: '🇰🇷',
-    regex: new RegExp('🇰🇷|韩国|(?:^|[^A-Za-z])KR(?:$|[^A-Za-z])|korea|seoul|首尔|仁川|incheon|釜山|busan|(?:^|[^A-Za-z])ICN(?:$|[^A-Za-z])', 'i'),
+    regex: new RegExp(
+      '🇰🇷|韩国|(?:^|[^A-Za-z])KR(?:$|[^A-Za-z])|korea|seoul|首尔|仁川|incheon|釜山|busan|(?:^|[^A-Za-z])ICN(?:$|[^A-Za-z])',
+      'i',
+    ),
     icon: '',
   },
-  { name: '新加坡', flag: '🇸🇬', regex: new RegExp('🇸🇬|新加坡|狮城|\\bSGP?\\b|singapore|樟宜|changi|singtel|starhub|(?:^|[^A-Za-z])SIN(?:$|[^A-Za-z])', 'i'), icon: '' },
+  {
+    name: '新加坡',
+    flag: '🇸🇬',
+    regex: new RegExp(
+      '🇸🇬|新加坡|狮城|\\bSGP?\\b|singapore|樟宜|changi|singtel|starhub|(?:^|[^A-Za-z])SIN(?:$|[^A-Za-z])',
+      'i',
+    ),
+    icon: '',
+  },
   {
     name: '美国',
     flag: '🇺🇸',
@@ -232,13 +259,19 @@ const regionDefinitions = [
   {
     name: '英国',
     flag: '🇬🇧',
-    regex: new RegExp('🇬🇧|英国|(?:^|[^A-Za-z0-9])GB(?:$|[^A-Za-z])|united[\\s_-]*kingdom|london|伦敦|曼彻斯特|manchester|爱丁堡|edinburgh|(?:^|[^A-Za-z])UK(?:$|[^A-Za-z])|(?:^|[^A-Za-z])LHR(?:$|[^A-Za-z])', 'i'),
+    regex: new RegExp(
+      '🇬🇧|英国|(?:^|[^A-Za-z0-9])GB(?:$|[^A-Za-z])|united[\\s_-]*kingdom|london|伦敦|曼彻斯特|manchester|爱丁堡|edinburgh|(?:^|[^A-Za-z])UK(?:$|[^A-Za-z])|(?:^|[^A-Za-z])LHR(?:$|[^A-Za-z])',
+      'i',
+    ),
     icon: '',
   },
   {
     name: '德国',
     flag: '🇩🇪',
-    regex: new RegExp('🇩🇪|德国|(?:^|[^A-Za-z])DE(?:$|[^A-Za-z])|germany|frankfurt|法兰克福|柏林|berlin|慕尼黑|munich|汉堡|hamburg|(?:^|[^A-Za-z])FRA(?:$|[^A-Za-z])', 'i'),
+    regex: new RegExp(
+      '🇩🇪|德国|(?:^|[^A-Za-z])DE(?:$|[^A-Za-z])|germany|frankfurt|法兰克福|柏林|berlin|慕尼黑|munich|汉堡|hamburg|(?:^|[^A-Za-z])FRA(?:$|[^A-Za-z])',
+      'i',
+    ),
     icon: '',
   },
   {
@@ -250,13 +283,19 @@ const regionDefinitions = [
   {
     name: '马来西亚',
     flag: '🇲🇾',
-    regex: new RegExp('🇲🇾|马来西亚|(?:^|[^A-Za-z])MY(?:$|[^A-Za-z])|malaysia|kuala[\\s_-]*lumpur|吉隆坡|槟城|penang|新山|johor', 'i'),
+    regex: new RegExp(
+      '🇲🇾|马来西亚|(?:^|[^A-Za-z])MY(?:$|[^A-Za-z])|malaysia|kuala[\\s_-]*lumpur|吉隆坡|槟城|penang|新山|johor',
+      'i',
+    ),
     icon: '',
   },
   {
     name: '泰国',
     flag: '🇹🇭',
-    regex: new RegExp('🇹🇭|泰国|(?:^|[^A-Za-z])TH(?:$|[^A-Za-z])|thailand|bangkok|曼谷|清迈|chiang[\s_-]*mai|普吉|phuket', 'i'),
+    regex: new RegExp(
+      '🇹🇭|泰国|(?:^|[^A-Za-z])TH(?:$|[^A-Za-z])|thailand|bangkok|曼谷|清迈|chiang[\s_-]*mai|普吉|phuket',
+      'i',
+    ),
     icon: '',
   },
   {
@@ -283,37 +322,55 @@ const regionDefinitions = [
   {
     name: '印度',
     flag: '🇮🇳',
-    regex: new RegExp('🇮🇳|印度|(?:^|[^A-Za-z])IN(?:$|[^A-Za-z])|india|mumbai|孟买|delhi|德里|班加罗尔|bangalore|bengaluru|钦奈|chennai|海得拉巴|hyderabad', 'i'),
+    regex: new RegExp(
+      '🇮🇳|印度|(?:^|[^A-Za-z])IN(?:$|[^A-Za-z])|india|mumbai|孟买|delhi|德里|班加罗尔|bangalore|bengaluru|钦奈|chennai|海得拉巴|hyderabad',
+      'i',
+    ),
     icon: '',
   },
   {
     name: '澳大利亚',
     flag: '🇦🇺',
-    regex: new RegExp('🇦🇺|澳大利亚|澳洲|(?:^|[^A-Za-z])AU(?:$|[^A-Za-z])|australia|sydney|悉尼|melbourne|墨尔本|布里斯班|brisbane|珀斯|perth|(?:^|[^A-Za-z])SYD(?:$|[^A-Za-z])|(?:^|[^A-Za-z])MEL(?:$|[^A-Za-z])', 'i'),
+    regex: new RegExp(
+      '🇦🇺|澳大利亚|澳洲|(?:^|[^A-Za-z])AU(?:$|[^A-Za-z])|australia|sydney|悉尼|melbourne|墨尔本|布里斯班|brisbane|珀斯|perth|(?:^|[^A-Za-z])SYD(?:$|[^A-Za-z])|(?:^|[^A-Za-z])MEL(?:$|[^A-Za-z])',
+      'i',
+    ),
     icon: '',
   },
   {
     name: '法国',
     flag: '🇫🇷',
-    regex: new RegExp('🇫🇷|法国|(?:^|[^A-Za-z])FR(?:$|[^A-Za-z])|france|paris|巴黎|马赛|marseille|里昂|lyon|(?:^|[^A-Za-z])CDG(?:$|[^A-Za-z])', 'i'),
+    regex: new RegExp(
+      '🇫🇷|法国|(?:^|[^A-Za-z])FR(?:$|[^A-Za-z])|france|paris|巴黎|马赛|marseille|里昂|lyon|(?:^|[^A-Za-z])CDG(?:$|[^A-Za-z])',
+      'i',
+    ),
     icon: '',
   },
   {
     name: '俄罗斯',
     flag: '🇷🇺',
-    regex: new RegExp('🇷🇺|俄罗斯|(?:^|[^A-Za-z])RU(?:$|[^A-Za-z])|russia|moscow|莫斯科|圣彼得堡|st[\s_-]*petersburg|saint[\s_-]*petersburg', 'i'),
+    regex: new RegExp(
+      '🇷🇺|俄罗斯|(?:^|[^A-Za-z])RU(?:$|[^A-Za-z])|russia|moscow|莫斯科|圣彼得堡|st[\s_-]*petersburg|saint[\s_-]*petersburg',
+      'i',
+    ),
     icon: '',
   },
   {
     name: '意大利',
     flag: '🇮🇹',
-    regex: new RegExp('🇮🇹|意大利|(?:^|[^A-Za-z])IT(?:$|[^A-Za-z])|\\bitaly\\b|rome|罗马|米兰|milan|那不勒斯|naples', 'i'),
+    regex: new RegExp(
+      '🇮🇹|意大利|(?:^|[^A-Za-z])IT(?:$|[^A-Za-z])|\\bitaly\\b|rome|罗马|米兰|milan|那不勒斯|naples',
+      'i',
+    ),
     icon: '',
   },
   {
     name: '加拿大',
     flag: '🇨🇦',
-    regex: new RegExp('🇨🇦|加拿大|(?:^|[^A-Za-z])CA(?:$|[^A-Za-z])|canada|toronto|多伦多|温哥华|vancouver|蒙特利尔|montreal|(?:^|[^A-Za-z])YYZ(?:$|[^A-Za-z])|(?:^|[^A-Za-z])YVR(?:$|[^A-Za-z])', 'i'),
+    regex: new RegExp(
+      '🇨🇦|加拿大|(?:^|[^A-Za-z])CA(?:$|[^A-Za-z])|canada|toronto|多伦多|温哥华|vancouver|蒙特利尔|montreal|(?:^|[^A-Za-z])YYZ(?:$|[^A-Za-z])|(?:^|[^A-Za-z])YVR(?:$|[^A-Za-z])',
+      'i',
+    ),
     icon: '',
   },
   {
@@ -773,79 +830,326 @@ const regionDefinitions = [
     regex: new RegExp('🇿🇼|津巴布韦|(?:^|[^A-Za-z])ZW(?:$|[^A-Za-z])|zimbabwe', 'i'),
     icon: '',
   },
-  { name: '阿富汗', flag: '🇦🇫', regex: new RegExp('🇦🇫|(?:^|[^A-Za-z])AF(?:$|[^A-Za-z])|阿富汗|afghanistan|喀布尔|kabul', 'i'), icon: '' },
-  { name: '亚美尼亚', flag: '🇦🇲', regex: new RegExp('🇦🇲|(?:^|[^A-Za-z])AM(?:$|[^A-Za-z])|亚美尼亚|armenia|埃里温|yerevan', 'i'), icon: '' },
-  { name: '阿塞拜疆', flag: '🇦🇿', regex: new RegExp('🇦🇿|(?:^|[^A-Za-z])AZ(?:$|[^A-Za-z])|阿塞拜疆|azerbaijan|巴库|baku', 'i'), icon: '' },
-  { name: '巴林', flag: '🇧🇭', regex: new RegExp('🇧🇭|(?:^|[^A-Za-z])BH(?:$|[^A-Za-z])|巴林|bahrain|麦纳麦|manama', 'i'), icon: '' },
-  { name: '孟加拉国', flag: '🇧🇩', regex: new RegExp('🇧🇩|(?:^|[^A-Za-z])BD(?:$|[^A-Za-z])|孟加拉国|bangladesh|达卡|dhaka', 'i'), icon: '' },
+  {
+    name: '阿富汗',
+    flag: '🇦🇫',
+    regex: new RegExp('🇦🇫|(?:^|[^A-Za-z])AF(?:$|[^A-Za-z])|阿富汗|afghanistan|喀布尔|kabul', 'i'),
+    icon: '',
+  },
+  {
+    name: '亚美尼亚',
+    flag: '🇦🇲',
+    regex: new RegExp('🇦🇲|(?:^|[^A-Za-z])AM(?:$|[^A-Za-z])|亚美尼亚|armenia|埃里温|yerevan', 'i'),
+    icon: '',
+  },
+  {
+    name: '阿塞拜疆',
+    flag: '🇦🇿',
+    regex: new RegExp('🇦🇿|(?:^|[^A-Za-z])AZ(?:$|[^A-Za-z])|阿塞拜疆|azerbaijan|巴库|baku', 'i'),
+    icon: '',
+  },
+  {
+    name: '巴林',
+    flag: '🇧🇭',
+    regex: new RegExp('🇧🇭|(?:^|[^A-Za-z])BH(?:$|[^A-Za-z])|巴林|bahrain|麦纳麦|manama', 'i'),
+    icon: '',
+  },
+  {
+    name: '孟加拉国',
+    flag: '🇧🇩',
+    regex: new RegExp('🇧🇩|(?:^|[^A-Za-z])BD(?:$|[^A-Za-z])|孟加拉国|bangladesh|达卡|dhaka', 'i'),
+    icon: '',
+  },
   { name: '不丹', flag: '🇧🇹', regex: new RegExp('🇧🇹|(?:^|[^A-Za-z])BT(?:$|[^A-Za-z])|不丹|bhutan', 'i'), icon: '' },
-  { name: '格鲁吉亚', flag: '🇬🇪', regex: new RegExp('🇬🇪|(?:^|[^A-Za-z])GE(?:$|[^A-Za-z])|格鲁吉亚|georgia|第比利斯|tbilisi', 'i'), icon: '' },
-  { name: '伊朗', flag: '🇮🇷', regex: new RegExp('🇮🇷|(?:^|[^A-Za-z])IR(?:$|[^A-Za-z])|伊朗|iran|德黑兰|tehran', 'i'), icon: '' },
-  { name: '伊拉克', flag: '🇮🇶', regex: new RegExp('🇮🇶|(?:^|[^A-Za-z])IQ(?:$|[^A-Za-z])|伊拉克|iraq|巴格达|baghdad', 'i'), icon: '' },
-  { name: '以色列', flag: '🇮🇱', regex: new RegExp('🇮🇱|(?:^|[^A-Za-z])IL(?:$|[^A-Za-z])|以色列|israel|特拉维夫|tel[\s_-]*aviv|耶路撒冷|jerusalem', 'i'), icon: '' },
-  { name: '约旦', flag: '🇯🇴', regex: new RegExp('🇯🇴|(?:^|[^A-Za-z])JO(?:$|[^A-Za-z])|约旦|jordan|安曼|amman', 'i'), icon: '' },
-  { name: '哈萨克斯坦', flag: '🇰🇿', regex: new RegExp('🇰🇿|(?:^|[^A-Za-z])KZ(?:$|[^A-Za-z])|哈萨克斯坦|kazakhstan|阿拉木图|almaty|阿斯塔纳|astana', 'i'), icon: '' },
+  {
+    name: '格鲁吉亚',
+    flag: '🇬🇪',
+    regex: new RegExp('🇬🇪|(?:^|[^A-Za-z])GE(?:$|[^A-Za-z])|格鲁吉亚|georgia|第比利斯|tbilisi', 'i'),
+    icon: '',
+  },
+  {
+    name: '伊朗',
+    flag: '🇮🇷',
+    regex: new RegExp('🇮🇷|(?:^|[^A-Za-z])IR(?:$|[^A-Za-z])|伊朗|iran|德黑兰|tehran', 'i'),
+    icon: '',
+  },
+  {
+    name: '伊拉克',
+    flag: '🇮🇶',
+    regex: new RegExp('🇮🇶|(?:^|[^A-Za-z])IQ(?:$|[^A-Za-z])|伊拉克|iraq|巴格达|baghdad', 'i'),
+    icon: '',
+  },
+  {
+    name: '以色列',
+    flag: '🇮🇱',
+    regex: new RegExp(
+      '🇮🇱|(?:^|[^A-Za-z])IL(?:$|[^A-Za-z])|以色列|israel|特拉维夫|tel[\s_-]*aviv|耶路撒冷|jerusalem',
+      'i',
+    ),
+    icon: '',
+  },
+  {
+    name: '约旦',
+    flag: '🇯🇴',
+    regex: new RegExp('🇯🇴|(?:^|[^A-Za-z])JO(?:$|[^A-Za-z])|约旦|jordan|安曼|amman', 'i'),
+    icon: '',
+  },
+  {
+    name: '哈萨克斯坦',
+    flag: '🇰🇿',
+    regex: new RegExp('🇰🇿|(?:^|[^A-Za-z])KZ(?:$|[^A-Za-z])|哈萨克斯坦|kazakhstan|阿拉木图|almaty|阿斯塔纳|astana', 'i'),
+    icon: '',
+  },
   { name: '科威特', flag: '🇰🇼', regex: new RegExp('🇰🇼|(?:^|[^A-Za-z])KW(?:$|[^A-Za-z])|科威特|kuwait', 'i'), icon: '' },
-  { name: '吉尔吉斯斯坦', flag: '🇰🇬', regex: new RegExp('🇰🇬|(?:^|[^A-Za-z])KG(?:$|[^A-Za-z])|吉尔吉斯斯坦|kyrgyzstan|比什凯克|bishkek', 'i'), icon: '' },
-  { name: '黎巴嫩', flag: '🇱🇧', regex: new RegExp('🇱🇧|(?:^|[^A-Za-z])LB(?:$|[^A-Za-z])|黎巴嫩|lebanon|贝鲁特|beirut', 'i'), icon: '' },
-  { name: '马尔代夫', flag: '🇲🇻', regex: new RegExp('🇲🇻|(?:^|[^A-Za-z])MV(?:$|[^A-Za-z])|马尔代夫|maldives', 'i'), icon: '' },
-  { name: '蒙古', flag: '🇲🇳', regex: new RegExp('🇲🇳|(?:^|[^A-Za-z])MN(?:$|[^A-Za-z])|蒙古|mongolia|乌兰巴托|ulaanbaatar', 'i'), icon: '' },
-  { name: '尼泊尔', flag: '🇳🇵', regex: new RegExp('🇳🇵|(?:^|[^A-Za-z])NP(?:$|[^A-Za-z])|尼泊尔|nepal|加德满都|kathmandu', 'i'), icon: '' },
-  { name: '朝鲜', flag: '🇰🇵', regex: new RegExp('🇰🇵|(?:^|[^A-Za-z])KP(?:$|[^A-Za-z])|朝鲜|north[\\s_-]*korea|dprk', 'i'), icon: '' },
-  { name: '阿曼', flag: '🇴🇲', regex: new RegExp('🇴🇲|(?:^|[^A-Za-z])OM(?:$|[^A-Za-z])|阿曼|oman|马斯喀特|muscat', 'i'), icon: '' },
-  { name: '巴基斯坦', flag: '🇵🇰', regex: new RegExp('🇵🇰|(?:^|[^A-Za-z])PK(?:$|[^A-Za-z])|巴基斯坦|pakistan|卡拉奇|karachi|伊斯兰堡|islamabad', 'i'), icon: '' },
-  { name: '巴勒斯坦', flag: '🇵🇸', regex: new RegExp('🇵🇸|(?:^|[^A-Za-z])PS(?:$|[^A-Za-z])|巴勒斯坦|palestine|west[\\s_-]*bank|gaza', 'i'), icon: '' },
-  { name: '卡塔尔', flag: '🇶🇦', regex: new RegExp('🇶🇦|(?:^|[^A-Za-z])QA(?:$|[^A-Za-z])|卡塔尔|qatar|多哈|doha', 'i'), icon: '' },
-  { name: '斯里兰卡', flag: '🇱🇰', regex: new RegExp('🇱🇰|(?:^|[^A-Za-z])LK(?:$|[^A-Za-z])|斯里兰卡|sri[\\s_-]*lanka|科伦坡|colombo', 'i'), icon: '' },
-  { name: '叙利亚', flag: '🇸🇾', regex: new RegExp('🇸🇾|(?:^|[^A-Za-z])SY(?:$|[^A-Za-z])|叙利亚|syria|大马士革|damascus', 'i'), icon: '' },
-  { name: '塔吉克斯坦', flag: '🇹🇯', regex: new RegExp('🇹🇯|(?:^|[^A-Za-z])TJ(?:$|[^A-Za-z])|塔吉克斯坦|tajikistan|杜尚别|dushanbe', 'i'), icon: '' },
-  { name: '东帝汶', flag: '🇹🇱', regex: new RegExp('🇹🇱|(?:^|[^A-Za-z])TL(?:$|[^A-Za-z])|东帝汶|timor[\\s_-]*leste|east[\\s_-]*timor', 'i'), icon: '' },
-  { name: '土库曼斯坦', flag: '🇹🇲', regex: new RegExp('🇹🇲|(?:^|[^A-Za-z])TM(?:$|[^A-Za-z])|土库曼斯坦|turkmenistan', 'i'), icon: '' },
+  {
+    name: '吉尔吉斯斯坦',
+    flag: '🇰🇬',
+    regex: new RegExp('🇰🇬|(?:^|[^A-Za-z])KG(?:$|[^A-Za-z])|吉尔吉斯斯坦|kyrgyzstan|比什凯克|bishkek', 'i'),
+    icon: '',
+  },
+  {
+    name: '黎巴嫩',
+    flag: '🇱🇧',
+    regex: new RegExp('🇱🇧|(?:^|[^A-Za-z])LB(?:$|[^A-Za-z])|黎巴嫩|lebanon|贝鲁特|beirut', 'i'),
+    icon: '',
+  },
+  {
+    name: '马尔代夫',
+    flag: '🇲🇻',
+    regex: new RegExp('🇲🇻|(?:^|[^A-Za-z])MV(?:$|[^A-Za-z])|马尔代夫|maldives', 'i'),
+    icon: '',
+  },
+  {
+    name: '蒙古',
+    flag: '🇲🇳',
+    regex: new RegExp('🇲🇳|(?:^|[^A-Za-z])MN(?:$|[^A-Za-z])|蒙古|mongolia|乌兰巴托|ulaanbaatar', 'i'),
+    icon: '',
+  },
+  {
+    name: '尼泊尔',
+    flag: '🇳🇵',
+    regex: new RegExp('🇳🇵|(?:^|[^A-Za-z])NP(?:$|[^A-Za-z])|尼泊尔|nepal|加德满都|kathmandu', 'i'),
+    icon: '',
+  },
+  {
+    name: '朝鲜',
+    flag: '🇰🇵',
+    regex: new RegExp('🇰🇵|(?:^|[^A-Za-z])KP(?:$|[^A-Za-z])|朝鲜|north[\\s_-]*korea|dprk', 'i'),
+    icon: '',
+  },
+  {
+    name: '阿曼',
+    flag: '🇴🇲',
+    regex: new RegExp('🇴🇲|(?:^|[^A-Za-z])OM(?:$|[^A-Za-z])|阿曼|oman|马斯喀特|muscat', 'i'),
+    icon: '',
+  },
+  {
+    name: '巴基斯坦',
+    flag: '🇵🇰',
+    regex: new RegExp('🇵🇰|(?:^|[^A-Za-z])PK(?:$|[^A-Za-z])|巴基斯坦|pakistan|卡拉奇|karachi|伊斯兰堡|islamabad', 'i'),
+    icon: '',
+  },
+  {
+    name: '巴勒斯坦',
+    flag: '🇵🇸',
+    regex: new RegExp('🇵🇸|(?:^|[^A-Za-z])PS(?:$|[^A-Za-z])|巴勒斯坦|palestine|west[\\s_-]*bank|gaza', 'i'),
+    icon: '',
+  },
+  {
+    name: '卡塔尔',
+    flag: '🇶🇦',
+    regex: new RegExp('🇶🇦|(?:^|[^A-Za-z])QA(?:$|[^A-Za-z])|卡塔尔|qatar|多哈|doha', 'i'),
+    icon: '',
+  },
+  {
+    name: '斯里兰卡',
+    flag: '🇱🇰',
+    regex: new RegExp('🇱🇰|(?:^|[^A-Za-z])LK(?:$|[^A-Za-z])|斯里兰卡|sri[\\s_-]*lanka|科伦坡|colombo', 'i'),
+    icon: '',
+  },
+  {
+    name: '叙利亚',
+    flag: '🇸🇾',
+    regex: new RegExp('🇸🇾|(?:^|[^A-Za-z])SY(?:$|[^A-Za-z])|叙利亚|syria|大马士革|damascus', 'i'),
+    icon: '',
+  },
+  {
+    name: '塔吉克斯坦',
+    flag: '🇹🇯',
+    regex: new RegExp('🇹🇯|(?:^|[^A-Za-z])TJ(?:$|[^A-Za-z])|塔吉克斯坦|tajikistan|杜尚别|dushanbe', 'i'),
+    icon: '',
+  },
+  {
+    name: '东帝汶',
+    flag: '🇹🇱',
+    regex: new RegExp('🇹🇱|(?:^|[^A-Za-z])TL(?:$|[^A-Za-z])|东帝汶|timor[\\s_-]*leste|east[\\s_-]*timor', 'i'),
+    icon: '',
+  },
+  {
+    name: '土库曼斯坦',
+    flag: '🇹🇲',
+    regex: new RegExp('🇹🇲|(?:^|[^A-Za-z])TM(?:$|[^A-Za-z])|土库曼斯坦|turkmenistan', 'i'),
+    icon: '',
+  },
   {
     name: '阿联酋',
     flag: '🇦🇪',
-    regex: new RegExp('🇦🇪|(?:^|[^A-Za-z])AE(?:$|[^A-Za-z])|阿联酋|迪拜|阿布扎比|dubai|abu[\s_-]*dhabi|uae|united[\\s_-]*arab[\\s_-]*emirates', 'i'),
+    regex: new RegExp(
+      '🇦🇪|(?:^|[^A-Za-z])AE(?:$|[^A-Za-z])|阿联酋|迪拜|阿布扎比|dubai|abu[\s_-]*dhabi|uae|united[\\s_-]*arab[\\s_-]*emirates',
+      'i',
+    ),
     icon: '',
   },
-  { name: '乌兹别克斯坦', flag: '🇺🇿', regex: new RegExp('🇺🇿|(?:^|[^A-Za-z])UZ(?:$|[^A-Za-z])|乌兹别克斯坦|uzbekistan|塔什干|tashkent', 'i'), icon: '' },
+  {
+    name: '乌兹别克斯坦',
+    flag: '🇺🇿',
+    regex: new RegExp('🇺🇿|(?:^|[^A-Za-z])UZ(?:$|[^A-Za-z])|乌兹别克斯坦|uzbekistan|塔什干|tashkent', 'i'),
+    icon: '',
+  },
   { name: '也门', flag: '🇾🇪', regex: new RegExp('🇾🇪|(?:^|[^A-Za-z])YE(?:$|[^A-Za-z])|也门|yemen', 'i'), icon: '' },
-  { name: '澳门', flag: '🇲🇴', regex: new RegExp('🇲🇴|(?:^|[^A-Za-z])MO(?:$|[^A-Za-z])|澳门|macau|macao', 'i'), icon: '' },
+  {
+    name: '澳门',
+    flag: '🇲🇴',
+    regex: new RegExp('🇲🇴|(?:^|[^A-Za-z])MO(?:$|[^A-Za-z])|澳门|macau|macao', 'i'),
+    icon: '',
+  },
   { name: '阿尔巴尼亚', flag: '🇦🇱', regex: new RegExp('🇦🇱|阿尔巴尼亚|albania|地拉那|tirana', 'i'), icon: '' },
   { name: '安道尔', flag: '🇦🇩', regex: new RegExp('🇦🇩|安道尔|andorra', 'i'), icon: '' },
-  { name: '白俄罗斯', flag: '🇧🇾', regex: new RegExp('🇧🇾|(?:^|[^A-Za-z])BY(?:$|[^A-Za-z])|白俄罗斯|belarus|明斯克|minsk', 'i'), icon: '' },
+  {
+    name: '白俄罗斯',
+    flag: '🇧🇾',
+    regex: new RegExp('🇧🇾|(?:^|[^A-Za-z])BY(?:$|[^A-Za-z])|白俄罗斯|belarus|明斯克|minsk', 'i'),
+    icon: '',
+  },
   {
     name: '波斯尼亚和黑塞哥维那',
     flag: '🇧🇦',
-    regex: new RegExp('🇧🇦|(?:^|[^A-Za-z])BA(?:$|[^A-Za-z])|波斯尼亚和黑塞哥维那|bosnia|bosnia[\\s_-]*and[\\s_-]*herzegovina|萨拉热窝|sarajevo', 'i'),
+    regex: new RegExp(
+      '🇧🇦|(?:^|[^A-Za-z])BA(?:$|[^A-Za-z])|波斯尼亚和黑塞哥维那|bosnia|bosnia[\\s_-]*and[\\s_-]*herzegovina|萨拉热窝|sarajevo',
+      'i',
+    ),
     icon: '',
   },
-  { name: '冰岛', flag: '🇮🇸', regex: new RegExp('🇮🇸|(?:^|[^A-Za-z])IS(?:$|[^A-Za-z])|冰岛|iceland|雷克雅未克|reykjavik', 'i'), icon: '' },
-  { name: '列支敦士登', flag: '🇱🇮', regex: new RegExp('🇱🇮|(?:^|[^A-Za-z])LI(?:$|[^A-Za-z])|列支敦士登|liechtenstein', 'i'), icon: '' },
-  { name: '摩尔多瓦', flag: '🇲🇩', regex: new RegExp('🇲🇩|(?:^|[^A-Za-z])MD(?:$|[^A-Za-z])|摩尔多瓦|moldova|基希讷乌|chisinau', 'i'), icon: '' },
+  {
+    name: '冰岛',
+    flag: '🇮🇸',
+    regex: new RegExp('🇮🇸|(?:^|[^A-Za-z])IS(?:$|[^A-Za-z])|冰岛|iceland|雷克雅未克|reykjavik', 'i'),
+    icon: '',
+  },
+  {
+    name: '列支敦士登',
+    flag: '🇱🇮',
+    regex: new RegExp('🇱🇮|(?:^|[^A-Za-z])LI(?:$|[^A-Za-z])|列支敦士登|liechtenstein', 'i'),
+    icon: '',
+  },
+  {
+    name: '摩尔多瓦',
+    flag: '🇲🇩',
+    regex: new RegExp('🇲🇩|(?:^|[^A-Za-z])MD(?:$|[^A-Za-z])|摩尔多瓦|moldova|基希讷乌|chisinau', 'i'),
+    icon: '',
+  },
   { name: '摩纳哥', flag: '🇲🇨', regex: new RegExp('🇲🇨|摩纳哥|monaco', 'i'), icon: '' },
   { name: '黑山', flag: '🇲🇪', regex: new RegExp('🇲🇪|黑山|montenegro|波德戈里察|podgorica', 'i'), icon: '' },
-  { name: '北马其顿', flag: '🇲🇰', regex: new RegExp('🇲🇰|(?:^|[^A-Za-z])MK(?:$|[^A-Za-z])|北马其顿|north[\\s_-]*macedonia|macedonia|斯科普里|skopje', 'i'), icon: '' },
-  { name: '挪威', flag: '🇳🇴', regex: new RegExp('🇳🇴|(?:^|[^A-Za-z])NO(?:$|[^A-Za-z])|挪威|norway|奥斯陆|oslo', 'i'), icon: '' },
+  {
+    name: '北马其顿',
+    flag: '🇲🇰',
+    regex: new RegExp(
+      '🇲🇰|(?:^|[^A-Za-z])MK(?:$|[^A-Za-z])|北马其顿|north[\\s_-]*macedonia|macedonia|斯科普里|skopje',
+      'i',
+    ),
+    icon: '',
+  },
+  {
+    name: '挪威',
+    flag: '🇳🇴',
+    regex: new RegExp('🇳🇴|(?:^|[^A-Za-z])NO(?:$|[^A-Za-z])|挪威|norway|奥斯陆|oslo', 'i'),
+    icon: '',
+  },
   { name: '圣马力诺', flag: '🇸🇲', regex: new RegExp('🇸🇲|圣马力诺|san[\\s_-]*marino', 'i'), icon: '' },
-  { name: '塞尔维亚', flag: '🇷🇸', regex: new RegExp('🇷🇸|(?:^|[^A-Za-z])RS(?:$|[^A-Za-z])|塞尔维亚|serbia|贝尔格莱德|belgrade', 'i'), icon: '' },
-  { name: '瑞士', flag: '🇨🇭', regex: new RegExp('🇨🇭|(?:^|[^A-Za-z])CH(?:$|[^A-Za-z])|瑞士|switzerland|苏黎世|zurich|日内瓦|geneva', 'i'), icon: '' },
-  { name: '乌克兰', flag: '🇺🇦', regex: new RegExp('🇺🇦|(?:^|[^A-Za-z])UA(?:$|[^A-Za-z])|乌克兰|ukraine|基辅|kyiv|kiev', 'i'), icon: '' },
+  {
+    name: '塞尔维亚',
+    flag: '🇷🇸',
+    regex: new RegExp('🇷🇸|(?:^|[^A-Za-z])RS(?:$|[^A-Za-z])|塞尔维亚|serbia|贝尔格莱德|belgrade', 'i'),
+    icon: '',
+  },
+  {
+    name: '瑞士',
+    flag: '🇨🇭',
+    regex: new RegExp('🇨🇭|(?:^|[^A-Za-z])CH(?:$|[^A-Za-z])|瑞士|switzerland|苏黎世|zurich|日内瓦|geneva', 'i'),
+    icon: '',
+  },
+  {
+    name: '乌克兰',
+    flag: '🇺🇦',
+    regex: new RegExp('🇺🇦|(?:^|[^A-Za-z])UA(?:$|[^A-Za-z])|乌克兰|ukraine|基辅|kyiv|kiev', 'i'),
+    icon: '',
+  },
   { name: '梵蒂冈', flag: '🇻🇦', regex: new RegExp('🇻🇦|梵蒂冈|vatican', 'i'), icon: '' },
   { name: '科索沃', flag: '🇽🇰', regex: new RegExp('🇽🇰|(?:^|[^A-Za-z])XK(?:$|[^A-Za-z])|科索沃|kosovo', 'i'), icon: '' },
-  { name: '巴哈马', flag: '🇧🇸', regex: new RegExp('🇧🇸|(?:^|[^A-Za-z])BS(?:$|[^A-Za-z])|巴哈马|bahamas', 'i'), icon: '' },
-  { name: '巴巴多斯', flag: '🇧🇧', regex: new RegExp('🇧🇧|(?:^|[^A-Za-z])BB(?:$|[^A-Za-z])|巴巴多斯|barbados', 'i'), icon: '' },
+  {
+    name: '巴哈马',
+    flag: '🇧🇸',
+    regex: new RegExp('🇧🇸|(?:^|[^A-Za-z])BS(?:$|[^A-Za-z])|巴哈马|bahamas', 'i'),
+    icon: '',
+  },
+  {
+    name: '巴巴多斯',
+    flag: '🇧🇧',
+    regex: new RegExp('🇧🇧|(?:^|[^A-Za-z])BB(?:$|[^A-Za-z])|巴巴多斯|barbados', 'i'),
+    icon: '',
+  },
   { name: '伯利兹', flag: '🇧🇿', regex: new RegExp('🇧🇿|(?:^|[^A-Za-z])BZ(?:$|[^A-Za-z])|伯利兹|belize', 'i'), icon: '' },
-  { name: '哥斯达黎加', flag: '🇨🇷', regex: new RegExp('🇨🇷|(?:^|[^A-Za-z])CR(?:$|[^A-Za-z])|哥斯达黎加|costa[\\s_-]*rica', 'i'), icon: '' },
-  { name: '古巴', flag: '🇨🇺', regex: new RegExp('🇨🇺|(?:^|[^A-Za-z])CU(?:$|[^A-Za-z])|古巴|cuba|哈瓦那|havana', 'i'), icon: '' },
+  {
+    name: '哥斯达黎加',
+    flag: '🇨🇷',
+    regex: new RegExp('🇨🇷|(?:^|[^A-Za-z])CR(?:$|[^A-Za-z])|哥斯达黎加|costa[\\s_-]*rica', 'i'),
+    icon: '',
+  },
+  {
+    name: '古巴',
+    flag: '🇨🇺',
+    regex: new RegExp('🇨🇺|(?:^|[^A-Za-z])CU(?:$|[^A-Za-z])|古巴|cuba|哈瓦那|havana', 'i'),
+    icon: '',
+  },
   { name: '多米尼克', flag: '🇩🇲', regex: new RegExp('🇩🇲|多米尼克|dominica', 'i'), icon: '' },
   { name: '多米尼加', flag: '🇩🇴', regex: new RegExp('🇩🇴|多米尼加|dominican[\\s_-]*republic|dominican', 'i'), icon: '' },
-  { name: '萨尔瓦多', flag: '🇸🇻', regex: new RegExp('🇸🇻|(?:^|[^A-Za-z])SV(?:$|[^A-Za-z])|萨尔瓦多|el[\\s_-]*salvador', 'i'), icon: '' },
-  { name: '格林纳达', flag: '🇬🇩', regex: new RegExp('🇬🇩|(?:^|[^A-Za-z])GD(?:$|[^A-Za-z])|格林纳达|grenada', 'i'), icon: '' },
-  { name: '危地马拉', flag: '🇬🇹', regex: new RegExp('🇬🇹|(?:^|[^A-Za-z])GT(?:$|[^A-Za-z])|危地马拉|guatemala', 'i'), icon: '' },
+  {
+    name: '萨尔瓦多',
+    flag: '🇸🇻',
+    regex: new RegExp('🇸🇻|(?:^|[^A-Za-z])SV(?:$|[^A-Za-z])|萨尔瓦多|el[\\s_-]*salvador', 'i'),
+    icon: '',
+  },
+  {
+    name: '格林纳达',
+    flag: '🇬🇩',
+    regex: new RegExp('🇬🇩|(?:^|[^A-Za-z])GD(?:$|[^A-Za-z])|格林纳达|grenada', 'i'),
+    icon: '',
+  },
+  {
+    name: '危地马拉',
+    flag: '🇬🇹',
+    regex: new RegExp('🇬🇹|(?:^|[^A-Za-z])GT(?:$|[^A-Za-z])|危地马拉|guatemala', 'i'),
+    icon: '',
+  },
   { name: '海地', flag: '🇭🇹', regex: new RegExp('🇭🇹|(?:^|[^A-Za-z])HT(?:$|[^A-Za-z])|海地|haiti', 'i'), icon: '' },
-  { name: '洪都拉斯', flag: '🇭🇳', regex: new RegExp('🇭🇳|(?:^|[^A-Za-z])HN(?:$|[^A-Za-z])|洪都拉斯|honduras', 'i'), icon: '' },
-  { name: '牙买加', flag: '🇯🇲', regex: new RegExp('🇯🇲|(?:^|[^A-Za-z])JM(?:$|[^A-Za-z])|牙买加|jamaica', 'i'), icon: '' },
-  { name: '尼加拉瓜', flag: '🇳🇮', regex: new RegExp('🇳🇮|(?:^|[^A-Za-z])NI(?:$|[^A-Za-z])|尼加拉瓜|nicaragua', 'i'), icon: '' },
+  {
+    name: '洪都拉斯',
+    flag: '🇭🇳',
+    regex: new RegExp('🇭🇳|(?:^|[^A-Za-z])HN(?:$|[^A-Za-z])|洪都拉斯|honduras', 'i'),
+    icon: '',
+  },
+  {
+    name: '牙买加',
+    flag: '🇯🇲',
+    regex: new RegExp('🇯🇲|(?:^|[^A-Za-z])JM(?:$|[^A-Za-z])|牙买加|jamaica', 'i'),
+    icon: '',
+  },
+  {
+    name: '尼加拉瓜',
+    flag: '🇳🇮',
+    regex: new RegExp('🇳🇮|(?:^|[^A-Za-z])NI(?:$|[^A-Za-z])|尼加拉瓜|nicaragua', 'i'),
+    icon: '',
+  },
   { name: '巴拿马', flag: '🇵🇦', regex: new RegExp('🇵🇦|(?:^|[^A-Za-z])PA(?:$|[^A-Za-z])|巴拿马|panama', 'i'), icon: '' },
   {
     name: '圣基茨和尼维斯',
@@ -853,7 +1157,12 @@ const regionDefinitions = [
     regex: new RegExp('🇰🇳|圣基茨和尼维斯|saint[\\s_-]*kitts|st[\\s_-]*kitts', 'i'),
     icon: '',
   },
-  { name: '圣卢西亚', flag: '🇱🇨', regex: new RegExp('🇱🇨|(?:^|[^A-Za-z])LC(?:$|[^A-Za-z])|圣卢西亚|saint[\\s_-]*lucia|st[\\s_-]*lucia', 'i'), icon: '' },
+  {
+    name: '圣卢西亚',
+    flag: '🇱🇨',
+    regex: new RegExp('🇱🇨|(?:^|[^A-Za-z])LC(?:$|[^A-Za-z])|圣卢西亚|saint[\\s_-]*lucia|st[\\s_-]*lucia', 'i'),
+    icon: '',
+  },
   {
     name: '圣文森特和格林纳丁斯',
     flag: '🇻🇨',
@@ -878,19 +1187,62 @@ const regionDefinitions = [
     regex: new RegExp('🇨🇴|哥伦比亚|波哥大|麦德林|(?:^|[^A-Za-z])CO(?:$|[^A-Za-z])|bogot[aá]|medellin|colombia', 'i'),
     icon: '',
   },
-  { name: '智利', flag: '🇨🇱', regex: new RegExp('🇨🇱|(?:^|[^A-Za-z])CL(?:$|[^A-Za-z])|智利|chile|圣地亚哥|santiago', 'i'), icon: '' },
-  { name: '秘鲁', flag: '🇵🇪', regex: new RegExp('🇵🇪|(?:^|[^A-Za-z])PE(?:$|[^A-Za-z])|秘鲁|peru|利马|\blima\b', 'i'), icon: '' },
-  { name: '乌拉圭', flag: '🇺🇾', regex: new RegExp('🇺🇾|(?:^|[^A-Za-z])UY(?:$|[^A-Za-z])|乌拉圭|uruguay|蒙得维的亚|montevideo', 'i'), icon: '' },
-  { name: '巴拉圭', flag: '🇵🇾', regex: new RegExp('🇵🇾|(?:^|[^A-Za-z])PY(?:$|[^A-Za-z])|巴拉圭|paraguay', 'i'), icon: '' },
-  { name: '玻利维亚', flag: '🇧🇴', regex: new RegExp('🇧🇴|(?:^|[^A-Za-z])BO(?:$|[^A-Za-z])|玻利维亚|bolivia', 'i'), icon: '' },
-  { name: '厄瓜多尔', flag: '🇪🇨', regex: new RegExp('🇪🇨|(?:^|[^A-Za-z])EC(?:$|[^A-Za-z])|厄瓜多尔|ecuador', 'i'), icon: '' },
-  { name: '委内瑞拉', flag: '🇻🇪', regex: new RegExp('🇻🇪|(?:^|[^A-Za-z])VE(?:$|[^A-Za-z])|委内瑞拉|venezuela', 'i'), icon: '' },
+  {
+    name: '智利',
+    flag: '🇨🇱',
+    regex: new RegExp('🇨🇱|(?:^|[^A-Za-z])CL(?:$|[^A-Za-z])|智利|chile|圣地亚哥|santiago', 'i'),
+    icon: '',
+  },
+  {
+    name: '秘鲁',
+    flag: '🇵🇪',
+    regex: new RegExp('🇵🇪|(?:^|[^A-Za-z])PE(?:$|[^A-Za-z])|秘鲁|peru|利马|\blima\b', 'i'),
+    icon: '',
+  },
+  {
+    name: '乌拉圭',
+    flag: '🇺🇾',
+    regex: new RegExp('🇺🇾|(?:^|[^A-Za-z])UY(?:$|[^A-Za-z])|乌拉圭|uruguay|蒙得维的亚|montevideo', 'i'),
+    icon: '',
+  },
+  {
+    name: '巴拉圭',
+    flag: '🇵🇾',
+    regex: new RegExp('🇵🇾|(?:^|[^A-Za-z])PY(?:$|[^A-Za-z])|巴拉圭|paraguay', 'i'),
+    icon: '',
+  },
+  {
+    name: '玻利维亚',
+    flag: '🇧🇴',
+    regex: new RegExp('🇧🇴|(?:^|[^A-Za-z])BO(?:$|[^A-Za-z])|玻利维亚|bolivia', 'i'),
+    icon: '',
+  },
+  {
+    name: '厄瓜多尔',
+    flag: '🇪🇨',
+    regex: new RegExp('🇪🇨|(?:^|[^A-Za-z])EC(?:$|[^A-Za-z])|厄瓜多尔|ecuador', 'i'),
+    icon: '',
+  },
+  {
+    name: '委内瑞拉',
+    flag: '🇻🇪',
+    regex: new RegExp('🇻🇪|(?:^|[^A-Za-z])VE(?:$|[^A-Za-z])|委内瑞拉|venezuela', 'i'),
+    icon: '',
+  },
   { name: '圭亚那', flag: '🇬🇾', regex: new RegExp('🇬🇾|(?:^|[^A-Za-z])GY(?:$|[^A-Za-z])|圭亚那|guyana', 'i'), icon: '' },
-  { name: '苏里南', flag: '🇸🇷', regex: new RegExp('🇸🇷|(?:^|[^A-Za-z])SR(?:$|[^A-Za-z])|苏里南|suriname', 'i'), icon: '' },
+  {
+    name: '苏里南',
+    flag: '🇸🇷',
+    regex: new RegExp('🇸🇷|(?:^|[^A-Za-z])SR(?:$|[^A-Za-z])|苏里南|suriname', 'i'),
+    icon: '',
+  },
   {
     name: '新西兰',
     flag: '🇳🇿',
-    regex: new RegExp('🇳🇿|(?:^|[^A-Za-z])NZ(?:$|[^A-Za-z])|新西兰|new[\\s_-]*zealand|auckland|奥克兰|wellington|惠灵顿', 'i'),
+    regex: new RegExp(
+      '🇳🇿|(?:^|[^A-Za-z])NZ(?:$|[^A-Za-z])|新西兰|new[\\s_-]*zealand|auckland|奥克兰|wellington|惠灵顿',
+      'i',
+    ),
     icon: '',
   },
   { name: '斐济', flag: '🇫🇯', regex: new RegExp('🇫🇯|(?:^|[^A-Za-z])FJ(?:$|[^A-Za-z])|斐济|fiji', 'i'), icon: '' },
@@ -916,12 +1268,37 @@ const regionDefinitions = [
     icon: '',
   },
   { name: '关岛', flag: '🇬🇺', regex: new RegExp('🇬🇺|(?:^|[^A-Za-z])GU(?:$|[^A-Za-z])|关岛|guam', 'i'), icon: '' },
-  { name: '波多黎各', flag: '🇵🇷', regex: new RegExp('🇵🇷|(?:^|[^A-Za-z])PR(?:$|[^A-Za-z])|波多黎各|puerto[\\s_-]*rico', 'i'), icon: '' },
-  { name: '百慕大', flag: '🇧🇲', regex: new RegExp('🇧🇲|(?:^|[^A-Za-z])BM(?:$|[^A-Za-z])|百慕大|bermuda', 'i'), icon: '' },
-  { name: '格陵兰', flag: '🇬🇱', regex: new RegExp('🇬🇱|(?:^|[^A-Za-z])GL(?:$|[^A-Za-z])|格陵兰|greenland', 'i'), icon: '' },
-  { name: '库拉索', flag: '🇨🇼', regex: new RegExp('🇨🇼|(?:^|[^A-Za-z])CW(?:$|[^A-Za-z])|库拉索|curacao|curaçao', 'i'), icon: '' },
+  {
+    name: '波多黎各',
+    flag: '🇵🇷',
+    regex: new RegExp('🇵🇷|(?:^|[^A-Za-z])PR(?:$|[^A-Za-z])|波多黎各|puerto[\\s_-]*rico', 'i'),
+    icon: '',
+  },
+  {
+    name: '百慕大',
+    flag: '🇧🇲',
+    regex: new RegExp('🇧🇲|(?:^|[^A-Za-z])BM(?:$|[^A-Za-z])|百慕大|bermuda', 'i'),
+    icon: '',
+  },
+  {
+    name: '格陵兰',
+    flag: '🇬🇱',
+    regex: new RegExp('🇬🇱|(?:^|[^A-Za-z])GL(?:$|[^A-Za-z])|格陵兰|greenland', 'i'),
+    icon: '',
+  },
+  {
+    name: '库拉索',
+    flag: '🇨🇼',
+    regex: new RegExp('🇨🇼|(?:^|[^A-Za-z])CW(?:$|[^A-Za-z])|库拉索|curacao|curaçao', 'i'),
+    icon: '',
+  },
   { name: '阿鲁巴', flag: '🇦🇼', regex: new RegExp('🇦🇼|(?:^|[^A-Za-z])AW(?:$|[^A-Za-z])|阿鲁巴|aruba', 'i'), icon: '' },
-  { name: '开曼群岛', flag: '🇰🇾', regex: new RegExp('🇰🇾|(?:^|[^A-Za-z])KY(?:$|[^A-Za-z])|开曼群岛|cayman[\\s_-]*islands', 'i'), icon: '' },
+  {
+    name: '开曼群岛',
+    flag: '🇰🇾',
+    regex: new RegExp('🇰🇾|(?:^|[^A-Za-z])KY(?:$|[^A-Za-z])|开曼群岛|cayman[\\s_-]*islands', 'i'),
+    icon: '',
+  },
   {
     name: '英属维尔京群岛',
     flag: '🇻🇬',
@@ -934,8 +1311,18 @@ const regionDefinitions = [
     regex: new RegExp('🇻🇮|美属维尔京群岛|us[\\s_-]*virgin[\\s_-]*islands|u\\.s\\.[\\s_-]*virgin[\\s_-]*islands', 'i'),
     icon: '',
   },
-  { name: '新喀里多尼亚', flag: '🇳🇨', regex: new RegExp('🇳🇨|(?:^|[^A-Za-z])NC(?:$|[^A-Za-z])|新喀里多尼亚|new[\\s_-]*caledonia', 'i'), icon: '' },
-  { name: '法属波利尼西亚', flag: '🇵🇫', regex: new RegExp('🇵🇫|(?:^|[^A-Za-z])PF(?:$|[^A-Za-z])|法属波利尼西亚|french[\\s_-]*polynesia', 'i'), icon: '' },
+  {
+    name: '新喀里多尼亚',
+    flag: '🇳🇨',
+    regex: new RegExp('🇳🇨|(?:^|[^A-Za-z])NC(?:$|[^A-Za-z])|新喀里多尼亚|new[\\s_-]*caledonia', 'i'),
+    icon: '',
+  },
+  {
+    name: '法属波利尼西亚',
+    flag: '🇵🇫',
+    regex: new RegExp('🇵🇫|(?:^|[^A-Za-z])PF(?:$|[^A-Za-z])|法属波利尼西亚|french[\\s_-]*polynesia', 'i'),
+    icon: '',
+  },
   { name: '库克群岛', flag: '🇨🇰', regex: new RegExp('🇨🇰|库克群岛|cook[\\s_-]*islands', 'i'), icon: '' },
   { name: '纽埃', flag: '🇳🇺', regex: new RegExp('🇳🇺|纽埃|niue', 'i'), icon: '' },
 ];
@@ -951,13 +1338,13 @@ const rateRegionDefinitions = [
     name: lowRateRegionName,
     regex:
       /^(?!.*(?:剩|期)).*(?:(?<!\d)0\.[0-5]|(?<=[ \[\(|｜丨∣┃\-‐–—−－﹣])0[*×✕✖⨯⨉x倍])|(?:(?<=[ \[\(|｜丨∣┃\-‐–—−－﹣])[*×✕✖⨯⨉x]0(?=[ \)\]]|倍|$))|^(?!.*(?:客户端|软件)).*下载|低倍|免费|(?<![A-Za-z])free(?![A-Za-z])/i,
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Available.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Available.svg',
   },
   {
     name: highRateRegionName,
     regex:
       /(?<=[ \[\(|｜丨∣┃\-‐–—−－﹣])((?:[*×✕✖⨯⨉x]\s*(?:[2-9]\d*|[1-9]\d+)(?:\.\d+)?)|(?:(?<![\d.])(?:[2-9]\d*|[1-9]\d+)(?:\.\d+)?\s*(?:倍|[*×✕✖⨯⨉x])))/i,
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Airport.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Airport.svg',
   },
 ];
 // @shared:end rateRegionDefinitions
@@ -969,7 +1356,7 @@ const homeRegionDefinitions = [
   {
     name: homeRegionName,
     regex: /家宽|住宅|原生\s*IP|家庭宽带|\bISP\b|\bRES\b|residential/i,
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Server.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Server.svg',
   },
 ];
 
@@ -1125,7 +1512,7 @@ const urlTestBaseOption = {
   type: 'url-test',
   tolerance: 50,
   'exclude-type': 'DIRECT',
-  icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Auto.svg',
+  icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Auto.svg',
   hidden: true,
 };
 // @shared:end urlTestBaseOption
@@ -1136,7 +1523,7 @@ const loadBalanceBaseOption = {
   type: 'load-balance',
   strategy: 'sticky-sessions',
   'exclude-type': 'DIRECT',
-  icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/RoundRobin.svg',
+  icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/RoundRobin.svg',
   hidden: true,
 };
 
@@ -1146,19 +1533,19 @@ const baseGroups = [
     name: '手动选择',
     baseOption: selectBaseOption,
     includeAll: true,
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Static.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Static.svg',
   },
   {
     name: '自动选择',
     baseOption: urlTestBaseOption,
     includeAll: true,
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Auto.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Auto.svg',
   },
   {
     name: '负载均衡',
     baseOption: loadBalanceBaseOption,
     includeAll: true,
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/RoundRobin.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/RoundRobin.svg',
   },
   {
     name: '故障转移',
@@ -1166,10 +1553,10 @@ const baseGroups = [
       ...groupBaseOption,
       type: 'fallback',
       'exclude-type': 'DIRECT',
-      icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Auto.svg',
+      icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Auto.svg',
     },
     includeAll: true,
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Auto.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Auto.svg',
   },
 ];
 
@@ -1187,7 +1574,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geosite/googlefcm.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Fcm.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Fcm.svg',
     rules: ['RULE-SET,googlefcm,FCM'],
   },
   {
@@ -1201,7 +1588,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geosite/youtube.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/YouTube.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/YouTube.svg',
     rules: ['RULE-SET,youtube,YouTube'],
   },
   {
@@ -1221,7 +1608,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geoip/google.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Google.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Google.svg',
     rules: ['RULE-SET,google,Google', 'RULE-SET,google_ip,Google,no-resolve'],
   },
   {
@@ -1237,7 +1624,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geosite/anthropic.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Proxy.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Proxy.svg',
     rules: [
       // 官方 geosite:anthropic：anthropic.com、claude.ai/com/dev、clau.de、mcp、usercontent。
       'RULE-SET,anthropic,Claude',
@@ -1265,7 +1652,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geosite/category-ai-!cn.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/ChatGPT.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/ChatGPT.svg',
     rules: [
       'RULE-SET,ai,AI',
       'DOMAIN,cdn.usefathom.com,AI',
@@ -1284,7 +1671,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geosite/github.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/GitHub.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/GitHub.svg',
     rules: ['RULE-SET,github,GitHub'],
   },
   {
@@ -1298,7 +1685,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geosite/microsoft.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Microsoft.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Microsoft.svg',
     rules: ['RULE-SET,microsoft,Microsoft'],
   },
   {
@@ -1312,7 +1699,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geosite/apple.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Apple.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Apple.svg',
     rules: ['RULE-SET,apple,Apple'],
   },
   {
@@ -1332,7 +1719,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geoip/telegram.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Telegram.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Telegram.svg',
     rules: ['RULE-SET,telegram,Telegram', 'RULE-SET,telegram_ip,Telegram,no-resolve'],
   },
   {
@@ -1346,7 +1733,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geosite/steam.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Steam.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Steam.svg',
     rules: ['RULE-SET,steam,Steam'],
   },
   {
@@ -1361,7 +1748,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geosite/tiktok.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/TikTok.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/TikTok.svg',
     rules: ['RULE-SET,tiktok,TikTok'],
   },
   {
@@ -1381,7 +1768,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geoip/twitter.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Twitter.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Twitter.svg',
     rules: ['RULE-SET,twitter,Twitter', 'RULE-SET,twitter_ip,Twitter,no-resolve'],
   },
   {
@@ -1401,7 +1788,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geoip/facebook.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Meta.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Meta.svg',
     rules: ['RULE-SET,meta,Meta', 'RULE-SET,facebook_ip,Meta,no-resolve'],
   },
   {
@@ -1415,7 +1802,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geosite/line.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Line.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Line.svg',
     rules: ['RULE-SET,line,Line'],
   },
   {
@@ -1435,7 +1822,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geoip/netflix.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Netflix.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Netflix.svg',
     rules: ['RULE-SET,netflix,Netflix', 'RULE-SET,netflix_ip,Netflix,no-resolve'],
   },
   {
@@ -1449,7 +1836,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geosite/category-emby.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Emby.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Emby.svg',
     rules: [
       'RULE-SET,emby,Emby',
       'DOMAIN-SUFFIX,mb3admin.com,Emby',
@@ -1475,7 +1862,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geosite/pikpak.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Pikpak.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Pikpak.svg',
     rules: ['RULE-SET,pikpak,PikPak'],
   },
   {
@@ -1489,7 +1876,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geosite/spotify.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Spotify.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Spotify.svg',
     rules: ['RULE-SET,spotify,Spotify'],
   },
   {
@@ -1504,7 +1891,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geosite/category-cryptocurrency.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Bitcoin.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Bitcoin.svg',
     rules: ['RULE-SET,cryptocurrency,Crypto'],
   },
   {
@@ -1519,14 +1906,14 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geosite/ehentai.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Ehentai.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Ehentai.svg',
     rules: ['RULE-SET,ehentai,EHentai'],
   },
   {
     name: '远控工具',
     baseOption: selectBaseOption,
-    fixedProxies: ['默认代理', 'REJECT-DROP'],
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Remote.svg',
+    fixedProxies: ['默认代理', 'DIRECT', 'REJECT-DROP'],
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Remote.svg',
     rules: [
       'PROCESS-NAME-WILDCARD,*AnyDesk*,远控工具',
       'PROCESS-NAME-WILDCARD,*ToDesk*,远控工具',
@@ -1555,7 +1942,7 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geosite/category-ads-all.mrs',
       },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/AdBlock.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/AdBlock.svg',
     rules: ['RULE-SET,adblockmihomolite,AdBlock'],
   },
 ];
@@ -1959,7 +2346,7 @@ function buildRegionGroups(filteredProxies, customProxies) {
     generatedRegionGroups.push(
       ...createRegionGroup(
         '其他节点',
-        'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/WorldMap.svg',
+        'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/WorldMap.svg',
         otherProxies,
       ),
     );
@@ -2012,7 +2399,7 @@ function buildCustomizeGroups(filteredProxies, customizeList = customizeProxies)
     ...selectBaseOption,
     name: chainEnabled ? '链式落地' : '自建节点',
     proxies: customProxyNames,
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Server.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Server.svg',
   };
 
   return {
@@ -2050,7 +2437,7 @@ function buildFunctionalGroups(filteredProxies, generatedRegionGroups, customize
           ...selectBaseOption,
           name: dialerProxyName,
           proxies: filteredProxyNames,
-          icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Bypass.svg',
+          icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Bypass.svg',
         }
       : null;
 
@@ -2059,21 +2446,21 @@ function buildFunctionalGroups(filteredProxies, generatedRegionGroups, customize
       ...selectBaseOption,
       name: '默认代理',
       proxies: allProxiesNames,
-      icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Proxy.svg',
+      icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Proxy.svg',
     };
     const finalRuleProviders = { ...baseRuleProviders };
     const directGroup = {
       ...selectBaseOption,
       name: '直连',
       proxies: [...directProxies.map((p) => p.name)],
-      icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/China.svg',
+      icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/China.svg',
       hidden: true,
     };
     const globalGroup = {
       ...selectBaseOption,
       name: 'GLOBAL',
       proxies: ['默认代理', ...customGroupNames, ...(chainGroup ? [chainGroup.name] : [])],
-      icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Global.svg',
+      icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Global.svg',
     };
     return {
       globalGroup,
@@ -2089,7 +2476,7 @@ function buildFunctionalGroups(filteredProxies, generatedRegionGroups, customize
     ...selectBaseOption,
     name: '默认代理',
     proxies: [...groupNamesOfSelect, ...baseGroupNames, ...customGroupNames],
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Proxy.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Proxy.svg',
   });
 
   const orderedServiceConfigs = [
@@ -2135,14 +2522,14 @@ function buildFunctionalGroups(filteredProxies, generatedRegionGroups, customize
     name: '漏网之鱼',
     proxies: ['默认代理', ...groupNamesOfSelect],
     'default-selected': '默认代理',
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Stack.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Stack.svg',
   });
 
   const directGroup = {
     ...selectBaseOption,
     name: '直连',
     proxies: [...directProxies.map((p) => p.name)],
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/China.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/China.svg',
     hidden: hideManualSelectGroupEnabled,
   };
 
@@ -2155,7 +2542,7 @@ function buildFunctionalGroups(filteredProxies, generatedRegionGroups, customize
       ...(chainGroup ? [chainGroup.name] : []),
       ...generatedRegionGroups.map((g) => g.name),
     ],
-    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/Global.svg',
+    icon: 'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/Global.svg',
   };
 
   return { globalGroup, functionalGroups, functionalRules, finalRuleProviders, chainGroup, directGroup };

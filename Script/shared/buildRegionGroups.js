@@ -27,7 +27,7 @@ function buildRegionGroups(filteredProxies, customProxies) {
     generatedRegionGroups.push(
       ...createRegionGroup(
         '其他节点',
-        'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v1/Icons/svg/WorldMap.svg',
+        'https://fastly.jsdelivr.net/gh/dukangalex/HiClash@assets-v2/Icons/svg/WorldMap.svg',
         otherProxies,
       ),
     );
