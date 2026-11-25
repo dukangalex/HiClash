@@ -119,20 +119,20 @@ jobs:
       - name: run existing regression tests
         run: node Test/run-tests.js
 
-      - name: download mihomo v1.19.32
+      - name: download mihomo v1.19.34
         run: |
           curl -fL --retry 3 --retry-all-errors \
-            -o /tmp/mihomo-v1.19.32.gz \
-            https://github.com/MetaCubeX/mihomo/releases/download/v1.19.32/mihomo-linux-amd64-v1.19.32.gz
-          echo "8451100836c9eda194331c2babfad490b2faf30cebc1a04b0e76fd8ac2d35d10  /tmp/mihomo-v1.19.32.gz" > /tmp/mihomo.sha256
+            -o /tmp/mihomo-v1.19.34.gz \
+            https://github.com/MetaCubeX/mihomo/releases/download/v1.19.34/mihomo-linux-amd64-v1.19.34.gz
+          echo "223fab877e5795ce780ba39902e5f0b1113c1256ae244a7160f1165e017e9ccc  /tmp/mihomo-v1.19.34.gz" > /tmp/mihomo.sha256
           if ! sha256sum -c /tmp/mihomo.sha256; then
             echo "Pinned SHA256 verification failed; refresh the official release checksum before changing this test."
             exit 1
           fi
-          gunzip -c /tmp/mihomo-v1.19.32.gz > /tmp/mihomo
+          gunzip -c /tmp/mihomo-v1.19.34.gz > /tmp/mihomo
           chmod +x /tmp/mihomo
 
-      - name: run mihomo v1.19.32 runtime config validation
+      - name: run mihomo v1.19.34 runtime config validation
         env:
           MIHOMO_BIN: /tmp/mihomo
         run: node Test/mihomo-runtime.test.js

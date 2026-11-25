@@ -9,7 +9,7 @@ const { loadScript } = require('./lib/loader');
 const fx = require('./lib/fixtures');
 
 const MIHOMO_BIN = process.env.MIHOMO_BIN;
-const MIHOMO_VERSION = 'v1.19.32';
+const MIHOMO_VERSION = 'v1.19.34';
 
 if (!MIHOMO_BIN) {
   throw new Error('MIHOMO_BIN is required');
@@ -24,7 +24,7 @@ const fixture = fx.typicalSubscription();
 const config = api.main(fixture);
 assert(
   config.proxies.some((proxy) => proxy.type === 'vmess' && proxy.cipher === 'auto'),
-  'vmess nodes must gain cipher=auto so mihomo v1.19.32 can parse the profile',
+  'vmess nodes must gain cipher=auto so mihomo v1.19.34 can parse the profile',
 );
 
 function assert(condition, message) {
@@ -168,4 +168,4 @@ try {
   fs.rmSync(tempDir, { recursive: true, force: true });
 }
 
-// Runtime validation is pinned to the official v1.19.32 release binary in CI.
+// Runtime validation is pinned to the official v1.19.34 release binary in CI.
